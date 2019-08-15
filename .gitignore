@@ -2,6 +2,7 @@
 .vs/
 bin/
 bin-interm/
+Basement/vendor/spdlog
 
 # Files
 *.vcxproj
