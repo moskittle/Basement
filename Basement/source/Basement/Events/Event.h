@@ -16,7 +16,7 @@ namespace Basement {
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased,
-		MouseButtonPressed, MouseButtonRelease, MouseButtonMoved, MouseButtonScrolled
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
 	enum EEventCategory
@@ -29,7 +29,6 @@ namespace Basement {
 		EventCategoryMouseButton           = BIT(4)
 	};
 
-// EVENT_CLASS_TYPE macro
 #define EventTypeName(type) #type 
 	
 	class BASEMENT_API Event

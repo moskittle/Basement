@@ -6,6 +6,7 @@
 #include "Basement/Log.h"
 #include "Basement/Events/Event.h"
 #include "Basement/Events/KeyEvent.h"
+#include "Basement/Events/MouseEvent.h"
 
 
 // ---Entry Point----------------------
