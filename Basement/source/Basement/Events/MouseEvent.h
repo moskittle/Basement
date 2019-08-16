@@ -63,7 +63,7 @@ namespace Basement {
 		inline int GetMouseButton() const { return m_Button; }
 
 		// Event Category
-		virtual int GetCategoryFlags() const override { return EventCategoryInput | EventCategoryMouse; }
+		virtual int GetCategoryFlags() const override { return EventCategoryInput | EventCategoryMouseButton; }
 	protected:
 		MouseButtonEvent(int button)
 			: m_Button(button) {}
