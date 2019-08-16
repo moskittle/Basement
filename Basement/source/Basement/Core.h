@@ -8,4 +8,6 @@
 	#endif // BM_BUILD_DLL
 #else
 	#error Basement Engine only supports Windows!
-#endif
+#endif	// BM_PLATFORM_WINDOWS
+
+#define BIT(x) (1 << x)
