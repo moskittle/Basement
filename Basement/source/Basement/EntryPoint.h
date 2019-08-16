@@ -7,6 +7,7 @@ extern Basement::Application* Basement::CreateApplication();
 int main(int argc, char** argv)
 {
 	Basement::Log::Init();
+	BM_CORE_INFO("Welcome to Basement Engine!");
 
 	auto gpBackyardApp = Basement::CreateApplication();
 	gpBackyardApp->Run();
