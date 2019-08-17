@@ -1,9 +1,7 @@
 #pragma once
 
+#include "bmpch.h"
 #include "Basement/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Basement {
 
@@ -53,12 +51,6 @@ namespace Basement {
 	public:
 		EventDispatcher(Event& event)
 			: m_Event(event) {}
-
-		//template<typename TEventType>
-		//bool Dispatch(std::function<bool(TEventType&)> func)
-		//{
-
-		//}
 
 		template<typename TEventType>
 		bool Dispatch(EventFn<TEventType> func)

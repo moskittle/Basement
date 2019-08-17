@@ -19,6 +19,9 @@ project "Basement"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "bmpch.h"
+	pchsource "Basement/source/bmpch.cpp"
+
 	files
 	{
 		"%{prj.name}/source/**.h",

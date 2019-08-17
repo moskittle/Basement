@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Basement {
 
 	class BASEMENT_API KeyEvent : public Event

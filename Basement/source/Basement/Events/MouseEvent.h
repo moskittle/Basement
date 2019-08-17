@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Basement {
 
 	class BASEMENT_API MouseMovedEvent : public Event
