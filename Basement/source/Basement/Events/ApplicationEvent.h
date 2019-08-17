@@ -6,6 +6,34 @@
 
 namespace Basement {
 	
+	class BASEMENT_API WindowResizeEvent : public Event
+	{
+	public:
+		WindowResizeEvent(float width, float height)
+			: m_Width(width), m_Height(height) {}
+
+		inline float GetWidth() const { return m_Width; }
+		inline float GetHeight() const { return m_Height; }
+
+		// Event Category
+		virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
+
+		// Event Type
+		static EEventType GetStaticType() { return EEventType::WindowResize; }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(WindowResize); }
+
+		virtual std::string ToString() const override 
+		{
+			std::stringstream ss;
+			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
+			return ss.str();
+		}
+
+	private:
+		float m_Width, m_Height;
+	};
+
 	class BASEMENT_API WindowCloseEvent : public Event
 	{
 	public:
@@ -16,8 +44,8 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::WindowClose; }
-		virtual EEventType GetEventType() { GetStaticType(); }
-		virtual const char* GetEventName() const override { return EnventTypeName(WindowClose); }
+		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(WindowClose); }
 	};
 
 	class BASEMENT_API AppTickEvent : public Event
@@ -30,8 +58,8 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::AppTick; }
-		virtual EEventType GetEventType() { GetStaticType(); }
-		virtual const char* GetEventName() const override { return EnventTypeName(AppTick); }
+		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(AppTick); }
 	};
 
 	class BASEMENT_API AppUpdateEvent : public Event
@@ -44,8 +72,8 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::AppUpdate; }
-		virtual EEventType GetEventType() { GetStaticType(); }
-		virtual const char* GetEventName() const override { return EnventTypeName(AppUpdate); }
+		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(AppUpdate); }
 	};
 
 	class BASEMENT_API AppRenderEvent : public Event
@@ -58,7 +86,7 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::AppRender; }
-		virtual EEventType GetEventType() { GetStaticType(); }
-		virtual const char* GetEventName() const override { return EnventTypeName(AppRender); }
+		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(AppRender); }
 	};
 }

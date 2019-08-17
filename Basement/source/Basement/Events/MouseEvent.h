@@ -13,7 +13,7 @@ namespace Basement {
 			: m_MouseX(mouseX), m_MouseY(mouseY) {}
 
 		inline float GetX() const { return m_MouseX; }
-		inline float GetY() const { return m_MouseY; }
+		inline float GetY() const { return m_MouseY; } 
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseMoved; }
@@ -38,6 +38,9 @@ namespace Basement {
 	public:
 		MouseScrolledEvent(float offsetX, float offsetY)
 			: m_OffsetX(offsetX), m_OffsetY(offsetY) {}
+		
+		inline float GetOffsetX() { return m_OffsetX; }
+		inline float GetOffsetY() { return m_OffsetY; }
 
 		// Event Category
 		virtual int GetCategoryFlags() { return EventCategoryInput | EventCategoryMouse; }
@@ -45,7 +48,7 @@ namespace Basement {
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseScrolled; }
 		virtual EEventType GetEventType() const override { return GetStaticType(); }
-		virtual const char* GetEventName() const override { return EventTypeName(MouseScrolledEvent); }
+		virtual const char* GetEventName() const override { return EventTypeName(MouseScrolled); }
 
 		virtual std::string ToString()
 		{

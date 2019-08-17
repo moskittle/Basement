@@ -27,7 +27,7 @@ project "Basement"
 
 	includedirs
 	{
-		"%{prj.name/source",
+		"%{prj.name}/source",
 		"%{prj.name}/vendor/spdlog/include"
 	}
 

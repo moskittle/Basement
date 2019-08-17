@@ -51,7 +51,7 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::KeyReleased; }
-		virtual EEventType GetEventType() const override { GetStaticType(); }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(EEventType::KeyReleased); }
 		
 		virtual std::string ToString() const override

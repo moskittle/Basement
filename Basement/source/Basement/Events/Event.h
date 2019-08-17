@@ -22,15 +22,15 @@ namespace Basement {
 	enum EEventCategory
 	{
 		None = 0,
-		EventCategoryApplication           = BIT(0),
-		EventCategoryInput                 = BIT(1),
-		EventCategoryKeyboard              = BIT(2),
-		EventCategoryMouse                 = BIT(3),
-		EventCategoryMouseButton           = BIT(4)
+		EventCategoryApplication = BIT(0),
+		EventCategoryInput = BIT(1),
+		EventCategoryKeyboard = BIT(2),
+		EventCategoryMouse = BIT(3),
+		EventCategoryMouseButton = BIT(4)
 	};
 
 #define EventTypeName(type) #type 
-	
+
 	class BASEMENT_API Event
 	{
 		friend class EventDispatcher;
@@ -48,7 +48,36 @@ namespace Basement {
 
 	class EventDispatcher
 	{
+		template<typename TEventType>
+		using EventFn = std::function<bool(TEventType&)>;
+	public:
+		EventDispatcher(Event& event)
+			: m_Event(event) {}
 
+		//template<typename TEventType>
+		//bool Dispatch(std::function<bool(TEventType&)> func)
+		//{
+
+		//}
+
+		template<typename TEventType>
+		bool Dispatch(EventFn<TEventType> func)
+		{
+			if (m_Event.GetEventType() == TEventType::GetStaticType())
+			{
+				m_Event.m_Handled = func(*(TEventType*)& m_Event);
+				return true;
+			}
+			return false;
+		}
+
+	private:
+		Event& m_Event;
 	};
+
+	inline std::ostream& operator<<(std::ostream& os, const Event& e)
+	{
+		return os << e.ToString();
+	}
 
 }
