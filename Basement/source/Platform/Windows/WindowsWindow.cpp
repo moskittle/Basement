@@ -50,6 +50,7 @@ namespace Basement {
 			// TODO: glfwTerminate on system shutdown
 			//bool success = glfwInit();
 			//BM_CORE_ASSERT(success, "Could not initialize GLFW!");
+
 		}
 
 	}
