@@ -1,6 +1,6 @@
-[submodule "Basement/vendor/spdlog"]
-	path = Basement/vendor/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "Basement/vendor/GLFW"]
 	path = Basement/vendor/GLFW
 	url = https://github.com/moskittle/glfw
+[submodule "Basement/vendor/spdlog"]
+	path = Basement/vendor/spdlog
+	url = https://github.com/gabime/spdlog
