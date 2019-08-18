@@ -55,7 +55,8 @@ project "Basement"
 		defines
 		{
 			"BM_PLATFORM_WINDOWS",
-			"BM_BUILD_DLL"
+			"BM_BUILD_DLL",
+			"BM_ENABLE_ASSERTS"
 		}
 
 		postbuildcommands
