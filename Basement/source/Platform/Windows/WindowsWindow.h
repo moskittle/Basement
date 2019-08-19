@@ -12,7 +12,7 @@ namespace Basement {
 		WindowsWindow(const WindowProps& props);
 		virtual ~WindowsWindow();
 
-		void Update() override;
+		virtual void Update() override;
 
 		inline unsigned int GetWidth() const override { return m_WindowData.Width; }
 		inline unsigned int GetHeight() const override { return m_WindowData.Height; }
