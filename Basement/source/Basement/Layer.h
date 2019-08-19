@@ -1,0 +1,25 @@
+#pragma once
+
+#include "Basement/Core.h"
+#include "Basement/Events/Event.h"
+
+namespace Basement {
+
+	class BASEMENT_API Layer
+	{
+	public:
+		Layer(const std::string& debugName = "Layer");
+		virtual ~Layer();
+
+		virtual void Attach() {};
+		virtual void Detach() {};
+		virtual void Update() {};
+		virtual void ProcessEvent(Event& event) {};
+
+		inline const std::string& GetDebugName() const { return m_DebugName; }
+	protected:
+		std::string m_DebugName;
+	};
+
+
+}

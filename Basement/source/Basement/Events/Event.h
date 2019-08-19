@@ -33,15 +33,16 @@ namespace Basement {
 	{
 		friend class EventDispatcher;
 	public:
-		virtual int GetCategoryFlags() const = 0;
+		bool m_Handled = false;
 
+		// Event Category
+		virtual int GetCategoryFlags() const = 0;
+		// Event Type
 		virtual EEventType GetEventType() const = 0;
 		virtual const char* GetEventName() const = 0;
 		virtual std::string ToString() const { return GetEventName(); }
 
 		inline bool IsInCategory(EEventCategory category) { return GetCategoryFlags(); }
-	protected:
-		bool m_Handled = false;
 	};
 
 	class EventDispatcher

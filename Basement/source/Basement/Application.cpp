@@ -13,7 +13,7 @@ namespace Basement {
 	Application::Application()
 	{
 		mu_Window = std::unique_ptr<Window>(Window::Create());
-		mu_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		mu_Window->SetEventCallback(BIND_EVENT_FN(ProcessEvent));
 	}
 
 	void Application::Run()
@@ -23,16 +23,42 @@ namespace Basement {
 			float div = 256,r = 105/div, g = 190/div, b = 40/div;
 			glClearColor(r, g, b, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (auto& layer : m_LayerStack)
+			{
+				layer->Update();
+			}
+
 			mu_Window->Update();
 		}
 	}
 
-	void Application::OnEvent(Event& event)
+	void Application::ProcessEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(CloseWindow));
 
 		BM_CORE_TRACE("{0}", event);
+		
+		for (auto iter = m_LayerStack.end(); iter != m_LayerStack.begin();)
+		{
+			(*--iter)->ProcessEvent(event);
+
+			if (event.m_Handled)
+			{
+				break;
+			}
+		}
+	}
+
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
 	}
 
 	bool Application::CloseWindow(WindowCloseEvent& event)

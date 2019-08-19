@@ -66,14 +66,17 @@ project "Basement"
 
 	filter { "configurations:Debug" }
 		defines "BM_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
+		buildoptions "/MD"
 		optimize "On"
 
 project "Backyard"
@@ -113,12 +116,15 @@ project "Backyard"
 
 	filter { "configurations:Debug" }
 		defines "BM_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
+		buildoptions "/MD"
 		optimize "On"
