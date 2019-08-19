@@ -42,7 +42,4 @@ namespace Basement {
 		WindowData m_WindowData;
 	};
 
-
-
-
 }

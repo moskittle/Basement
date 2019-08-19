@@ -55,7 +55,7 @@ namespace Basement {
 		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyReleasedEvent" << m_KeyCode;
+			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 	};

@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Events/Event.h"
+#include "Basement/Events/ApplicationEvent.h"
 #include "Window.h"
 
 namespace Basement {
@@ -13,8 +14,10 @@ namespace Basement {
 		virtual ~Application() = default;
 
 		void Run();
+		void OnEvent(Event& event);
 	private:
-		std::unique_ptr<Window> m_Window;
+		bool CloseWindow(WindowCloseEvent& event);
+		std::unique_ptr<Window> mu_Window;
 		bool m_IsRunning = true;
 	};
 

@@ -42,7 +42,7 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::WindowClose; }
-		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(WindowClose); }
 	};
 
@@ -56,7 +56,7 @@ namespace Basement {
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::AppTick; }
-		virtual EEventType GetEventType() { return GetStaticType(); }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(AppTick); }
 	};
 

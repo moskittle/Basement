@@ -7,15 +7,15 @@ namespace Basement {
 	class BASEMENT_API MouseMovedEvent : public Event
 	{
 	public:
-		MouseMovedEvent(float mouseX, float mouseY)
-			: m_MouseX(mouseX), m_MouseY(mouseY) {}
+		MouseMovedEvent(float xPos, float yPos)
+			: m_XPos(xPos), m_YPos(yPos) {}
 
-		inline float GetX() const { return m_MouseX; }
-		inline float GetY() const { return m_MouseY; } 
+		inline float GetX() const { return m_XPos; }
+		inline float GetY() const { return m_YPos; }
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseMoved; }
-		virtual EEventType GetEventType() const override { GetStaticType(); }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(MouseMoved); }
 		
 		// Event Category
@@ -24,38 +24,38 @@ namespace Basement {
 		virtual std::string ToString() const override 
 		{
 			std::stringstream ss;
-			ss << "MouseMoveEvent: " << m_MouseX << ", " << m_MouseY;
+			ss << "MouseMoveEvent: " << m_XPos << ", " << m_YPos;
 			return ss.str();
 		}
 	private:
-		float m_MouseX, m_MouseY;
+		float m_XPos, m_YPos;
 	};
 
 	class BASEMENT_API MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(float offsetX, float offsetY)
-			: m_OffsetX(offsetX), m_OffsetY(offsetY) {}
+		MouseScrolledEvent(float xOffset, float yOffset)
+			: m_XOffset(xOffset), m_YOffset(yOffset) {}
 		
-		inline float GetOffsetX() { return m_OffsetX; }
-		inline float GetOffsetY() { return m_OffsetY; }
+		inline float GetOffsetX() { return m_XOffset; }
+		inline float GetOffsetY() { return m_YOffset; }
 
 		// Event Category
-		virtual int GetCategoryFlags() { return EventCategoryInput | EventCategoryMouse; }
+		virtual int GetCategoryFlags() const override { return EventCategoryInput | EventCategoryMouse; }
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseScrolled; }
 		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(MouseScrolled); }
 
-		virtual std::string ToString()
+		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseScrolledEvent: " << m_OffsetX << ", " << m_OffsetY;
+			ss << "MouseScrolledEvent: " << m_XOffset << ", " << m_YOffset;
 			return ss.str();
 		}
 	private:
-		float m_OffsetX, m_OffsetY;
+		float m_XOffset, m_YOffset;
 	};
 
 	class BASEMENT_API MouseButtonEvent : public Event
@@ -71,10 +71,10 @@ namespace Basement {
 		int m_Button;
 	};
 
-	class BASEMENT_API MouseButtonPressed : public MouseButtonEvent
+	class BASEMENT_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressed(int button)
+		MouseButtonPressedEvent(int button)
 			: MouseButtonEvent(button) {}
 
 		// Event Type
@@ -82,7 +82,7 @@ namespace Basement {
 		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(MouseButtonPressed); }
 
-		virtual std::string ToString()
+		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonPressed: " << m_Button;
@@ -90,10 +90,10 @@ namespace Basement {
 		}
 	};
 
-	class BASEMENT_API MouseButtonReleased : public MouseButtonEvent
+	class BASEMENT_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleased(int button)
+		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
 
 		// Event Type
@@ -101,7 +101,7 @@ namespace Basement {
 		virtual EEventType GetEventType() const override { return GetStaticType(); }
 		virtual const char* GetEventName() const override { return EventTypeName(MouseButtonReleased); }
 
-		virtual std::string ToString()
+		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonReleased: " << m_Button;
