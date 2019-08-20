@@ -15,7 +15,7 @@ namespace Basement {
 		Application();
 		virtual ~Application() = default;
 
-		inline static Application& GetInstance() { return *m_Instance; }
+		inline static Application& GetInstance() { return *s_Instance; }
 
 		void Run();
 		void ProcessEvent(Event& event);
@@ -31,7 +31,7 @@ namespace Basement {
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
 	private:
-		static Application* m_Instance;
+		static Application* s_Instance;
 	public:
 		Application(const Application&) = delete;
 		void operator=(const Application&) = delete;
