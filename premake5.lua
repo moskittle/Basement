@@ -27,7 +27,7 @@ project "Basement"
 	kind "SharedLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "On"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
@@ -65,7 +65,6 @@ project "Basement"
 		{
 			"BM_PLATFORM_WINDOWS",
 			"BM_BUILD_DLL",
-			"BM_ENABLE_ASSERTS",
 			"GLFW_INCLUDE_NONE"
 		}
 
@@ -76,23 +75,24 @@ project "Basement"
 
 	filter { "configurations:Debug" }
 		defines "BM_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
-		buildoptions "/MD"
+		runtime "Release"		
 		optimize "On"
 
 project "Backyard"
 	location "Backyard"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
@@ -116,7 +116,6 @@ project "Backyard"
 
 	filter { "system:windows" }
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -126,15 +125,15 @@ project "Backyard"
 
 	filter { "configurations:Debug" }
 		defines "BM_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
