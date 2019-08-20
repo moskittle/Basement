@@ -5,7 +5,6 @@ namespace Basement {
 
 	LayerStack::LayerStack()
 	{
-		m_LayerInsert = m_Layers.begin();
 	}
 
 	LayerStack::~LayerStack()
@@ -18,23 +17,27 @@ namespace Basement {
 
 	void LayerStack::PushLayer(Layer* layer)
 	{
-		m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);
+		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
+		++m_LayerInsertIndex;
+		layer->Attach();
 	}
 
 	void LayerStack::PopLayer(Layer* layer)
 	{
-		auto iter = std::find(m_Layers.begin(), m_Layers.end(), layer);
+		auto iter = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
 
 		if (iter != m_Layers.end())
 		{
+			layer->Detach();
 			m_Layers.erase(iter);
-			--m_LayerInsert;
+			--m_LayerInsertIndex;
 		}
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
 	{
 		m_Layers.emplace_back(overlay);
+		overlay->Attach();
 	}
 
 	void LayerStack::PopOverlay(Layer* overlay)
@@ -43,6 +46,7 @@ namespace Basement {
 		
 		if (iter != m_Layers.end())
 		{
+			overlay->Detach();
 			m_Layers.erase(iter);
 		}
 	}
