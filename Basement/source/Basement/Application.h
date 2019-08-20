@@ -20,12 +20,17 @@ namespace Basement {
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
+
+		inline static Application& GetInstance() { return *s_Instance; }
+		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool CloseWindow(WindowCloseEvent& event);
 		
-		std::unique_ptr<Window> mu_Window;
+		std::unique_ptr<Window> m_Window;
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
+	private:
+		static Application* s_Instance;
 	};
 
 	// To be defined in CLIENT

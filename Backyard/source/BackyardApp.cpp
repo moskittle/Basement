@@ -24,7 +24,8 @@ class Backyard : public Basement::Application
 public:
 	Backyard()
 	{
-		PushLayer(new ExampleLayer());
+		//PushLayer(new ExampleLayer());
+		PushOverlay(new Basement::ImGuiLayer());
 	}
 
 	~Backyard()
