@@ -59,4 +59,24 @@ namespace Basement {
 			return ss.str();
 		}
 	};
+
+	class BASEMENT_API KeyTypedEvent : public KeyEvent
+	{
+	public:
+		KeyTypedEvent(int keycode)
+			: KeyEvent(keycode) {}
+
+		// Event Type
+		static EEventType GetStaticType() { return EEventType::KeyTyped; }
+		virtual EEventType GetEventType() const override { return GetStaticType(); }
+		virtual const char* GetEventName() const override { return EventTypeName(EEventType::KeyTyped); }
+
+		virtual std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << m_KeyCode;
+			return ss.str();
+		}
+	};
+
 }

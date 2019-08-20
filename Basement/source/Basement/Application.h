@@ -15,13 +15,14 @@ namespace Basement {
 		Application();
 		virtual ~Application() = default;
 
+		inline static Application& GetInstance() { return *m_Instance; }
+
 		void Run();
 		void ProcessEvent(Event& event);
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		inline static Application& GetInstance() { return *s_Instance; }
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool CloseWindow(WindowCloseEvent& event);
@@ -30,7 +31,10 @@ namespace Basement {
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
 	private:
-		static Application* s_Instance;
+		static Application* m_Instance;
+	public:
+		Application(const Application&) = delete;
+		void operator=(const Application&) = delete;
 	};
 
 	// To be defined in CLIENT

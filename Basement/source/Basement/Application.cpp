@@ -9,17 +9,15 @@
 
 namespace Basement {
 
-#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
-
-	Application* Application::s_Instance = nullptr;
+	Application* Application::m_Instance = nullptr;
 
 	Application::Application()
 	{
-		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
-		s_Instance = this;
+		BM_CORE_ASSERT(!m_Instance, "Application already exsists!");
+		m_Instance = this;
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(BIND_EVENT_FN(ProcessEvent));
+		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::ProcessEvent));
 	}
 
 	void Application::Run()
@@ -42,7 +40,7 @@ namespace Basement {
 	void Application::ProcessEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(CloseWindow));
+		dispatcher.Dispatch<WindowCloseEvent>(BM_BIND_EVENT_FN(Application::CloseWindow));
 
 		BM_CORE_TRACE("{0}", event);
 		

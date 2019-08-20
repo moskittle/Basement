@@ -102,7 +102,7 @@ namespace Basement {
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
 
 			switch (action)
 			{
@@ -127,6 +127,14 @@ namespace Basement {
 			}
 		});
 
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
+			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
+			
+			KeyTypedEvent event(keycode);
+			data.EventCallback(event);
+		});
+
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			WindowData data = *(WindowData*) glfwGetWindowUserPointer(window);
@@ -137,11 +145,13 @@ namespace Basement {
 				{
 					MouseButtonPressedEvent event(button);
 					data.EventCallback(event);
+					break;
 				}
 				case GLFW_RELEASE:
 				{
 					MouseButtonReleasedEvent event(button);
 					data.EventCallback(event);
+					break;
 				}
 			}
 		});
