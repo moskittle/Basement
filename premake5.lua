@@ -14,16 +14,20 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Basement/vendor/GLFW/include"
+IncludeDir["Glad"] = "Basement/vendor/Glad/include"
 IncludeDir["ImGui"] = "Basement/vendor/ImGui"
 
 
 include "Basement/vendor/GLFW"
+include "Basement/vendor/Glad"
 include "Basement/vendor/ImGui"
 
 project "Basement"
 	location "Basement"
 	kind "SharedLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "On"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
@@ -42,26 +46,27 @@ project "Basement"
 		"%{prj.name}/source",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
 		"ImGui",
 		"opengl32.lib"
 	}
 
 	filter { "system:windows" }
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
 		{
 			"BM_PLATFORM_WINDOWS",
 			"BM_BUILD_DLL",
-			"BM_ENABLE_ASSERTS"
+			"BM_ENABLE_ASSERTS",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands

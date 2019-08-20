@@ -5,6 +5,7 @@
 #include "Basement/Events/KeyEvent.h"
 
 #include "GLFW/glfw3.h"
+#include "glad/glad.h"
 
 namespace Basement {
 
@@ -20,7 +21,7 @@ namespace Basement {
 	{
 		while (m_IsRunning)
 		{
-			float div = 256,r = 105/div, g = 190/div, b = 40/div;
+			float div = 256, r = 105/div, g = 190/div, b = 40/div;	// action green	
 			glClearColor(r, g, b, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 

@@ -5,6 +5,8 @@
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Events/MouseEvent.h"
 
+#include <glad/glad.h>
+
 namespace Basement {
 
 	static bool s_GLFWInitialized = false;
@@ -64,14 +66,18 @@ namespace Basement {
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on system shutdown
-			bool success = glfwInit();
-			BM_CORE_ASSERT(success, "Could not initialize GLFW!");
+			bool glfwStatus = glfwInit();
+			BM_CORE_ASSERT(glfwStatus, "Failed to initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_WindowData.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+
+		bool gladStatus = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+		BM_CORE_ASSERT(gladStatus, "Failed to initialize Glad!")
+
 		glfwSetWindowUserPointer(m_Window, &m_WindowData);
 		SetVSync(true);
 
