@@ -8,6 +8,7 @@ namespace Basement {
 	{
 	public:
 		Input() = default;
+		virtual ~Input() = default;
 
 		inline static bool IsKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }
 		
@@ -26,8 +27,7 @@ namespace Basement {
 		static Input* s_Instance;
 	private:
 		Input(const Input&) = delete;
-		void operator=(const Input&) = delete;
+		Input& operator=(const Input&) = delete;
 	};
-
 
 }

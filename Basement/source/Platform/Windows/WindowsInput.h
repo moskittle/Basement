@@ -13,6 +13,9 @@ namespace Basement {
 		virtual std::pair<float, float> GetMousePositionImpl() override;
 		virtual float GetMousePositionXImpl() override;
 		virtual float GetMousePositionYImpl() override;
+	private:
+		//WindowsInput(const WindowsInput&) = delete;
+		//WindowsInput& operator=(const WindowsInput&) = delete;
 	};
 
 

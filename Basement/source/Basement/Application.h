@@ -33,7 +33,7 @@ namespace Basement {
 	private:
 		static Application* s_Instance;
 		Application(const Application&) = delete;
-		void operator=(const Application&) = delete;
+		Application& operator=(const Application&) = delete;
 	};
 
 	// To be defined in CLIENT

@@ -9,7 +9,7 @@ namespace Basement {
 	class BASEMENT_API LayerStack
 	{
 	public:
-		LayerStack();
+		LayerStack() = default;
 		~LayerStack();
 
 		void PushLayer(Layer* layer);
@@ -22,7 +22,7 @@ namespace Basement {
 
 	private:
 		std::vector<Layer*> m_Layers;
-		std::vector<Layer*>::size_type m_LayerInsertIndex;
+		std::vector<Layer*>::size_type m_LayerInsertIndex = 0;
 	};
 
 }
