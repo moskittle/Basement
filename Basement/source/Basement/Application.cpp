@@ -33,6 +33,8 @@ namespace Basement {
 			{
 				layer->Update();
 			}
+			auto pos = Input::GetMousePosition();
+			BM_CORE_TRACE("{0}, {1}", pos.first, pos.second);
 
 			m_Window->Update();
 		}

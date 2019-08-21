@@ -72,7 +72,8 @@ namespace Basement {
 			s_GLFWInitialized = true;
 		}
 
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_WindowData.Title.c_str(), nullptr, nullptr);
+		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), 
+									m_WindowData.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
 
 		bool gladStatus = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
@@ -160,14 +161,14 @@ namespace Basement {
 		{
 			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
 			
-			MouseScrolledEvent event((float)xOffset, (float)yOffset);
+			MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			data.EventCallback(event);
 		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 			{
 				WindowData data = *(WindowData*) glfwGetWindowUserPointer(window);
-				MouseMovedEvent event((float)xPos, (float)yPos);
+				MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
 				data.EventCallback(event);
 		});
 		// -----------------------------------------------

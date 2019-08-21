@@ -32,7 +32,6 @@ namespace Basement {
 		LayerStack m_LayerStack;
 	private:
 		static Application* s_Instance;
-	public:
 		Application(const Application&) = delete;
 		void operator=(const Application&) = delete;
 	};

@@ -19,10 +19,6 @@ namespace Basement {
 	{
 	}
 
-	ImGuiLayer::~ImGuiLayer()
-	{
-	}
-
 	void ImGuiLayer::Attach()
 	{
 		ImGui::CreateContext();
@@ -70,7 +66,7 @@ namespace Basement {
 		Application& app = Application::GetInstance();
 		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 
-		float time = (float)glfwGetTime();
+		float time = static_cast<float>(glfwGetTime());
 		io.DeltaTime = m_Time > 0.0f ? (time - m_Time) : (1.0f / 60.0f);
 		m_Time = time;
 

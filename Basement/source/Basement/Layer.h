@@ -9,7 +9,7 @@ namespace Basement {
 	{
 	public:
 		Layer(const std::string& debugName = "Layer");
-		virtual ~Layer();
+		virtual ~Layer() = default;
 
 		virtual void Attach() {};
 		virtual void Detach() {};

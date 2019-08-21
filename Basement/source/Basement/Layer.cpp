@@ -8,8 +8,4 @@ namespace Basement {
 	{
 	}
 
-	Layer::~Layer()
-	{
-	}
-
 }
