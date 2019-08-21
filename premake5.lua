@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Basement/vendor/GLFW/include"
 IncludeDir["Glad"] = "Basement/vendor/Glad/include"
 IncludeDir["ImGui"] = "Basement/vendor/ImGui"
+IncludeDir["glm"] = "Basement/vendor/glm"
 
 group "Dependencies"
 	include "Basement/vendor/GLFW"
@@ -39,7 +40,9 @@ project "Basement"
 	files
 	{
 		"%{prj.name}/source/**.h",
-		"%{prj.name}/source/**.cpp"
+		"%{prj.name}/source/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs
@@ -48,7 +51,8 @@ project "Basement"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -107,7 +111,9 @@ project "Backyard"
 	includedirs
 	{
 		"Basement/vendor/spdlog/include",
-		"Basement/source"
+		"Basement/source",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
