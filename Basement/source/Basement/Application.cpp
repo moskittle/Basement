@@ -3,6 +3,7 @@
 
 #include "Basement/Log.h"
 #include "Basement/Events/KeyEvent.h"
+#include "Basement/Input.h"
 
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
@@ -58,18 +59,17 @@ namespace Basement {
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
-		layer->Attach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
 		m_LayerStack.PushOverlay(overlay);
-		overlay->Attach();
 	}
 
 	bool Application::CloseWindow(WindowCloseEvent& event)
 	{
 		m_IsRunning = false;
+
 		return true;
 	}
 

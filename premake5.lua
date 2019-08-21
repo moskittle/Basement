@@ -17,10 +17,11 @@ IncludeDir["GLFW"] = "Basement/vendor/GLFW/include"
 IncludeDir["Glad"] = "Basement/vendor/Glad/include"
 IncludeDir["ImGui"] = "Basement/vendor/ImGui"
 
-
-include "Basement/vendor/GLFW"
-include "Basement/vendor/Glad"
-include "Basement/vendor/ImGui"
+group "Dependencies"
+	include "Basement/vendor/GLFW"
+	include "Basement/vendor/Glad"
+	include "Basement/vendor/ImGui"
+group ""
 
 project "Basement"
 	location "Basement"
@@ -70,7 +71,7 @@ project "Basement"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Backyard")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Backyard/\"")
 		}
 
 	filter { "configurations:Debug" }
