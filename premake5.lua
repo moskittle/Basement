@@ -112,7 +112,7 @@ project "Backyard"
 	{
 		"Basement/vendor/spdlog/include",
 		"Basement/source",
-		"%{IncludeDir.ImGui}",
+		"Basement/vendor",
 		"%{IncludeDir.glm}"
 	}
 
