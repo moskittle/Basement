@@ -16,17 +16,10 @@ namespace Basement {
 
 		virtual void Attach() override;
 		virtual void Detach() override;
-		virtual void Update() override;
-		virtual void ProcessEvent(Event& event) override;
-	private:
-		bool HasMouseButtonPressedEvent(MouseButtonPressedEvent& event);
-		bool HasMouseButtonReleasedEvent(MouseButtonReleasedEvent& event);
-		bool HasMouseMovedEvent(MouseMovedEvent& event);
-		bool HasMouseScrolledEvent(MouseScrolledEvent& event);
-		bool HasKeyPressedEvent(KeyPressedEvent& event);
-		bool HasKeyReleasedEvent(KeyReleasedEvent& event);
-		bool HasKeyTypedEvent(KeyTypedEvent& event);
-		bool HasWindowResizeEvent(WindowResizeEvent& event);
+		virtual void RenderImGui() override;
+
+		void Begin();
+		void End();
 	private:
 		float m_Time = 0.0f;
 	};

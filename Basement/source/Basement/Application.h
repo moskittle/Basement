@@ -7,6 +7,8 @@
 #include "Events/Event.h"
 #include "Basement/Events/ApplicationEvent.h"
 
+#include "Basement/ImGui/ImGuiLayer.h"
+
 namespace Basement {
 	
 	class BASEMENT_API Application
@@ -28,6 +30,7 @@ namespace Basement {
 		bool CloseWindow(WindowCloseEvent& event);
 		
 		std::unique_ptr<Window> m_Window;
+		std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
 	private:

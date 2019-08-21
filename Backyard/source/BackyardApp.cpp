@@ -18,11 +18,7 @@
 class ExampleLayer : public Basement::Layer
 {
 public:
-	ExampleLayer()
-		: Layer("Example") 
-	{
-		// auto cam = camera(5.0f, { 0.5f, 0.5f });
-	}
+	ExampleLayer() : Layer("Example") {}
 
 	void Update() override
 	{
