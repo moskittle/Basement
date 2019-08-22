@@ -20,7 +20,7 @@ namespace Basement {
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::ProcessEvent));
 
-		m_ImGuiLayer = std::make_unique<ImGuiLayer>();
+		m_ImGuiLayer = new ImGuiLayer();
 	}
 
 	void Application::Run()

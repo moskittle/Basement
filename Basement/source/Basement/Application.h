@@ -30,7 +30,7 @@ namespace Basement {
 		bool CloseWindow(WindowCloseEvent& event);
 		
 		std::unique_ptr<Window> m_Window;
-		std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
 	private:

@@ -6,8 +6,9 @@ namespace Basement {
 
 	class BASEMENT_API Input
 	{
-	public:
+	protected:
 		Input() = default;
+	public:
 		virtual ~Input() = default;
 
 		inline static bool IsKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }

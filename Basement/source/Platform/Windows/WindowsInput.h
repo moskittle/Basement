@@ -6,6 +6,8 @@ namespace Basement {
 
 	class WindowsInput : public Input
 	{
+	public:
+		WindowsInput() = default;
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) override;
 		
@@ -14,10 +16,8 @@ namespace Basement {
 		virtual float GetMousePositionXImpl() override;
 		virtual float GetMousePositionYImpl() override;
 	private:
-		//WindowsInput(const WindowsInput&) = delete;
-		//WindowsInput& operator=(const WindowsInput&) = delete;
+		WindowsInput(const WindowsInput&) = delete;
+		WindowsInput& operator=(const WindowsInput&) = delete;
 	};
-
-
 
 }
