@@ -2,12 +2,12 @@ workspace "Basement"
 	architecture "x64"
 	startproject "Backyard"
 
-    configurations
-    {
-        "Debug",
-        "Release",
-        "Dist"
-    }
+	configurations
+	{
+		"Debug",
+		"Release",
+		"Dist"
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -26,10 +26,10 @@ group ""
 
 project "Basement"
 	location "Basement"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "Off"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
@@ -43,6 +43,11 @@ project "Basement"
 		"%{prj.name}/source/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs
@@ -73,31 +78,27 @@ project "Basement"
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Backyard/\"")
-		}
-
 	filter { "configurations:Debug" }
 		defines "BM_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
 		runtime "Release"		
-		optimize "On"
+		optimize "on"
 
 project "Backyard"
 	location "Backyard"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "Off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
@@ -122,7 +123,7 @@ project "Backyard"
 	}
 
 	filter { "system:windows" }
-		cppdialect "C++17"
+
 		systemversion "latest"
 
 		defines
@@ -144,3 +145,4 @@ project "Backyard"
 		defines "BM_DIST"
 		runtime "Release"
 		optimize "On"
+		

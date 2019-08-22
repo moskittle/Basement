@@ -4,7 +4,7 @@
 
 namespace Basement {
 
-	class BASEMENT_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float xPos, float yPos)
@@ -31,7 +31,7 @@ namespace Basement {
 		float m_XPos, m_YPos;
 	};
 
-	class BASEMENT_API MouseScrolledEvent : public Event
+	class MouseScrolledEvent : public Event
 	{
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset)
@@ -58,7 +58,7 @@ namespace Basement {
 		float m_XOffset, m_YOffset;
 	};
 
-	class BASEMENT_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
 	public:
 		inline int GetMouseButton() const { return m_Button; }
@@ -71,7 +71,7 @@ namespace Basement {
 		int m_Button;
 	};
 
-	class BASEMENT_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonPressedEvent(int button)
@@ -90,7 +90,7 @@ namespace Basement {
 		}
 	};
 
-	class BASEMENT_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonReleasedEvent(int button)

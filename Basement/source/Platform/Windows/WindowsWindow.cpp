@@ -89,7 +89,7 @@ namespace Basement {
 			data.Width = width;
 			data.Height = height;
 
-			WindowResizeEvent event(width, height);
+			WindowResizeEvent event(static_cast<float>(width), static_cast<float>(height));
 			data.EventCallback(event);
 		});
 

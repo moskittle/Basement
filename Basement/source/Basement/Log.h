@@ -6,7 +6,7 @@
 
 namespace Basement {
 	
-	class BASEMENT_API Log
+	class Log
 	{
 	public:
 		static void Init();

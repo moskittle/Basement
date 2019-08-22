@@ -4,7 +4,7 @@
 
 namespace Basement {
 	
-	class BASEMENT_API WindowResizeEvent : public Event
+	class WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(float width, float height)
@@ -32,7 +32,7 @@ namespace Basement {
 		float m_Width, m_Height;
 	};
 
-	class BASEMENT_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() {}
@@ -46,7 +46,7 @@ namespace Basement {
 		virtual const char* GetEventName() const override { return EventTypeName(WindowClose); }
 	};
 
-	class BASEMENT_API AppTickEvent : public Event
+	class AppTickEvent : public Event
 	{
 	public:
 		AppTickEvent() {}
@@ -60,7 +60,7 @@ namespace Basement {
 		virtual const char* GetEventName() const override { return EventTypeName(AppTick); }
 	};
 
-	class BASEMENT_API AppUpdateEvent : public Event
+	class AppUpdateEvent : public Event
 	{
 	public:
 		AppUpdateEvent() {}
@@ -74,7 +74,7 @@ namespace Basement {
 		virtual const char* GetEventName() const override { return EventTypeName(AppUpdate); }
 	};
 
-	class BASEMENT_API AppRenderEvent : public Event
+	class AppRenderEvent : public Event
 	{
 	public:
 		AppRenderEvent() {}

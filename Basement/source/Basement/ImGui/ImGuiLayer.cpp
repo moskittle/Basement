@@ -3,7 +3,7 @@
 
 #include "imgui.h"
 
-#define IMGUI_IMPL_API
+//#define IMGUI_IMPL_API
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
 
@@ -16,6 +16,8 @@
 namespace Basement {
 
 #define BIND_EVENT_FN(x) std::bind(ImGuiLayer::x, this, std::placeholders::_1)
+#define APP_WINDOW_WIDTH static_cast<float>(app.GetWindow().GetWidth())
+#define APP_WINDOW_HEIGHT static_cast<float>(app.GetWindow().GetHeight())
 
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
@@ -76,7 +78,7 @@ namespace Basement {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
+		io.DisplaySize = ImVec2(APP_WINDOW_WIDTH, APP_WINDOW_HEIGHT);
 
 		// Rendering
 		ImGui::Render();

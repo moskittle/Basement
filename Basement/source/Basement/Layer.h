@@ -5,7 +5,7 @@
 
 namespace Basement {
 
-	class BASEMENT_API Layer
+	class Layer
 	{
 	public:
 		Layer(const std::string& debugName = "Layer");

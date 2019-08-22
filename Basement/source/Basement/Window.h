@@ -7,24 +7,39 @@
 
 namespace Basement {
 
-	struct WindowProps
-	{
-		std::string Title;
-		unsigned int Width;
-		unsigned int Height;
+	//struct WindowProps
+	//{
+	//	std::string Title;
+	//	unsigned int Width;
+	//	unsigned int Height;
 
-		WindowProps(const std::string & title = "Basement Engine",
-					unsigned int width = 1280,
-					unsigned int height = 720)
-			: Title(title), Width(width), Height(height)
-		{
-		}
-	};
+	//	WindowProps(const std::string & title = "Basement Engine",
+	//				unsigned int width = 1280,
+	//				unsigned int height = 720)
+	//		: Title(title), Width(width), Height(height)
+	//	{
+	//	}
+	//};
 	
 	// Interface representing a desktop system based Window
-	class BASEMENT_API Window
+	class Window
 	{
 	public:
+
+		struct WindowProps
+		{
+			std::string Title;
+			unsigned int Width;
+			unsigned int Height;
+
+			WindowProps(const std::string& title = "Basement Engine",
+				unsigned int width = 1280,
+				unsigned int height = 720)
+				: Title(title), Width(width), Height(height)
+			{
+			}
+		};
+
 		using EventCallbackFn = std::function<void(Event&)>;
 
 		virtual ~Window() = default;

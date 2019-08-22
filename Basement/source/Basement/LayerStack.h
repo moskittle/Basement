@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	class BASEMENT_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack() = default;

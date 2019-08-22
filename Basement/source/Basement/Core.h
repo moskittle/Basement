@@ -1,15 +1,18 @@
 #pragma once
 
 #ifdef BM_PLATFORM_WINDOWS
-	#ifdef BM_BUILD_DLL
-		#define BASEMENT_API __declspec(dllexport)
+	#if BM_DYNAMIC_LINK	
+		#ifdef BM_BUILD_DLL
+			#define BASEMENT_API __declspec(dllexport)
+		#else
+			#define BASEMENT_API __declspec(dllimport)
+		#endif // BM_BUILD_DLL
 	#else
-		#define BASEMENT_API __declspec(dllimport)
-	#endif // BM_BUILD_DLL
+		#define BASEMENT_API
+	#endif	// BM_DYNAMIC_LINK
 #else
 	#error Basement Engine only supports Windows!
 #endif	// BM_PLATFORM_WINDOWS
-
 
 #ifdef BM_DEBUG
 	#define BM_ENABLE_ASSERTS

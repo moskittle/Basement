@@ -29,7 +29,7 @@ namespace Basement {
 
 #define EventTypeName(type) #type 
 
-	class BASEMENT_API Event
+	class  Event
 	{
 		friend class EventDispatcher;
 	public:
