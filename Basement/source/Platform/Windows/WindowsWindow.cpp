@@ -31,10 +31,45 @@ namespace Basement {
 		Shutdown();
 	}
 
+	void WindowsWindow::Init(const WindowProps& props)
+	{
+		m_WindowData.Title = props.Title;
+		m_WindowData.Width = props.Width;
+		m_WindowData.Height = props.Height;
+
+		BM_CORE_INFO("Creating window {0} ({1}x{2})", props.Title, props.Width, props.Height);
+
+		// Initialize GLFW
+		if (!s_GLFWInitialized)
+		{
+			// TODO: glfwTerminate on system shutdown
+			bool glfwStatus = glfwInit();
+			BM_CORE_ASSERT(glfwStatus, "Failed to initialize GLFW!");
+			glfwSetErrorCallback(GLFWErrorCallback);
+			s_GLFWInitialized = true;
+		}
+
+		// Create Window
+		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height),
+			m_WindowData.Title.c_str(), nullptr, nullptr);
+
+		// Create Context
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
+
+		// Set GLFW callbacks
+		SetglfwCallbacks();
+	}
+
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
 		m_Context->SwapBuffers();
+	}
+
+	void WindowsWindow::Shutdown()
+	{
+		glfwDestroyWindow(m_Window);
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
@@ -55,59 +90,36 @@ namespace Basement {
 		return m_WindowData.VSync;
 	}
 
-	void WindowsWindow::Init(const WindowProps & props)
+
+	void WindowsWindow::SetglfwCallbacks()
 	{
-		m_WindowData.Title = props.Title;
-		m_WindowData.Width = props.Width;
-		m_WindowData.Height = props.Height;
-
-		BM_CORE_INFO("Creating window {0} ({1}x{2})", props.Title, props.Width, props.Height);
-
-		if (!s_GLFWInitialized)
-		{
-			// TODO: glfwTerminate on system shutdown
-			bool glfwStatus = glfwInit();
-			BM_CORE_ASSERT(glfwStatus, "Failed to initialize GLFW!");
-			glfwSetErrorCallback(GLFWErrorCallback);
-			s_GLFWInitialized = true;
-		}
-
-		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), 
-									m_WindowData.Title.c_str(), nullptr, nullptr);
-		
-		m_Context = new OpenGLContext(m_Window);
-		m_Context->Init();
-
-
-
 		glfwSetWindowUserPointer(m_Window, &m_WindowData);
 		SetVSync(true);
 
-		// -----------Set GLFW callbacks------------------
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-		{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-			data.Width = width;
-			data.Height = height;
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				data.Width = width;
+				data.Height = height;
 
-			WindowResizeEvent event(static_cast<float>(width), static_cast<float>(height));
-			data.EventCallback(event);
-		});
+				WindowResizeEvent event(static_cast<float>(width), static_cast<float>(height));
+				data.EventCallback(event);
+			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-		{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-			
-			WindowCloseEvent event;
-			data.EventCallback(event);
-		});
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				WindowCloseEvent event;
+				data.EventCallback(event);
+			});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-
-			switch (action)
 			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				switch (action)
+				{
 				case GLFW_PRESS:
 				{
 					KeyPressedEvent event(key, 0);
@@ -126,23 +138,23 @@ namespace Basement {
 					data.EventCallback(event);
 					break;
 				}
-			}
-		});
+				}
+			});
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
-		{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-			
-			KeyTypedEvent event(keycode);
-			data.EventCallback(event);
-		});
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				KeyTypedEvent event(keycode);
+				data.EventCallback(event);
+			});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
-		{
-			WindowData data = *(WindowData*) glfwGetWindowUserPointer(window);
-
-			switch (action)
 			{
+				WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				switch (action)
+				{
 				case GLFW_PRESS:
 				{
 					MouseButtonPressedEvent event(button);
@@ -155,29 +167,23 @@ namespace Basement {
 					data.EventCallback(event);
 					break;
 				}
-			}
-		});
+				}
+			});
 
-		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) 
-		{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-			
-			MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-			data.EventCallback(event);
-		});
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
+				data.EventCallback(event);
+			});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 			{
-				WindowData data = *(WindowData*) glfwGetWindowUserPointer(window);
+				WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
 				MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
 				data.EventCallback(event);
-		});
-		// -----------------------------------------------
-	}
-
-	void WindowsWindow::Shutdown()
-	{
-		glfwDestroyWindow(m_Window);
+			});
 	}
 
 }
