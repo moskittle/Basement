@@ -6,20 +6,6 @@
 #include "Basement/Events/Event.h"
 
 namespace Basement {
-
-	//struct WindowProps
-	//{
-	//	std::string Title;
-	//	unsigned int Width;
-	//	unsigned int Height;
-
-	//	WindowProps(const std::string & title = "Basement Engine",
-	//				unsigned int width = 1280,
-	//				unsigned int height = 720)
-	//		: Title(title), Width(width), Height(height)
-	//	{
-	//	}
-	//};
 	
 	// Interface representing a desktop system based Window
 	class Window

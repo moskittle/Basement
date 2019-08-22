@@ -5,7 +5,7 @@
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Events/MouseEvent.h"
 
-#include <glad/glad.h>
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Basement {
 
@@ -34,7 +34,7 @@ namespace Basement {
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
@@ -74,10 +74,11 @@ namespace Basement {
 
 		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), 
 									m_WindowData.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
+		
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
-		bool gladStatus = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-		BM_CORE_ASSERT(gladStatus, "Failed to initialize Glad!")
+
 
 		glfwSetWindowUserPointer(m_Window, &m_WindowData);
 		SetVSync(true);

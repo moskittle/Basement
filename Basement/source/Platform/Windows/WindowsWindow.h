@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Basement/Window.h"
+#include "Basement/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -11,7 +12,10 @@ namespace Basement {
 	public:
 		WindowsWindow(const WindowProps& props);
 		virtual ~WindowsWindow();
-
+	private:
+		void Init(const WindowProps& props);
+		void Shutdown();
+	public:
 		virtual void Update() override;
 
 		inline unsigned int GetWidth() const override { return m_WindowData.Width; }
@@ -23,18 +27,15 @@ namespace Basement {
 		virtual bool IsVSync() const override;
 
 		virtual inline void* GetNativeWindow() const override { return m_Window; }
-
-	private:
-		void Init(const WindowProps& props);
-		void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{
-			std::string Title;
-			unsigned int Width, Height;
-			bool VSync;
+			std::string Title = "";
+			unsigned int Width = 0, Height = 0;
+			bool VSync = false;
 
 			EventCallbackFn EventCallback;
 		};
