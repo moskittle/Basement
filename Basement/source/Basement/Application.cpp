@@ -5,8 +5,10 @@
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Input.h"
 
-#include "GLFW/glfw3.h"
-#include "glad/glad.h"
+//#include "Platform/OpenGL/OpenGLBuffer.h"
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace Basement {
 
@@ -22,13 +24,9 @@ namespace Basement {
 
 		m_ImGuiLayer = new ImGuiLayer();
 
-		// Vertext Array
+		// Vertex Array
 		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
-
-		// Vertext Buffer
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 
 		float vertices[3 * 4] = {
 			 0.5f, -0.5f, 0.0f,
@@ -37,23 +35,20 @@ namespace Basement {
 			-0.5f,  0.5f, 0.0f
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-		// Index Buffer
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-
-		unsigned int indices[3 * 2] = { 
+		uint32_t indices[3 * 2] = { 
 			0, 1, 2,
 			1, 2, 3
 		};
-		
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		std::string vertSource = R"(
+		// Index Buffer
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+
+		const std::string vertSource = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
@@ -67,7 +62,7 @@ namespace Basement {
 			}
 		)";
 
-		std::string fragSource = R"(
+		const std::string fragSource = R"(
 			#version 330 core
 			
 			layout(location = 0) out vec4 color;
@@ -81,7 +76,6 @@ namespace Basement {
 			}
 		)";
 
-		//m_Shader = std::make_unique<Shader>(new Shader(vertSource, fragSource));
 		m_Shader.reset(new Shader(vertSource, fragSource));
 	}
 
@@ -99,8 +93,7 @@ namespace Basement {
 
 			m_Shader->Bind();
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (auto& layer : m_LayerStack)
 			{
