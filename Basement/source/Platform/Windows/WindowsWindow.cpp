@@ -43,8 +43,8 @@ namespace Basement {
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on system shutdown
-			bool glfwStatus = glfwInit();
-			BM_CORE_ASSERT(glfwStatus, "Failed to initialize GLFW!");
+			bool bIsInitialized = glfwInit();
+			BM_CORE_ASSERT(bIsInitialized, "Failed to initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}

@@ -30,7 +30,7 @@ namespace Basement {
 		glGenBuffers(1, &m_VertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 
-		float vertices[12] = {
+		float vertices[3 * 4] = {
 			 0.5f, -0.5f, 0.0f,
 			-0.5f, -0.5f, 0.0f,
 			 0.5f,  0.5f, 0.0f,
@@ -46,21 +46,58 @@ namespace Basement {
 		glGenBuffers(1, &m_IndexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 
-		unsigned int indices[6] = { 
+		unsigned int indices[3 * 2] = { 
 			0, 1, 2,
 			1, 2, 3
 		};
 		
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::string vertSource = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			
+			out vec3 v_Color;
+
+			void main()
+			{
+				v_Color = a_Position;
+				gl_Position = vec4(a_Position - 0.5, 1.0);
+			}
+		)";
+
+		std::string fragSource = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			
+			in vec3 v_Color;
+			
+			void main()
+			{
+				color = vec4(v_Color * 0.5f + 0.5f, 0.0);
+				//color = vec4(0.0f, 34.0f / 255.0f, 68.0f / 255.0f, 0.0f);
+			}
+		)";
+
+		//m_Shader = std::make_unique<Shader>(new Shader(vertSource, fragSource));
+		m_Shader.reset(new Shader(vertSource, fragSource));
 	}
 
 	void Application::Run()
 	{
 		while (m_IsRunning)
 		{
-			float div = 256, r = 105/div, g = 190/div, b = 40/div;	// action green	
-			glClearColor(r, g, b, 1);
+			float div = 256.0f;
+			float green[3] = { 105.0f / div, 190.0f / div, 40.0f / div };	// action green	
+			float blue[3] = { 0.0f, 34.0f / div, 68.0f / div };				// college navy
+			float grey[3] = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
+
+			glClearColor( grey[0], grey[1], grey[2], 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			m_Shader->Bind();
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
