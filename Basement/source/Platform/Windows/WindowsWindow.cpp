@@ -58,7 +58,7 @@ namespace Basement {
 		m_Context->Init();
 
 		// Set GLFW callbacks
-		SetglfwCallbacks();
+		SetGLFWCallbacks();
 	}
 
 	void WindowsWindow::Update()
@@ -91,7 +91,7 @@ namespace Basement {
 	}
 
 
-	void WindowsWindow::SetglfwCallbacks()
+	void WindowsWindow::SetGLFWCallbacks()
 	{
 		glfwSetWindowUserPointer(m_Window, &m_WindowData);
 		SetVSync(true);

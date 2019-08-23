@@ -21,6 +21,37 @@ namespace Basement {
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::ProcessEvent));
 
 		m_ImGuiLayer = new ImGuiLayer();
+
+		// Vertext Array
+		glGenVertexArrays(1, &m_VertexArray);
+		glBindVertexArray(m_VertexArray);
+
+		// Vertext Buffer
+		glGenBuffers(1, &m_VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+
+		float vertices[12] = {
+			 0.5f, -0.5f, 0.0f,
+			-0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
+
+		// Index Buffer
+		glGenBuffers(1, &m_IndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+
+		unsigned int indices[6] = { 
+			0, 1, 2,
+			1, 2, 3
+		};
+		
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	}
 
 	void Application::Run()
@@ -30,6 +61,9 @@ namespace Basement {
 			float div = 256, r = 105/div, g = 190/div, b = 40/div;	// action green	
 			glClearColor(r, g, b, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 			for (auto& layer : m_LayerStack)
 			{

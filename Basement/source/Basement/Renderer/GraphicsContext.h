@@ -1,5 +1,4 @@
 #pragma once
-#include "bmpch.h"
 
 namespace Basement {
 

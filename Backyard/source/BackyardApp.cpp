@@ -17,9 +17,16 @@ public:
 
 	virtual void RenderImGui() override
 	{
-		//ImGui::Begin("Test");
-		//ImGui::Text("Hello World");
-		//ImGui::End();
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+
+		ImGuiIO& io = ImGui::GetIO(); static_cast<void>(io);
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;			// Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;			// Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;				// Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;				// Enable Multi-Viewport / Platform Windows
+
+		ImGui::End();
 	}
 
 	void ProcessEvent(Basement::Event& event) override
