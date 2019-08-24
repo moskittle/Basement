@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
+	VertexBuffer* VertexBuffer::Create(uint32_t size, float* vertices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -14,14 +14,14 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 			return nullptr;
 		case ERendererAPI::OpenGL:
-			return new OpenGLVertexBuffer(vertices, size);
+			return new OpenGLVertexBuffer(size, vertices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");
 			return nullptr;
 		}
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	IndexBuffer* IndexBuffer::Create(uint32_t count, uint32_t* indices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -29,7 +29,7 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 				return nullptr;
 		case ERendererAPI::OpenGL:
-			return new OpenGLIndexBuffer(indices, count);
+			return new OpenGLIndexBuffer(count, indices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");
 			return nullptr;

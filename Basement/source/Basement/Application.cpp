@@ -28,6 +28,7 @@ namespace Basement {
 		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
 
+		// Vertex Buffer
 		float vertices[3 * 4] = {
 			 0.5f, -0.5f, 0.0f,
 			-0.5f, -0.5f, 0.0f,
@@ -35,19 +36,22 @@ namespace Basement {
 			-0.5f,  0.5f, 0.0f
 		};
 
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		m_VertexBuffer.reset(VertexBuffer::Create(sizeof(vertices), vertices));
 
 		glEnableVertexAttribArray(0);
+		m_VertexBuffer->Bind();
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
+		// Index Buffer
 		uint32_t indices[3 * 2] = { 
 			0, 1, 2,
 			1, 2, 3
 		};
 
-		// Index Buffer
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_IndexBuffer.reset(IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
 
+
+		// Shaders
 		const std::string vertSource = R"(
 			#version 330 core
 			
@@ -88,12 +92,14 @@ namespace Basement {
 			float blue[3] = { 0.0f, 34.0f / div, 68.0f / div };				// college navy
 			float grey[3] = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 
+			// Background color
 			glClearColor( grey[0], grey[1], grey[2], 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			m_Shader->Bind();
-
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			
+			m_IndexBuffer->Bind();
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 			for (auto& layer : m_LayerStack)
 			{
