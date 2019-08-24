@@ -20,6 +20,7 @@ namespace Basement {
 		BufferLayout m_BufferLayout;
 	};
 
+
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
@@ -34,6 +35,5 @@ namespace Basement {
 		uint32_t m_IndexBufferID;
 		uint32_t m_Count;
 	};
-
 
 }

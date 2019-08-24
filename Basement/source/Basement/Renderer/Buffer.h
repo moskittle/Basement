@@ -11,6 +11,7 @@ namespace Basement {
 		Bool
 	};
 
+
 	static uint32_t GetShaderDataTypeSize(EShaderDataType type)
 	{
 		switch (type)
@@ -32,6 +33,7 @@ namespace Basement {
 		return 0;
 	}
 
+
 	struct BufferElement
 	{
 		std::string Name;
@@ -42,10 +44,7 @@ namespace Basement {
 
 		BufferElement() = default;
 
-		BufferElement(const std::string& name, EShaderDataType type, bool isNormalized = false)
-			: Name(name), Type(type), Size(GetShaderDataTypeSize(type)), Offset(0), bIsNormalized(isNormalized)
-		{
-		}
+		BufferElement(const std::string& name, EShaderDataType type, bool isNormalized = false);
 
 		uint32_t GetComponentCount() const
 		{
@@ -67,42 +66,29 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			return 0;
 		}
-
-
 	};
+
 
 	class BufferLayout
 	{
 	public:
 		BufferLayout() = default;
-		BufferLayout(const std::initializer_list<BufferElement>& initList) 
-			: m_BufferElements(initList)
-		{
-			CalculateOffsetAndStride();
-		}
+		BufferLayout(const std::initializer_list<BufferElement>& initList);
 
 		inline const std::vector<BufferElement> GetElements() const { return m_BufferElements; }
 		inline uint32_t GetStride() const { return m_Stride; }
 
 		std::vector<BufferElement>::iterator begin() { return m_BufferElements.begin(); }
 		std::vector<BufferElement>::iterator end() { return m_BufferElements.end(); }
-
+		std::vector<BufferElement>::const_iterator begin() const { return m_BufferElements.cbegin(); }
+		std::vector<BufferElement>::const_iterator end() const { return m_BufferElements.cend(); }
 	private:
-		void CalculateOffsetAndStride()
-		{
-			uint32_t offset = 0;
-			for (auto& element : m_BufferElements)
-			{
-				element.Offset = offset;
-				offset += element.Size;
-				m_Stride += element.Size;
-			}
-			//m_Stride = offset;
-		}
+		void CalculateOffsetAndStride();
 	private:
 		std::vector<BufferElement> m_BufferElements;
 		uint32_t m_Stride = 0;
 	};
+
 
 	class VertexBuffer
 	{
@@ -118,6 +104,7 @@ namespace Basement {
 		static VertexBuffer* Create(uint32_t size, float* vertices);
 
 	};
+
 
 	class IndexBuffer
 	{

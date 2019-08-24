@@ -50,22 +50,28 @@ namespace Basement {
 
 		// Vertex Buffer
 		float vertices[4 * 7] = {
-			 0.5f, -0.5f, 0.0f, 0.75f, 0.25f, 0.5f, 0.0f,
-			-0.5f, -0.5f, 0.0f, 0.25f, 0.25f, 0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f, 0.75f, 0.75f, 0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f, 0.25f, 0.75f, 0.5f, 0.0f
+			// Position				// Color
+			 0.5f, -0.5f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,
+			-0.5f, -0.5f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
+			//// Position				// Color
+			// 1.0f, -1.0f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,
+			//-1.0f, -1.0f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
+			// 1.0f,  1.0f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
+			//-1.0f,  1.0f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
 		};
 		m_VertexBuffer.reset(VertexBuffer::Create(sizeof(vertices), vertices));
 
-
-		BufferLayout bufferLayout = {
+		BufferLayout bufferLayout = 
+		{
 			{ "a_Position", EShaderDataType::Float3 },
 			{ "a_Color", EShaderDataType::Float4 }
 		};
 		m_VertexBuffer->SetLayout(bufferLayout);
 
 		uint32_t index = 0;
-		for (const auto& element : bufferLayout)
+		for (const auto& element : m_VertexBuffer->GetLayout())
 		{
 			// Set vertex attributes
 			glEnableVertexAttribArray(index);
@@ -73,10 +79,17 @@ namespace Basement {
 				element.GetComponentCount(), 
 				ShaderDataTypeToOpenGLBaseType(element.Type),
 				element.bIsNormalized ? GL_TRUE : GL_FALSE, 
-				bufferLayout.GetStride(),
-				(const void*)element.Offset);
+				m_VertexBuffer->GetLayout().GetStride(),
+				(const void*)(intptr_t)element.Offset);
 
 			++index;
+		}
+		
+
+		// temp
+		{
+			//glEnableVertexAttribArray(1);
+			//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3));
 		}
 
 		// Index Buffer
@@ -85,6 +98,7 @@ namespace Basement {
 			1, 2, 3
 		};
 		m_IndexBuffer.reset(IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
+
 
 		// Shaders
 		const std::string vertSource = R"(
@@ -99,7 +113,8 @@ namespace Basement {
 			{
 				//v_Color = a_Position;
 				v_Color2 = a_Color;
-				gl_Position = vec4(a_Position - 0.5, 1.0);
+				gl_Position = vec4(a_Position, 1.0);
+				//gl_Position = vec4(a_Position - 0.5, 1.0);
 			}
 		)";
 
