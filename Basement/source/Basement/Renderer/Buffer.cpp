@@ -6,6 +6,7 @@
 
 namespace Basement {
 
+	// --Vertex Buffer-----------------------------------------
 	VertexBuffer* VertexBuffer::Create(uint32_t size, float* vertices)
 	{
 		switch (Renderer::GetAPI())
@@ -21,6 +22,7 @@ namespace Basement {
 		}
 	}
 
+	// --Index Buffer-----------------------------------------
 	IndexBuffer* IndexBuffer::Create(uint32_t count, uint32_t* indices)
 	{
 		switch (Renderer::GetAPI())

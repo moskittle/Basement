@@ -12,8 +12,12 @@ namespace Basement {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual const BufferLayout& GetLayout() const override { return m_BufferLayout; }
+		virtual void SetLayout(const BufferLayout& bufferLayout) override { m_BufferLayout = bufferLayout; }
 	private:
 		uint32_t m_VertexBufferID;
+		BufferLayout m_BufferLayout;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer
@@ -26,7 +30,6 @@ namespace Basement {
 		virtual void Unbind() const override;
 
 		virtual inline uint32_t GetCount() const override { return m_Count; }
-		virtual inline uint32_t GetRendererID() const override { return m_IndexBufferID; }
 	private:
 		uint32_t m_IndexBufferID;
 		uint32_t m_Count;

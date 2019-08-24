@@ -6,7 +6,6 @@
 namespace Basement {
 
 	// --Vertex Buffer-----------------------------------------
-
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, float* vertices)
 	{
 		glCreateBuffers(1, &m_VertexBufferID);
@@ -28,17 +27,15 @@ namespace Basement {
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-	// --------------------------------------------------------
-
 
 
 	// --Index Buffer-----------------------------------------
-
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count, uint32_t* indices)
 	{
 		glCreateBuffers(1, &m_IndexBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		m_Count = count;
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
@@ -55,6 +52,5 @@ namespace Basement {
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	// -------------------------------------------------------
 
 }
