@@ -56,7 +56,7 @@ namespace Basement {
 		{
 		case ERendererAPI::None:
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
-				return nullptr;
+			return nullptr;
 		case ERendererAPI::OpenGL:
 			return new OpenGLIndexBuffer(count, indices);
 		default:

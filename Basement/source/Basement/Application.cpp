@@ -12,28 +12,6 @@ namespace Basement {
 
 	Application* Application::s_Instance = nullptr;
 
-	// TODO move to class as Getter()
-	static GLenum ShaderDataTypeToOpenGLBaseType(EShaderDataType type) 
-	{
-		switch (type)
-		{
-			case EShaderDataType::Int:      return GL_INT;
-			case EShaderDataType::Int2:     return GL_INT;
-			case EShaderDataType::Int3:     return GL_INT;
-			case EShaderDataType::Int4:     return GL_INT;
-			case EShaderDataType::Float:    return GL_FLOAT;
-			case EShaderDataType::Float2:   return GL_FLOAT;
-			case EShaderDataType::Float3:   return GL_FLOAT;
-			case EShaderDataType::Float4:   return GL_FLOAT;
-			case EShaderDataType::Mat3:     return GL_FLOAT;
-			case EShaderDataType::Mat4:     return GL_FLOAT;
-			case EShaderDataType::Bool:     return GL_BOOL;
-		}
-
-		BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
-		return 0;
-	}
-
 	Application::Application()
 	{
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
@@ -45,8 +23,7 @@ namespace Basement {
 		m_ImGuiLayer = new ImGuiLayer();
 
 		// Vertex Array
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
+		m_VertexArray.reset(VertexArray::Create());
 
 		// Vertex Buffer
 		float vertices[4 * 7] = {
@@ -55,11 +32,6 @@ namespace Basement {
 			-0.5f, -0.5f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
 			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
 			-0.5f,  0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
-			//// Position				// Color
-			// 1.0f, -1.0f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,
-			//-1.0f, -1.0f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
-			// 1.0f,  1.0f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
-			//-1.0f,  1.0f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
 		};
 		m_VertexBuffer.reset(VertexBuffer::Create(sizeof(vertices), vertices));
 
@@ -69,37 +41,47 @@ namespace Basement {
 			{ "a_Color", EShaderDataType::Float4 }
 		};
 		m_VertexBuffer->SetLayout(bufferLayout);
-
-		uint32_t index = 0;
-		for (const auto& element : m_VertexBuffer->GetLayout())
-		{
-			// Set vertex attributes
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, 
-				element.GetComponentCount(), 
-				ShaderDataTypeToOpenGLBaseType(element.Type),
-				element.bIsNormalized ? GL_TRUE : GL_FALSE, 
-				m_VertexBuffer->GetLayout().GetStride(),
-				(const void*)(intptr_t)element.Offset);
-
-			++index;
-		}
-		
-
-		// temp
-		{
-			//glEnableVertexAttribArray(1);
-			//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3));
-		}
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 		// Index Buffer
-		uint32_t indices[3 * 2] = { 
+		uint32_t indices[3 * 2] = {
 			0, 1, 2,
 			1, 2, 3
 		};
 		m_IndexBuffer.reset(IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
 
+		// triangle
+		float verticesTri[3 * 7] = {
+			// Position				// Color
+			 0.0f,  0.5f, 0.0f,		0.25f, 0.25f, 0.75f, 0.0f,
+			-0.5f, -0.5f, 0.0f,		0.75f,  0.5f, 0.25f, 0.0f,
+			 0.5f,  -0.5f, 0.0f,	0.25f, 0.25f, 0.5f, 0.0f,
+		};
+
+		uint32_t indicesTri[3 * 2] = {
+			0, 1, 2,
+			1, 2, 3
+		};
+
+		// Triangle
+		m_TriangleVA.reset(VertexArray::Create());
+		
+		std::shared_ptr<VertexBuffer> triangleVB;
+		triangleVB.reset(VertexBuffer::Create(sizeof(verticesTri), verticesTri));
+		BufferLayout bufferLayoutTri =
+		{
+			{ "a_Position", EShaderDataType::Float3 },
+			{ "a_Color", EShaderDataType::Float4 }
+		};
+
+		triangleVB->SetLayout(bufferLayoutTri);
+		m_TriangleVA->AddVertexBuffer(triangleVB);
+		
+		std::shared_ptr<IndexBuffer> triangleIB;
+		triangleIB.reset(IndexBuffer::Create(sizeof(indicesTri), indicesTri));
+		m_TriangleVA->SetIndexBuffer(triangleIB);
 		// Shaders
 		const std::string vertSource = R"(
 			#version 330 core
@@ -151,8 +133,11 @@ namespace Basement {
 
 			m_Shader->Bind();
 
-			//m_IndexBuffer->Bind();
+			m_VertexArray->Bind();
 			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+			m_TriangleVA->Bind();
+			glDrawElements(GL_TRIANGLES, m_TriangleVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (auto& layer : m_LayerStack)
 			{
