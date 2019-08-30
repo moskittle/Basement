@@ -79,6 +79,7 @@ namespace Basement {
 		std::shared_ptr<IndexBuffer> IBTriangle;
 		IBTriangle.reset(IndexBuffer::Create(sizeof(indicesTri), indicesTri));
 		m_TriangleVA->SetIndexBuffer(IBTriangle);
+		
 		// Shaders
 		const std::string vertSource = R"(
 			#version 330 core
@@ -112,7 +113,7 @@ namespace Basement {
 			}
 		)";
 
-		m_Shader.reset(new Shader(vertSource, fragSource));
+		m_ShaderProgram.reset(new ShaderProgram(vertSource, fragSource));
 	}
 
 	float div = 256.0f;
@@ -129,10 +130,10 @@ namespace Basement {
 
 			Renderer::BeginScene();
 
-			m_Shader->Bind();
+			m_ShaderProgram->Bind();
 			Renderer::Submit(m_VertexArray);
 
-			m_Shader->Bind();
+			m_ShaderProgram->Bind();
 			Renderer::Submit(m_TriangleVA);
 
 			Renderer::EndScene();

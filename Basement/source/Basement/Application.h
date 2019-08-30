@@ -9,7 +9,7 @@
 
 #include "Basement/ImGui/ImGuiLayer.h"
 
-#include "Basement/Renderer/Shader.h"
+#include "Basement/Renderer/ShaderProgram.h"
 #include "Basement/Renderer/Buffer.h"
 #include "Basement/Renderer/VertexArray.h"
 
@@ -38,7 +38,7 @@ namespace Basement {
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
 
-		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<ShaderProgram> m_ShaderProgram;
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		std::shared_ptr<VertexArray> m_VertexArray;

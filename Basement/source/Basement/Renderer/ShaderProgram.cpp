@@ -1,11 +1,11 @@
 #include "bmpch.h"
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 #include <glad/glad.h>
 
 namespace Basement {
 
-	Shader::Shader(const std::string& vertSource, const std::string& fragSource)
+	ShaderProgram::ShaderProgram(const std::string& vertSource, const std::string& fragSource)
 	{
 		// Create an empty vertex shader object
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -66,8 +66,8 @@ namespace Basement {
 		}
 
 		// Create an empty program
-		m_RendererID = glCreateProgram();
-		GLuint& program = m_RendererID;
+		m_ProgramID = glCreateProgram();
+		GLuint& program = m_ProgramID;
 
 		// Attach shaders to program
 		glAttachShader(program, vertexShader);
@@ -99,17 +99,17 @@ namespace Basement {
 
 	}
 
-	Shader::~Shader()
+	ShaderProgram::~ShaderProgram()
 	{
-		glDeleteProgram(m_RendererID);
+		glDeleteProgram(m_ProgramID);
 	}
 
-	void Shader::Bind() const
+	void ShaderProgram::Bind() const
 	{
-		glUseProgram(m_RendererID);
+		glUseProgram(m_ProgramID);
 	}
 
-	void Shader::Unbind() const
+	void ShaderProgram::Unbind() const
 	{
 		glUseProgram(0);
 	}
