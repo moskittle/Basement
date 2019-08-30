@@ -5,12 +5,14 @@
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Input.h"
 #include "Basement/Renderer/Renderer.h"
+#include "Basement/Renderer/Camera.h"
 
 namespace Basement {
 
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	{
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
 		s_Instance = this;
