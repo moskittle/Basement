@@ -46,9 +46,10 @@ namespace Basement {
 
 		std::shared_ptr<VertexArray> m_TriangleVA;
 	private:
-		static Application* s_Instance;
 		Application(const Application&) = delete;
 		Application& operator=(const Application&) = delete;
+	private:
+		static Application* s_Instance;
 	};
 
 	// To be defined in CLIENT

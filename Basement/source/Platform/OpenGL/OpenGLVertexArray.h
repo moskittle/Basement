@@ -11,7 +11,7 @@ namespace Basement {
 	{
 	public:
 		OpenGLVertexArray();
-		virtual ~OpenGLVertexArray();
+		~OpenGLVertexArray();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

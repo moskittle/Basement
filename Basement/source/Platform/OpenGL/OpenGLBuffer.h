@@ -8,7 +8,7 @@ namespace Basement {
 	{
 	public:
 		OpenGLVertexBuffer(uint32_t size, float* vertices);
-		virtual ~OpenGLVertexBuffer();
+		~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
@@ -25,7 +25,7 @@ namespace Basement {
 	{
 	public:
 		OpenGLIndexBuffer(uint32_t count, uint32_t* indices);
-		virtual ~OpenGLIndexBuffer();
+		~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

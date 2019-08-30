@@ -33,7 +33,8 @@ namespace Basement {
 	{
 		friend class EventDispatcher;
 	public:
-		bool m_Handled = false;
+		Event() = default;
+		~Event() = default;
 
 		// Event Category
 		virtual int GetCategoryFlags() const = 0;
@@ -43,13 +44,20 @@ namespace Basement {
 		virtual std::string ToString() const { return GetEventName(); }
 
 		inline bool IsInCategory(EEventCategory category) { return GetCategoryFlags(); }
+		inline bool GetHandleStatus() { return m_IsHandled; }
+	private:
+		bool m_IsHandled = false;
 	};
 
 	class EventDispatcher
 	{
+	private:
 		template<typename TEventType>
 		using EventFn = std::function<bool(TEventType&)>;
 	public:
+		EventDispatcher() = default;
+		~EventDispatcher() = default;
+
 		EventDispatcher(Event& event)
 			: m_Event(event) {}
 
@@ -58,7 +66,7 @@ namespace Basement {
 		{
 			if (m_Event.GetEventType() == TEventType::GetStaticType())
 			{
-				m_Event.m_Handled = func(*(TEventType*)& m_Event);
+				m_Event.m_IsHandled = func(*(TEventType*) &m_Event);
 				return true;
 			}
 			return false;

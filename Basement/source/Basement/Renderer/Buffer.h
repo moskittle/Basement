@@ -40,9 +40,8 @@ namespace Basement {
 		uint32_t Size;
 		bool bIsNormalized;
 
-		BufferElement() = default;
-
 		BufferElement(const std::string& name, EShaderDataType type, bool isNormalized = false);
+		~BufferElement() = default;
 
 		uint32_t GetComponentCount() const
 		{
@@ -72,6 +71,7 @@ namespace Basement {
 	public:
 		BufferLayout() = default;
 		BufferLayout(const std::initializer_list<BufferElement>& initList);
+		~BufferLayout() = default;
 
 		inline const std::vector<BufferElement> GetElements() const { return m_BufferElements; }
 		inline uint32_t GetStride() const { return m_Stride; }
@@ -91,8 +91,6 @@ namespace Basement {
 	class VertexBuffer
 	{
 	public:
-		virtual ~VertexBuffer() = default;
-
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 		
@@ -100,15 +98,12 @@ namespace Basement {
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
 		static VertexBuffer* Create(uint32_t size, float* vertices);
-
 	};
 
 
 	class IndexBuffer
 	{
 	public:
-		virtual ~IndexBuffer() = default;
-
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 		virtual inline uint32_t GetCount() const = 0;

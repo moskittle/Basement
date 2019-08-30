@@ -46,7 +46,6 @@ public:
 	}
 
 	~Backyard() = default;
-
 private:
 	Backyard(const Backyard&) = delete;
 	Backyard& operator=(const Backyard&) = delete;

@@ -6,9 +6,6 @@
 #include "Basement/Input.h"
 #include "Basement/Renderer/Renderer.h"
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
 namespace Basement {
 
 	Application* Application::s_Instance = nullptr;
@@ -68,20 +65,20 @@ namespace Basement {
 		// Triangle
 		m_TriangleVA.reset(VertexArray::Create());
 		
-		std::shared_ptr<VertexBuffer> triangleVB;
-		triangleVB.reset(VertexBuffer::Create(sizeof(verticesTri), verticesTri));
+		std::shared_ptr<VertexBuffer> VBTriangle;
+		VBTriangle.reset(VertexBuffer::Create(sizeof(verticesTri), verticesTri));
 		BufferLayout bufferLayoutTri =
 		{
 			{ "a_Position", EShaderDataType::Float3 },
 			{ "a_Color", EShaderDataType::Float4 }
 		};
 
-		triangleVB->SetLayout(bufferLayoutTri);
-		m_TriangleVA->AddVertexBuffer(triangleVB);
+		VBTriangle->SetLayout(bufferLayoutTri);
+		m_TriangleVA->AddVertexBuffer(VBTriangle);
 		
-		std::shared_ptr<IndexBuffer> triangleIB;
-		triangleIB.reset(IndexBuffer::Create(sizeof(indicesTri), indicesTri));
-		m_TriangleVA->SetIndexBuffer(triangleIB);
+		std::shared_ptr<IndexBuffer> IBTriangle;
+		IBTriangle.reset(IndexBuffer::Create(sizeof(indicesTri), indicesTri));
+		m_TriangleVA->SetIndexBuffer(IBTriangle);
 		// Shaders
 		const std::string vertSource = R"(
 			#version 330 core
@@ -127,7 +124,6 @@ namespace Basement {
 	{
 		while (m_IsRunning)
 		{
-			// Background color
 			RenderCommand::SetClearColor(navy);
 			RenderCommand::Clear();
 
@@ -168,7 +164,7 @@ namespace Basement {
 		{
 			(*--iter)->ProcessEvent(event);
 
-			if (event.m_Handled)
+			if (event.GetHandleStatus())
 			{
 				break;
 			}

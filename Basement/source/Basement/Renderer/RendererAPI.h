@@ -21,10 +21,14 @@ namespace Basement {
 		virtual void Clear() = 0;
 		virtual void DrawIndex(const std::shared_ptr<VertexArray>& vertexArray) = 0;
 
-		inline static EAPI GetRendererAPI() { return s_RendererAPI; };
-
+		inline static EAPI GetRendererAPI() { return s_Instance; };
+	protected:
+		RendererAPI() = default;
 	private:
-		static EAPI s_RendererAPI;
+		RendererAPI(const RendererAPI&) = delete;
+		RendererAPI& operator=(const RendererAPI&) = delete;
+	private:
+		static EAPI s_Instance;
 	};
 
 

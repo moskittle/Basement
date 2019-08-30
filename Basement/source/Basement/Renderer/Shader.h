@@ -16,5 +16,4 @@ namespace Basement {
 		uint32_t m_RendererID = 0;
 	};
 
-
 }

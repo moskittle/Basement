@@ -9,6 +9,7 @@ namespace Basement {
 	public:
 		WindowResizeEvent(float width, float height)
 			: m_Width(width), m_Height(height) {}
+		~WindowResizeEvent() = default;
 
 		inline float GetWidth() const { return m_Width; }
 		inline float GetHeight() const { return m_Height; }
@@ -35,7 +36,8 @@ namespace Basement {
 	class WindowCloseEvent : public Event
 	{
 	public:
-		WindowCloseEvent() {}
+		WindowCloseEvent() = default;
+		~WindowCloseEvent() = default;
 
 		// Event Category
 		virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
@@ -49,7 +51,8 @@ namespace Basement {
 	class AppTickEvent : public Event
 	{
 	public:
-		AppTickEvent() {}
+		AppTickEvent() = default;
+		~AppTickEvent() = default;
 
 		// Event Category
 		virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
@@ -63,7 +66,8 @@ namespace Basement {
 	class AppUpdateEvent : public Event
 	{
 	public:
-		AppUpdateEvent() {}
+		AppUpdateEvent() = default;
+		~AppUpdateEvent() = default;
 
 		// Event Category
 		virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
@@ -77,7 +81,8 @@ namespace Basement {
 	class AppRenderEvent : public Event
 	{
 	public:
-		AppRenderEvent() {}
+		AppRenderEvent() = default;
+		~AppRenderEvent() = default;
 
 		// Event Category
 		virtual int GetCategoryFlags() const override { return EventCategoryApplication; }

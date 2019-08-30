@@ -11,7 +11,7 @@ namespace Basement {
 	{
 	public:
 		WindowsWindow(const WindowProps& props);
-		virtual ~WindowsWindow();
+		~WindowsWindow();
 	private:
 		void Init(const WindowProps& props);
 		void SetGLFWCallbacks();

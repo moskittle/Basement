@@ -8,7 +8,7 @@ namespace Basement {
 	{
 	public:
 		OpenGLRendererAPI() = default;
-		virtual ~OpenGLRendererAPI() = default;
+		~OpenGLRendererAPI() = default;
 
 		virtual void SetClearColor(const glm::vec4& color) override;
 		virtual void Clear() override;

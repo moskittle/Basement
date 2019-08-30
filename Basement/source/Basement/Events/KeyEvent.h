@@ -7,6 +7,9 @@ namespace Basement {
 	class KeyEvent : public Event
 	{
 	public:
+		KeyEvent() = default;
+		~KeyEvent() = default;
+
 		inline int GetKeyCode() const { return m_KeyCode; }
 
 		// Event Category
@@ -23,6 +26,7 @@ namespace Basement {
 	public:
 		KeyPressedEvent(int keycode, int repeatCount)
 			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+		~KeyPressedEvent() = default;
 
 		inline int GetRepeatedCount() const { return m_RepeatCount; }
 		
@@ -46,6 +50,7 @@ namespace Basement {
 	public:
 		KeyReleasedEvent(int keycode)
 			: KeyEvent(keycode) {}
+		~KeyReleasedEvent() = default;
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::KeyReleased; }
@@ -65,6 +70,7 @@ namespace Basement {
 	public:
 		KeyTypedEvent(int keycode)
 			: KeyEvent(keycode) {}
+		~KeyTypedEvent() = default;
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::KeyTyped; }

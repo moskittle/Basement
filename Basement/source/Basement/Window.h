@@ -11,7 +11,6 @@ namespace Basement {
 	class Window
 	{
 	public:
-
 		struct WindowProps
 		{
 			std::string Title;
@@ -21,14 +20,11 @@ namespace Basement {
 			WindowProps(const std::string& title = "Basement Engine",
 				unsigned int width = 1280,
 				unsigned int height = 720)
-				: Title(title), Width(width), Height(height)
-			{
-			}
+				: Title(title), Width(width), Height(height) {}
+			~WindowProps() = default;
 		};
 
 		using EventCallbackFn = std::function<void(Event&)>;
-
-		virtual ~Window() = default;
 
 		virtual void Update() = 0;
 		

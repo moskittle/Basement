@@ -3,6 +3,6 @@
 
 namespace Basement {
 
-	RendererAPI::EAPI RendererAPI::s_RendererAPI = RendererAPI::EAPI::OpenGL;
+	RendererAPI::EAPI RendererAPI::s_Instance = RendererAPI::EAPI::OpenGL;
 
 }

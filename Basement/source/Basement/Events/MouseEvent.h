@@ -9,6 +9,7 @@ namespace Basement {
 	public:
 		MouseMovedEvent(float xPos, float yPos)
 			: m_XPos(xPos), m_YPos(yPos) {}
+		~MouseMovedEvent() = default;
 
 		inline float GetX() const { return m_XPos; }
 		inline float GetY() const { return m_YPos; }
@@ -36,6 +37,7 @@ namespace Basement {
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset)
 			: m_XOffset(xOffset), m_YOffset(yOffset) {}
+		~MouseScrolledEvent() = default;
 		
 		inline float GetOffsetX() { return m_XOffset; }
 		inline float GetOffsetY() { return m_YOffset; }
@@ -61,6 +63,9 @@ namespace Basement {
 	class MouseButtonEvent : public Event
 	{
 	public:
+		MouseButtonEvent() = default;
+		~MouseButtonEvent() = default;
+
 		inline int GetMouseButton() const { return m_Button; }
 
 		// Event Category
@@ -76,6 +81,7 @@ namespace Basement {
 	public:
 		MouseButtonPressedEvent(int button)
 			: MouseButtonEvent(button) {}
+		~MouseButtonPressedEvent() = default;
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseButtonPressed; }
@@ -95,6 +101,7 @@ namespace Basement {
 	public:
 		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
+		~MouseButtonReleasedEvent() = default;
 
 		// Event Type
 		static EEventType GetStaticType() { return EEventType::MouseButtonReleased; }

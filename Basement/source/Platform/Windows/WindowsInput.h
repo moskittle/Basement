@@ -8,6 +8,7 @@ namespace Basement {
 	{
 	public:
 		WindowsInput() = default;
+		~WindowsInput() = default;
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) override;
 		

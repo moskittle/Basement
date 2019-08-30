@@ -6,7 +6,7 @@ namespace Basement {
 	
 	class Renderer 
 	{
-	public:		
+	public:
 		static void BeginScene();
 		static void EndScene();
 

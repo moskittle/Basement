@@ -25,10 +25,10 @@ namespace Basement {
 		virtual float GetMousePositionXImpl() = 0;
 		virtual float GetMousePositionYImpl() = 0;
 	private:
-		static Input* s_Instance;
-	private:
 		Input(const Input&) = delete;
 		Input& operator=(const Input&) = delete;
+	private:
+		static Input* s_Instance;
 	};
 
 }

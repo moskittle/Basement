@@ -4,6 +4,6 @@
 
 namespace Basement {
 
-	RendererAPI* RenderCommand::s_RendererAPI = new OpenGLRendererAPI;
+	RendererAPI* RenderCommand::s_RenderAPI = new OpenGLRendererAPI();
 
 }
