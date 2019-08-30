@@ -4,6 +4,7 @@
 #include "Basement/Log.h"
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Input.h"
+#include "Basement/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -60,9 +61,8 @@ namespace Basement {
 			 0.5f,  -0.5f, 0.0f,	0.25f, 0.25f, 0.5f, 0.0f,
 		};
 
-		uint32_t indicesTri[3 * 2] = {
+		uint32_t indicesTri[3] = {
 			0, 1, 2,
-			1, 2, 3
 		};
 
 		// Triangle
@@ -118,26 +118,28 @@ namespace Basement {
 		m_Shader.reset(new Shader(vertSource, fragSource));
 	}
 
+	float div = 256.0f;
+	glm::vec4 green = { 105.0f / div, 190.0f / div, 40.0f / div, 0.0f };	// action green	
+	glm::vec4 navy = { 0.0f, 34.0f / div, 68.0f / div, 0.0f };	// college navy
+	glm::vec4 grey = { 165.0f / div, 172.0f / div, 175.0f / div, 0.0f };	// wolf grey
+
 	void Application::Run()
 	{
 		while (m_IsRunning)
 		{
-			float div = 256.0f;
-			float green[3] = { 105.0f / div, 190.0f / div, 40.0f / div };	// action green	
-			float blue[3] = { 0.0f, 34.0f / div, 68.0f / div };				// college navy
-			float grey[3] = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
-
 			// Background color
-			glClearColor( grey[0], grey[1], grey[2], 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor(navy);
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
 
 			m_Shader->Bind();
+			Renderer::Submit(m_VertexArray);
 
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			m_Shader->Bind();
+			Renderer::Submit(m_TriangleVA);
 
-			m_TriangleVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_TriangleVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::EndScene();
 
 			for (auto& layer : m_LayerStack)
 			{

@@ -11,7 +11,6 @@ namespace Basement {
 		Bool
 	};
 
-
 	static uint32_t GetShaderDataTypeSize(EShaderDataType type)
 	{
 		switch (type)
@@ -32,7 +31,6 @@ namespace Basement {
 		BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
-
 
 	struct BufferElement
 	{

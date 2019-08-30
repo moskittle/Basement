@@ -37,10 +37,10 @@ namespace Basement {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case ERendererAPI::None:
+		case RendererAPI::EAPI::None:
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 			return nullptr;
-		case ERendererAPI::OpenGL:
+		case RendererAPI::EAPI::OpenGL:
 			return new OpenGLVertexBuffer(size, vertices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");
@@ -54,10 +54,10 @@ namespace Basement {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case ERendererAPI::None:
+		case RendererAPI::EAPI::None:
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 			return nullptr;
-		case ERendererAPI::OpenGL:
+		case RendererAPI::EAPI::OpenGL:
 			return new OpenGLIndexBuffer(count, indices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");

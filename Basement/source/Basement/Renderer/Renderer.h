@@ -1,19 +1,18 @@
 #pragma once
 
-namespace Basement {
+#include "RenderCommand.h"
 
-	enum class ERendererAPI
-	{
-		None = 0, OpenGL = 1
-	};
+namespace Basement {
 	
 	class Renderer 
 	{
-	public:
-		inline static ERendererAPI GetAPI() { return s_RendererAPI; }
-	private:
-		static ERendererAPI s_RendererAPI;
-	};
+	public:		
+		static void BeginScene();
+		static void EndScene();
 
+		static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
+
+		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
+	};
 
 }
