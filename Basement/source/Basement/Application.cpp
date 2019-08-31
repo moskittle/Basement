@@ -5,14 +5,13 @@
 #include "Basement/Events/KeyEvent.h"
 #include "Basement/Input.h"
 #include "Basement/Renderer/Renderer.h"
-#include "Basement/Renderer/Camera.h"
 
 namespace Basement {
 
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
-		: m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
+		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
 		s_Instance = this;
@@ -88,15 +87,16 @@ namespace Basement {
 			
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
-			out vec3 v_Color;
-			out vec4 v_Color2;
+			
+			uniform mat4 u_ViewProjection;
+			
+			out vec4 v_Color;
 
 			void main()
 			{
-				//v_Color = a_Position;
-				v_Color2 = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
-				//gl_Position = vec4(a_Position - 0.5, 1.0);
+				v_Color = a_Color;
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				//gl_Position = vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -105,13 +105,11 @@ namespace Basement {
 			
 			layout(location = 0) out vec4 color;
 			
-			in vec3 v_Color;
-			in vec4 v_Color2;
+			in vec4 v_Color;
 			
 			void main()
 			{
-				//color = vec4(v_Color * 0.5f + 0.5f, 0.0);
-				color = v_Color2;
+				color = v_Color;
 			}
 		)";
 
@@ -130,13 +128,10 @@ namespace Basement {
 			RenderCommand::SetClearColor(navy);
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			Renderer::BeginScene(m_Camera);
 
-			m_ShaderProgram->Bind();
-			Renderer::Submit(m_VertexArray);
-
-			m_ShaderProgram->Bind();
-			Renderer::Submit(m_TriangleVA);
+			Renderer::Submit(m_ShaderProgram, m_VertexArray);
+			Renderer::Submit(m_ShaderProgram, m_TriangleVA);
 
 			Renderer::EndScene();
 
