@@ -6,14 +6,9 @@
 #include "Basement/LayerStack.h"
 #include "Events/Event.h"
 #include "Basement/Events/ApplicationEvent.h"
+#include "Basement/Core/Time.h"
 
 #include "Basement/ImGui/ImGuiLayer.h"
-
-#include "Basement/Renderer/ShaderProgram.h"
-#include "Basement/Renderer/Buffer.h"
-#include "Basement/Renderer/VertexArray.h"
-#include "Basement/Renderer/Camera.h"
-
 
 namespace Basement {
 	
@@ -34,11 +29,12 @@ namespace Basement {
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool CloseWindow(WindowCloseEvent& event);
-		
+	private:
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_IsRunning = true;
 		LayerStack m_LayerStack;
+		Timer m_Timer;
 	private:
 		Application(const Application&) = delete;
 		Application& operator=(const Application&) = delete;

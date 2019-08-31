@@ -6,8 +6,8 @@ class ExampleLayer : public Basement::Layer
 {
 public:
 	ExampleLayer() 
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(0.1f), 
-		m_CameraRotation(0.0f), m_CameraRotationSpeed(1.0f)
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(5.0f), 
+		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f)
 	{
 		// Vertex Array
 		m_VertexArray.reset(Basement::VertexArray::Create());
@@ -103,35 +103,37 @@ public:
 		m_ShaderProgram.reset(new Basement::ShaderProgram(vertSource, fragSource));
 	}
 
-	void Update() override
+	void Update(const Basement::Timer& deltaTime) override
 	{
+		BM_TRACE("Delta Time: {0}s ({1}ms)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetDeltaTimeInMilliseconds());
+
 		// Camera Movement
 		if (Basement::Input::IsKeyPressed(BM_KEY_W))
 		{
-			m_CameraPosition.y += m_CameraSpeed;
+			m_CameraPosition.y += m_CameraSpeed * deltaTime;
 		}
 		else if (Basement::Input::IsKeyPressed(BM_KEY_S))
 		{
-			m_CameraPosition.y -= m_CameraSpeed;
+			m_CameraPosition.y -= m_CameraSpeed * deltaTime;
 		}
 		
 		if (Basement::Input::IsKeyPressed(BM_KEY_A))
 		{
-			m_CameraPosition.x -= m_CameraSpeed;
+			m_CameraPosition.x -= m_CameraSpeed * deltaTime;
 		}
 		else if (Basement::Input::IsKeyPressed(BM_KEY_D))
 		{
-			m_CameraPosition.x += m_CameraSpeed;
+			m_CameraPosition.x += m_CameraSpeed * deltaTime;
 		}
 
 		// Camera Rotation
 		if (Basement::Input::IsKeyPressed(BM_KEY_Q))
 		{
-			m_CameraRotation += m_CameraRotationSpeed;
+			m_CameraRotation += m_CameraRotationSpeed * deltaTime;
 		}
 		else if (Basement::Input::IsKeyPressed(BM_KEY_E))
 		{
-			m_CameraRotation -= m_CameraRotationSpeed;
+			m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
 		}
 
 		static float div = 256.0f;

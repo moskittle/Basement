@@ -2,6 +2,7 @@
 
 #include "Basement/Core.h"
 #include "Basement/Events/Event.h"
+#include "Basement/Core/Time.h"
 
 namespace Basement {
 
@@ -13,7 +14,7 @@ namespace Basement {
 
 		virtual void Attach() {};
 		virtual void Detach() {};
-		virtual void Update() {};
+		virtual void Update(const Timer& deltaTime) {};
 		virtual void RenderImGui() {};
 		virtual void ProcessEvent(Event& event) {};
 

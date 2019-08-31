@@ -6,6 +6,8 @@
 #include "Basement/Input.h"
 #include "Basement/Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Basement {
 
 	Application* Application::s_Instance = nullptr;
@@ -27,9 +29,12 @@ namespace Basement {
 	{
 		while (m_IsRunning)
 		{
+			m_Timer.SetCurrentFrameTime(glfwGetTime());
+			m_Timer.CalculateDeltaTime();
+
 			for (auto& layer : m_LayerStack)
 			{
-				layer->Update();
+				layer->Update(m_Timer);
 			}
 
 			m_ImGuiLayer->Begin();
