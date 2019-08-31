@@ -2,7 +2,6 @@
 
 #include "VertexArray.h"
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 namespace Basement {

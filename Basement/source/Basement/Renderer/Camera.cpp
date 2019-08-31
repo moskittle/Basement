@@ -8,7 +8,7 @@ namespace Basement {
 	//---------------------------------------------------
 	//---Base Camera-------------------------------------
 	Camera::Camera()
-		: m_Position(glm::vec3(0.0f)), m_ViewProjectionMatrix(glm::mat4(1.0f))
+		: m_Position(0.0f), m_ViewProjectionMatrix(glm::mat4(1.0f))
 	{
 	}
 

@@ -11,7 +11,6 @@ namespace Basement {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
-		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
 		s_Instance = this;
@@ -20,121 +19,14 @@ namespace Basement {
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::ProcessEvent));
 
 		m_ImGuiLayer = new ImGuiLayer();
-
-		// Vertex Array
-		m_VertexArray.reset(VertexArray::Create());
-
-		// Vertex Buffer
-		float vertices[4 * 7] = {
-			// Position				// Color
-			 0.5f, -0.5f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,
-			-0.5f, -0.5f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
-		};
-		m_VertexBuffer.reset(VertexBuffer::Create(sizeof(vertices), vertices));
-
-		BufferLayout bufferLayout = 
-		{
-			{ "a_Position", EShaderDataType::Float3 },
-			{ "a_Color", EShaderDataType::Float4 }
-		};
-		m_VertexBuffer->SetLayout(bufferLayout);
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		// Index Buffer
-		uint32_t indices[3 * 2] = {
-			0, 1, 2,
-			1, 2, 3
-		};
-		m_IndexBuffer.reset(IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-
-		// triangle
-		float verticesTri[3 * 7] = {
-			// Position				// Color
-			 0.0f,  0.5f, 0.0f,		0.25f, 0.25f, 0.75f, 0.0f,
-			-0.5f, -0.5f, 0.0f,		0.75f,  0.5f, 0.25f, 0.0f,
-			 0.5f,  -0.5f, 0.0f,	0.25f, 0.25f, 0.5f, 0.0f,
-		};
-
-		uint32_t indicesTri[3] = {
-			0, 1, 2,
-		};
-
-		// Triangle
-		m_TriangleVA.reset(VertexArray::Create());
-		
-		std::shared_ptr<VertexBuffer> VBTriangle;
-		VBTriangle.reset(VertexBuffer::Create(sizeof(verticesTri), verticesTri));
-		BufferLayout bufferLayoutTri =
-		{
-			{ "a_Position", EShaderDataType::Float3 },
-			{ "a_Color", EShaderDataType::Float4 }
-		};
-
-		VBTriangle->SetLayout(bufferLayoutTri);
-		m_TriangleVA->AddVertexBuffer(VBTriangle);
-		
-		std::shared_ptr<IndexBuffer> IBTriangle;
-		IBTriangle.reset(IndexBuffer::Create(sizeof(indicesTri), indicesTri));
-		m_TriangleVA->SetIndexBuffer(IBTriangle);
-		
-		// Shaders
-		const std::string vertSource = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-			
-			uniform mat4 u_ViewProjection;
-			
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-				//gl_Position = vec4(a_Position, 1.0);
-			}
-		)";
-
-		const std::string fragSource = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-			
-			in vec4 v_Color;
-			
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		m_ShaderProgram.reset(new ShaderProgram(vertSource, fragSource));
 	}
 
-	float div = 256.0f;
-	glm::vec4 green = { 105.0f / div, 190.0f / div, 40.0f / div, 0.0f };	// action green	
-	glm::vec4 navy = { 0.0f, 34.0f / div, 68.0f / div, 0.0f };	// college navy
-	glm::vec4 grey = { 165.0f / div, 172.0f / div, 175.0f / div, 0.0f };	// wolf grey
+
 
 	void Application::Run()
 	{
 		while (m_IsRunning)
 		{
-			RenderCommand::SetClearColor(navy);
-			RenderCommand::Clear();
-
-			Renderer::BeginScene(m_Camera);
-
-			Renderer::Submit(m_ShaderProgram, m_VertexArray);
-			Renderer::Submit(m_ShaderProgram, m_TriangleVA);
-
-			Renderer::EndScene();
-
 			for (auto& layer : m_LayerStack)
 			{
 				layer->Update();

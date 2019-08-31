@@ -1,6 +1,7 @@
 #include "bmpch.h"
 #include "OpenGLRendererAPI.h"
 
+
 namespace Basement {
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
