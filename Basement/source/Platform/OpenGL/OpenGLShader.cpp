@@ -1,7 +1,6 @@
 #include "bmpch.h"
 #include "OpenGLShader.h"
 
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Basement {
@@ -115,53 +114,60 @@ namespace Basement {
 		glUseProgram(0);
 	}
 
-	void OpenGLShaderProgram::UploadUniformInt(const std::string& name, const int& value)
+	void OpenGLShaderProgram::UploadUniform1i(const std::string& name, const int& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform int location!");
+		GLint location = GetUniformLocation(name);
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShaderProgram::UploadUniformFloat(const std::string& name, const float& value)
+	void OpenGLShaderProgram::UploadUniform1f(const std::string& name, const float& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform float location!");
+		GLint location = GetUniformLocation(name);
 		glUniform1f(location, value);
 	}
 
-	void OpenGLShaderProgram::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+	void OpenGLShaderProgram::UploadUniform2f(const std::string& name, const glm::vec2& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform float2 location!");
+		GLint location = GetUniformLocation(name);
 		glUniform2f(location, value.x, value.y);
 	}
 
-	void OpenGLShaderProgram::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
+	void OpenGLShaderProgram::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform float3 location!");
+		GLint location = GetUniformLocation(name);
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
-	void OpenGLShaderProgram::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
+	void OpenGLShaderProgram::UploadUniform4f(const std::string& name, const glm::vec4& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform float4 location!");
+		GLint location = GetUniformLocation(name);
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	void OpenGLShaderProgram::UploadUniformMat3(const std::string& name, const glm::mat3& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform mat3 location!");
+		GLint location = GetUniformLocation(name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 	void OpenGLShaderProgram::UploadUniformMat4(const std::string& name, const glm::mat4& value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid uniform mat4 location!");
+		GLint location = GetUniformLocation(name);
+		BM_CORE_ASSERT((location != -1), "Invalid UniformMat4 location!");
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+
+	GLint OpenGLShaderProgram::GetUniformLocation(const std::string& name)
+	{
+		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+		{
+			return m_UniformLocationCache[name];
+		}
+
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid Uniform location!");
+		m_UniformLocationCache[name] = location;
+		return location;
 	}
 
 }

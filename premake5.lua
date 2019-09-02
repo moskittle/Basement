@@ -114,6 +114,7 @@ project "Backyard"
 		"Basement/vendor/spdlog/include",
 		"Basement/source",
 		"Basement/vendor",
+		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}"
 	}
 

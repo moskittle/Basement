@@ -183,7 +183,7 @@ public:
 				m_ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
 
 				//m_SquareColor = (x % 2 == 0) ? green : navy;
-				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_ShaderProgram)->UploadUniformFloat3("u_Color", m_SquareColor);
+				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_ShaderProgram)->UploadUniform3f("u_Color", m_SquareColor);
 
 				Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray, m_ModelMatrix);
 			}
