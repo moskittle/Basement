@@ -1,13 +1,15 @@
-#include <Basement.h>
+#include "Basement.h"
 
 #include "ImGui/imgui.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 class ExampleLayer : public Basement::Layer
 {
 public:
 	ExampleLayer() 
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(5.0f), 
-		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f)
+		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f), m_Position(0.0f), m_MoveSpeed(1.0f), m_Scale(glm::vec3(0.1f))
 	{
 		// Vertex Array
 		m_VertexArray.reset(Basement::VertexArray::Create());
@@ -76,14 +78,14 @@ public:
 			layout(location = 1) in vec4 a_Color;
 			
 			uniform mat4 u_ViewProjection;
-			
+			uniform mat4 u_ModelMatrix;
+
 			out vec4 v_Color;
 
 			void main()
 			{
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-				//gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -105,7 +107,8 @@ public:
 
 	void Update(const Basement::Timer& deltaTime) override
 	{
-		BM_TRACE("Delta Time: {0}s ({1}ms)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetDeltaTimeInMilliseconds());
+		//BM_TRACE("Delta Time: {0}s ({1}ms)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetDeltaTimeInMilliseconds());
+		BM_TRACE("Position: ({0}, {1}, {2})", m_Position.x, m_Position.y, m_Position.z);
 
 		// Camera Movement
 		if (Basement::Input::IsKeyPressed(BM_KEY_W))
@@ -116,7 +119,6 @@ public:
 		{
 			m_CameraPosition.y -= m_CameraSpeed * deltaTime;
 		}
-		
 		if (Basement::Input::IsKeyPressed(BM_KEY_A))
 		{
 			m_CameraPosition.x -= m_CameraSpeed * deltaTime;
@@ -136,10 +138,30 @@ public:
 			m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
 		}
 
+		// Transform Movement
+		if (Basement::Input::IsKeyPressed(BM_KEY_I))
+		{
+			m_Position.y += m_MoveSpeed * deltaTime;
+		}
+		else if (Basement::Input::IsKeyPressed(BM_KEY_K))
+		{
+			m_Position.y -= m_MoveSpeed * deltaTime;
+		}
+		if (Basement::Input::IsKeyPressed(BM_KEY_J))
+		{
+			m_Position.x -= m_MoveSpeed * deltaTime;
+		}
+		else if (Basement::Input::IsKeyPressed(BM_KEY_L))
+		{
+			m_Position.x += m_MoveSpeed * deltaTime;
+		}
+
+
 		static float div = 256.0f;
 		static glm::vec4 green = { 105.0f / div, 190.0f / div, 40.0f / div, 0.0f };	// action green	
 		static glm::vec4 navy = { 0.0f, 34.0f / div, 68.0f / div, 0.0f };			// college navy
 		static glm::vec4 grey = { 165.0f / div, 172.0f / div, 175.0f / div, 0.0f };	// wolf grey
+
 
 		Basement::RenderCommand::SetClearColor(navy);
 		Basement::RenderCommand::Clear();
@@ -149,8 +171,19 @@ public:
 
 		Basement::Renderer::BeginScene(m_Camera);
 
-		Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray);
-		Basement::Renderer::Submit(m_ShaderProgram, m_TriangleVA);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_Scale);
+
+		for (int y = 0; y < 10; ++y)
+		{
+			for (int x = 0; x < 10; ++x)
+			{
+				glm::vec3 position(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
+				Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray, ModelMatrix);
+			}
+		}
+
+		//Basement::Renderer::Submit(m_ShaderProgram, m_TriangleVA, ModelMatrix);
 
 		Basement::Renderer::EndScene();
 	}
@@ -178,6 +211,10 @@ private:
 	float m_CameraSpeed;
 	float m_CameraRotation;
 	float m_CameraRotationSpeed;
+
+	glm::vec3 m_Position;
+	glm::vec3 m_Scale;
+	float m_MoveSpeed;
 };
 
 class Backyard : public Basement::Application

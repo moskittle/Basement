@@ -29,7 +29,7 @@ namespace Basement {
 	{
 		while (m_IsRunning)
 		{
-			m_Timer.SetCurrentFrameTime(glfwGetTime());
+			m_Timer.SetCurrentFrameTime(static_cast<float>(glfwGetTime()));
 			m_Timer.CalculateDeltaTime();
 
 			for (auto& layer : m_LayerStack)

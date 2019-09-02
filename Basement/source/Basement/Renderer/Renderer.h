@@ -12,7 +12,7 @@ namespace Basement {
 		static void BeginScene(Camera& camera);
 		static void EndScene();
 
-		static void Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray);
+		static void Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
 
 		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
 	private:

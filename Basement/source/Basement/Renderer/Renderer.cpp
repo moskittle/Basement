@@ -14,10 +14,11 @@ namespace Basement {
 	{
 	}
 
-	void Renderer::Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray)
+	void Renderer::Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& modelMatrix)
 	{
 		shaderProgram->Bind();
 		shaderProgram->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		shaderProgram->UploadUniformMat4("u_ModelMatrix", modelMatrix);
 		
 		vertexArray->Bind();
 		RenderCommand::DrawIndex(vertexArray);
