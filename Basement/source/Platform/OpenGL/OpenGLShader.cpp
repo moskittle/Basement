@@ -1,12 +1,12 @@
 #include "bmpch.h"
-#include "ShaderProgram.h"
+#include "OpenGLShader.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Basement {
 
-	ShaderProgram::ShaderProgram(const std::string& vertSource, const std::string& fragSource)
+	OpenGLShaderProgram::OpenGLShaderProgram(const std::string& vertSource, const std::string& fragSource)
 	{
 		// Create an empty vertex shader object
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -26,15 +26,15 @@ namespace Basement {
 		{
 			GLint maxLength = 50;
 			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-			
+
 			std::vector<GLchar> errorLog(maxLength);
 			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &errorLog[0]);
 
 			glDeleteShader(vertexShader);
-			
+
 			BM_CORE_ERROR("{0}", errorLog.data());
 			BM_CORE_ASSERT(false, "Failed to compile vertex shader!");
-			
+
 			return;
 		}
 
@@ -55,7 +55,7 @@ namespace Basement {
 		{
 			GLint maxLength = 50;
 			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &maxLength);
-			
+
 			std::vector<GLchar> errorLog(maxLength);
 			glGetShaderInfoLog(fragShader, maxLength, &maxLength, &errorLog[0]);
 
@@ -100,26 +100,68 @@ namespace Basement {
 
 	}
 
-	ShaderProgram::~ShaderProgram()
+	OpenGLShaderProgram::~OpenGLShaderProgram()
 	{
 		glDeleteProgram(m_ProgramID);
 	}
 
-	void ShaderProgram::Bind() const
+	void OpenGLShaderProgram::Bind() const
 	{
 		glUseProgram(m_ProgramID);
 	}
 
-	void ShaderProgram::Unbind() const
+	void OpenGLShaderProgram::Unbind() const
 	{
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	void OpenGLShaderProgram::UploadUniformInt(const std::string& name, const int& value)
 	{
 		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location >= 0), "Invalid uniform location!");
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+		BM_CORE_ASSERT((location != -1), "Invalid uniform int location!");
+		glUniform1i(location, value);
+	}
+
+	void OpenGLShaderProgram::UploadUniformFloat(const std::string& name, const float& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform float location!");
+		glUniform1f(location, value);
+	}
+
+	void OpenGLShaderProgram::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform float2 location!");
+		glUniform2f(location, value.x, value.y);
+	}
+
+	void OpenGLShaderProgram::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform float3 location!");
+		glUniform3f(location, value.x, value.y, value.z);
+	}
+
+	void OpenGLShaderProgram::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform float4 location!");
+		glUniform4f(location, value.x, value.y, value.z, value.w);
+	}
+
+	void OpenGLShaderProgram::UploadUniformMat3(const std::string& name, const glm::mat3& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform mat3 location!");
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+
+	void OpenGLShaderProgram::UploadUniformMat4(const std::string& name, const glm::mat4& value)
+	{
+		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
+		BM_CORE_ASSERT((location != -1), "Invalid uniform mat4 location!");
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 }

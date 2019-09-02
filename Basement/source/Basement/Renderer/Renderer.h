@@ -2,7 +2,7 @@
 
 #include "RenderCommand.h"
 #include "Camera.h"
-#include "ShaderProgram.h"
+#include "Shader.h"
 
 namespace Basement {
 	

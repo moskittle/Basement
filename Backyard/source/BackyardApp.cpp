@@ -1,15 +1,24 @@
 #include "Basement.h"
 
+#include "Platform/OpenGL/OpenGLShader.h"
+
 #include "ImGui/imgui.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class ExampleLayer : public Basement::Layer
 {
+	const float div = 256.0f;
+	const glm::vec3 green = { 105.0f / div, 190.0f / div, 40.0f / div };	// action green	
+	const glm::vec3 navy = { 0.0f, 34.0f / div, 68.0f / div };			// college navy
+	const glm::vec3 grey = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 public:
-	ExampleLayer() 
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(5.0f), 
-		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f), m_Position(0.0f), m_MoveSpeed(1.0f), m_Scale(glm::vec3(0.1f))
+	ExampleLayer()
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(5.0f),
+		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f),
+		m_Position(0.0f), m_MoveSpeed(1.0f), m_Scale(glm::vec3(0.1f)), m_ModelMatrix(glm::mat4(1.0f)),
+		m_SquareColor(navy)
 	{
 		// Vertex Array
 		m_VertexArray.reset(Basement::VertexArray::Create());
@@ -93,22 +102,23 @@ public:
 			#version 330 core
 			
 			layout(location = 0) out vec4 color;
+
+			uniform vec3 u_Color;
 			
 			in vec4 v_Color;
 			
 			void main()
 			{
-				color = v_Color;
+				color = vec4(u_Color, 1.0f);
 			}
 		)";
 
-		m_ShaderProgram.reset(new Basement::ShaderProgram(vertSource, fragSource));
+		m_ShaderProgram.reset(Basement::ShaderProgram::Create(vertSource, fragSource));
 	}
 
 	void Update(const Basement::Timer& deltaTime) override
 	{
-		//BM_TRACE("Delta Time: {0}s ({1}ms)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetDeltaTimeInMilliseconds());
-		BM_TRACE("Position: ({0}, {1}, {2})", m_Position.x, m_Position.y, m_Position.z);
+		BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
 
 		// Camera Movement
 		if (Basement::Input::IsKeyPressed(BM_KEY_W))
@@ -156,14 +166,7 @@ public:
 			m_Position.x += m_MoveSpeed * deltaTime;
 		}
 
-
-		static float div = 256.0f;
-		static glm::vec4 green = { 105.0f / div, 190.0f / div, 40.0f / div, 0.0f };	// action green	
-		static glm::vec4 navy = { 0.0f, 34.0f / div, 68.0f / div, 0.0f };			// college navy
-		static glm::vec4 grey = { 165.0f / div, 172.0f / div, 175.0f / div, 0.0f };	// wolf grey
-
-
-		Basement::RenderCommand::SetClearColor(navy);
+		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
 		Basement::RenderCommand::Clear();
 
 		m_Camera.SetPosition(m_CameraPosition);
@@ -172,25 +175,34 @@ public:
 		Basement::Renderer::BeginScene(m_Camera);
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_Scale);
-
 		for (int y = 0; y < 10; ++y)
 		{
 			for (int x = 0; x < 10; ++x)
 			{
 				glm::vec3 position(x * 0.11f, y * 0.11f, 0.0f);
-				glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
-				Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray, ModelMatrix);
+				m_ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
+
+				//m_SquareColor = (x % 2 == 0) ? green : navy;
+				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_ShaderProgram)->UploadUniformFloat3("u_Color", m_SquareColor);
+
+				Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray, m_ModelMatrix);
 			}
 		}
-
-		//Basement::Renderer::Submit(m_ShaderProgram, m_TriangleVA, ModelMatrix);
+		scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		m_ModelMatrix = glm::translate(glm::mat4(1.0f), m_Position) * scale;
+		Basement::Renderer::Submit(m_ShaderProgram, m_TriangleVA, m_ModelMatrix);
 
 		Basement::Renderer::EndScene();
 	}
 
 	virtual void RenderImGui() override
 	{
-		
+		ImGui::Begin("Color Picker");
+
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
+
+
+		ImGui::End();
 	}
 
 	void ProcessEvent(Basement::Event& event) override
@@ -212,9 +224,12 @@ private:
 	float m_CameraRotation;
 	float m_CameraRotationSpeed;
 
+	glm::mat4 m_ModelMatrix;
 	glm::vec3 m_Position;
 	glm::vec3 m_Scale;
 	float m_MoveSpeed;
+
+	glm::vec3 m_SquareColor;
 };
 
 class Backyard : public Basement::Application

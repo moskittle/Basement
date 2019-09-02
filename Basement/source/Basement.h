@@ -20,7 +20,7 @@
 
 #include "Basement/Renderer/Buffer.h"
 #include "Basement/Renderer/VertexArray.h"
-#include "Basement/Renderer/ShaderProgram.h"
+#include "Basement/Renderer/Shader.h"
 
 #include "Basement/Renderer/Camera.h"
 // ------------------------------------

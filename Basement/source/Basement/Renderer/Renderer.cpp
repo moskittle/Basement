@@ -1,5 +1,6 @@
 #include "bmpch.h"
 #include "Renderer.h"
+#include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Basement {
 
@@ -17,8 +18,8 @@ namespace Basement {
 	void Renderer::Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& modelMatrix)
 	{
 		shaderProgram->Bind();
-		shaderProgram->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		shaderProgram->UploadUniformMat4("u_ModelMatrix", modelMatrix);
+		std::dynamic_pointer_cast<OpenGLShaderProgram>(shaderProgram)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShaderProgram>(shaderProgram)->UploadUniformMat4("u_ModelMatrix", modelMatrix);
 		
 		vertexArray->Bind();
 		RenderCommand::DrawIndex(vertexArray);
