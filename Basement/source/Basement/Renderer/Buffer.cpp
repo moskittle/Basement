@@ -7,7 +7,7 @@
 namespace Basement {
 
 	// --Buffer Element-----------------------------------------
-	BufferElement::BufferElement(const std::string& name, EShaderDataType type, bool isNormalized)
+	BufferElement::BufferElement(EShaderDataType type, const std::string& name, bool isNormalized)
 		: Name(name), Type(type), Size(GetShaderDataTypeSize(type)), Offset(0), bIsNormalized(isNormalized)
 	{
 	}

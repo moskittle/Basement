@@ -21,6 +21,7 @@
 #include "Basement/Renderer/Buffer.h"
 #include "Basement/Renderer/VertexArray.h"
 #include "Basement/Renderer/Shader.h"
+#include "Basement/Renderer/Texture.h"
 
 #include "Basement/Renderer/Camera.h"
 // ------------------------------------

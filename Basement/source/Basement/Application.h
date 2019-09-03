@@ -21,7 +21,7 @@ namespace Basement {
 		inline static Application& GetInstance() { return *s_Instance; }
 
 		void Run();
-		void ProcessEvent(Event& event);
+		void HandleEvent(Event& event);
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);

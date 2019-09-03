@@ -28,10 +28,10 @@ namespace Basement {
 		void UploadUniformMat3(const std::string& name, const glm::mat3& value);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& value);
 	private:
-		GLint GetUniformLocation(const std::string& name);
+		GLint GetUniformLocation(const std::string& name) const;
 	private:
 		uint32_t m_ProgramID = 0;
-		std::unordered_map<std::string, GLint> m_UniformLocationCache;
+		mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
 	};
 
 }

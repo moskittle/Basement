@@ -21,6 +21,7 @@ namespace Basement {
 
 		inline unsigned int GetWidth() const override { return m_WindowData.Width; }
 		inline unsigned int GetHeight() const override { return m_WindowData.Height; }
+		inline unsigned int GetAspectRatio() const override{ return m_WindowData.Width / m_WindowData.Height; }
 
 		// Window attributes
 		virtual inline void SetEventCallback(const EventCallbackFn& callback) override { m_WindowData.EventCallback = callback; }

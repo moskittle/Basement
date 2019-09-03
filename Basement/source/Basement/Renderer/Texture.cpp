@@ -1,23 +1,24 @@
 #include "bmpch.h"
-#include "VertexArray.h"
+#include "Texture.h"
 
 #include "Renderer.h"
-#include "Platform/OpenGL/OpenGLVertexArray.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace Basement {
 
-	VertexArray* VertexArray::Create()
+	Texture2D* Texture2D::Create(const std::string& path)
 	{
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::EAPI::None:
-				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+				BM_CORE_ASSERT(false, "RendererAPI::None is nto supported!");
 				return nullptr;
 			case RendererAPI::EAPI::OpenGL:
-				return new OpenGLVertexArray();
+				return new OpenGLTexture2D(path);
 			default:
 				BM_CORE_ASSERT(false, "Unknown RendererAPI");
 				return nullptr;
 		}
 	}
+
 }

@@ -15,7 +15,7 @@ class ExampleLayer : public Basement::Layer
 	const glm::vec3 grey = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CameraSpeed(5.0f),
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), /*m_Camera(m_Position),*/ m_CameraPosition(0.0f), m_CameraSpeed(5.0f),
 		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f),
 		m_Position(0.0f), m_MoveSpeed(1.0f), m_Scale(glm::vec3(0.1f)), m_ModelMatrix(glm::mat4(1.0f)),
 		m_SquareColor(navy)
@@ -24,19 +24,20 @@ public:
 		m_VertexArray.reset(Basement::VertexArray::Create());
 
 		// Vertex Buffer
-		float vertices[4 * 7] = {
-			// Position				// Color
-			 0.5f, -0.5f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,
-			-0.5f, -0.5f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f
+		float vertices[4 * 9] = {
+			// Position				// Color						// Texture Coord
+			-0.5f, -0.5f, 0.0f,		0.75f, 0.25f, 0.5f, 0.0f,		0.0f, 0.0f,			// bottom-left
+			-0.5f,  0.5f, 0.0f,		0.25f, 0.25f, 0.5f, 0.0f,		0.0f, 1.0f,			// top-left
+			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,		1.0f, 1.0f,			// top-right
+			 0.5f, -0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f,		1.0f, 0.0f			// bottom-right
 		};
 		m_VertexBuffer.reset(Basement::VertexBuffer::Create(sizeof(vertices), vertices));
 
 		Basement::BufferLayout bufferLayout =
 		{
-			{ "a_Position", Basement::EShaderDataType::Float3 },
-			{ "a_Color", Basement::EShaderDataType::Float4 }
+			{ Basement::EShaderDataType::Float3, "a_Position" },
+			{ Basement::EShaderDataType::Float4, "a_Color" },
+			{ Basement::EShaderDataType::Float2, "a_TextureCoord" }
 		};
 		m_VertexBuffer->SetLayout(bufferLayout);
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
@@ -44,7 +45,7 @@ public:
 		// Index Buffer
 		uint32_t indices[3 * 2] = {
 			0, 1, 2,
-			1, 2, 3
+			2, 3, 0	
 		};
 		m_IndexBuffer.reset(Basement::IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
@@ -61,25 +62,25 @@ public:
 			0, 1, 2,
 		};
 
-		// Triangle
-		m_TriangleVA.reset(Basement::VertexArray::Create());
+		//// Triangle
+		//m_TriangleVA.reset(Basement::VertexArray::Create());
 
-		std::shared_ptr<Basement::VertexBuffer> VBTriangle;
-		VBTriangle.reset(Basement::VertexBuffer::Create(sizeof(verticesTri), verticesTri));
-		Basement::BufferLayout bufferLayoutTri =
-		{
-			{ "a_Position", Basement::EShaderDataType::Float3 },
-			{ "a_Color", Basement::EShaderDataType::Float4 }
-		};
+		//std::shared_ptr<Basement::VertexBuffer> VBTriangle;
+		//VBTriangle.reset(Basement::VertexBuffer::Create(sizeof(verticesTri), verticesTri));
+		//Basement::BufferLayout bufferLayoutTri =
+		//{
+		//	{ Basement::EShaderDataType::Float3,  "a_Position" },
+		//	{ Basement::EShaderDataType::Float4,  "a_Color" }
+		//};
 
-		VBTriangle->SetLayout(bufferLayoutTri);
-		m_TriangleVA->AddVertexBuffer(VBTriangle);
+		//VBTriangle->SetLayout(bufferLayoutTri);
+		//m_TriangleVA->AddVertexBuffer(VBTriangle);
 
-		std::shared_ptr<Basement::IndexBuffer> IBTriangle;
-		IBTriangle.reset(Basement::IndexBuffer::Create(sizeof(indicesTri), indicesTri));
-		m_TriangleVA->SetIndexBuffer(IBTriangle);
+		//std::shared_ptr<Basement::IndexBuffer> IBTriangle;
+		//IBTriangle.reset(Basement::IndexBuffer::Create(sizeof(indicesTri), indicesTri));
+		//m_TriangleVA->SetIndexBuffer(IBTriangle);
 
-		// Shaders
+		// FlatCorlor Shaders
 		const std::string vertSource = R"(
 			#version 330 core
 			
@@ -113,12 +114,54 @@ public:
 			}
 		)";
 
-		m_ShaderProgram.reset(Basement::ShaderProgram::Create(vertSource, fragSource));
+		m_FlatColorShaderProgram.reset(Basement::ShaderProgram::Create(vertSource, fragSource));
+
+		// Texture Shaders
+		const std::string textureVertSource = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 2) in vec2 a_TextureCoord;
+			
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_ModelMatrix;
+
+			out vec2 v_TextureCoord;
+
+			void main()
+			{
+				v_TextureCoord = a_TextureCoord;
+				gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
+			}
+		)";
+
+		const std::string textureFragSource = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			
+			in vec2 v_TextureCoord;
+			
+			uniform sampler2D u_Texture;
+			
+			void main()
+			{
+				color = texture(u_Texture, v_TextureCoord);
+			}
+		)";
+		m_TextureShaderProgram.reset(Basement::ShaderProgram::Create(textureVertSource, textureFragSource));
+
+		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag.jpg"));
+		m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag_art.jpg"));
+		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/awesomeface.png"));
+
+		std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_TextureShaderProgram)->Bind();
+		std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_TextureShaderProgram)->UploadUniform1i("u_Texture", 0);	// slot: 0
 	}
 
 	void Update(const Basement::Timer& deltaTime) override
 	{
-		BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
+		//BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
 
 		// Camera Movement
 		if (Basement::Input::IsKeyPressed(BM_KEY_W))
@@ -137,6 +180,14 @@ public:
 		{
 			m_CameraPosition.x += m_CameraSpeed * deltaTime;
 		}
+		//if (Basement::Input::IsKeyPressed(BM_KEY_R))
+		//{
+		//	m_CameraPosition.z -= m_CameraSpeed * deltaTime;
+		//}
+		//else if (Basement::Input::IsKeyPressed(BM_KEY_F))
+		//{
+		//	m_CameraPosition.z += m_CameraSpeed * deltaTime;
+		//}
 
 		// Camera Rotation
 		if (Basement::Input::IsKeyPressed(BM_KEY_Q))
@@ -166,6 +217,10 @@ public:
 			m_Position.x += m_MoveSpeed * deltaTime;
 		}
 
+
+
+		BM_TRACE("Camera Position: {0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+
 		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
 		Basement::RenderCommand::Clear();
 
@@ -182,15 +237,18 @@ public:
 				glm::vec3 position(x * 0.11f, y * 0.11f, 0.0f);
 				m_ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
 
-				//m_SquareColor = (x % 2 == 0) ? green : navy;
-				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_ShaderProgram)->UploadUniform3f("u_Color", m_SquareColor);
+				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_FlatColorShaderProgram)->UploadUniform3f("u_Color", m_SquareColor);
 
-				Basement::Renderer::Submit(m_ShaderProgram, m_VertexArray, m_ModelMatrix);
+				Basement::Renderer::Submit(m_FlatColorShaderProgram, m_VertexArray, m_ModelMatrix);
 			}
 		}
-		scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		m_ModelMatrix = glm::translate(glm::mat4(1.0f), m_Position) * scale;
-		Basement::Renderer::Submit(m_ShaderProgram, m_TriangleVA, m_ModelMatrix);
+
+		m_Texture->Bind();
+		Basement::Renderer::Submit(m_TextureShaderProgram, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		//scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+		//m_ModelMatrix = glm::translate(glm::mat4(1.0f), m_Position) * scale;
+		//Basement::Renderer::Submit(m_FlatColorShaderProgram, m_TriangleVA, m_ModelMatrix);
 
 		Basement::Renderer::EndScene();
 	}
@@ -200,26 +258,28 @@ public:
 		ImGui::Begin("Color Picker");
 
 		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
-
-
+		
 		ImGui::End();
 	}
 
-	void ProcessEvent(Basement::Event& event) override
+	void HandleEvent(Basement::Event& event) override
 	{
 	}
 
 private:
-	std::shared_ptr<Basement::ShaderProgram> m_ShaderProgram;
+	std::shared_ptr<Basement::ShaderProgram> m_FlatColorShaderProgram, m_TextureShaderProgram;
 
 	std::shared_ptr<Basement::VertexArray> m_VertexArray;
 	std::shared_ptr<Basement::VertexBuffer> m_VertexBuffer;
 	std::shared_ptr<Basement::IndexBuffer> m_IndexBuffer;
 
+	std::shared_ptr<Basement::Texture2D> m_Texture;
+
 	std::shared_ptr<Basement::VertexArray> m_TriangleVA;
 
-	Basement::OrthographicCamera m_Camera;
+	//Basement::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
+	Basement::OrthographicCamera m_Camera;
 	float m_CameraSpeed;
 	float m_CameraRotation;
 	float m_CameraRotationSpeed;

@@ -18,7 +18,7 @@ namespace Basement {
 		s_Instance = this;
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::ProcessEvent));
+		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::HandleEvent));
 
 		m_ImGuiLayer = new ImGuiLayer();
 	}
@@ -48,7 +48,7 @@ namespace Basement {
 		}
 	}
 
-	void Application::ProcessEvent(Event& event)
+	void Application::HandleEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BM_BIND_EVENT_FN(Application::CloseWindow));
@@ -57,7 +57,7 @@ namespace Basement {
 		
 		for (auto iter = m_LayerStack.end(); iter != m_LayerStack.begin();)
 		{
-			(*--iter)->ProcessEvent(event);
+			(*--iter)->HandleEvent(event);
 
 			if (event.GetHandleStatus())
 			{

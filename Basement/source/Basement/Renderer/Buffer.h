@@ -40,7 +40,7 @@ namespace Basement {
 		uint32_t Size;
 		bool bIsNormalized;
 
-		BufferElement(const std::string& name, EShaderDataType type, bool isNormalized = false);
+		BufferElement(EShaderDataType type, const std::string& name, bool isNormalized = false);
 		~BufferElement() = default;
 
 		uint32_t GetComponentCount() const

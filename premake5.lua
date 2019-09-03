@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "Basement/vendor/GLFW/include"
 IncludeDir["Glad"] = "Basement/vendor/Glad/include"
 IncludeDir["ImGui"] = "Basement/vendor/ImGui"
 IncludeDir["glm"] = "Basement/vendor/glm"
+IncludeDir["stb_image"] = "Basement/vendor/stb_image"
 
 group "Dependencies"
 	include "Basement/vendor/GLFW"
@@ -42,7 +43,9 @@ project "Basement"
 		"%{prj.name}/source/**.h",
 		"%{prj.name}/source/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp"
 	}
 
 	defines
@@ -57,7 +60,8 @@ project "Basement"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links

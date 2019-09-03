@@ -16,7 +16,7 @@ namespace Basement {
 		virtual void Detach() {};
 		virtual void Update(const Timer& deltaTime) {};
 		virtual void RenderImGui() {};
-		virtual void ProcessEvent(Event& event) {};
+		virtual void HandleEvent(Event& event) {};
 
 		inline const std::string& GetDebugName() const { return m_DebugName; }
 	protected:

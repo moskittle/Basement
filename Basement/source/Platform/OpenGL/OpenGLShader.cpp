@@ -153,11 +153,10 @@ namespace Basement {
 	void OpenGLShaderProgram::UploadUniformMat4(const std::string& name, const glm::mat4& value)
 	{
 		GLint location = GetUniformLocation(name);
-		BM_CORE_ASSERT((location != -1), "Invalid UniformMat4 location!");
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
-	GLint OpenGLShaderProgram::GetUniformLocation(const std::string& name)
+	GLint OpenGLShaderProgram::GetUniformLocation(const std::string& name) const
 	{
 		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
 		{
