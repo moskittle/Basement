@@ -20,7 +20,10 @@ namespace Basement {
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::HandleEvent));
 
+		Renderer::Init();
+
 		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(new Basement::ImGuiLayer());
 	}
 
 

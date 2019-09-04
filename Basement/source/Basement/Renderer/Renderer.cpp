@@ -6,6 +6,11 @@ namespace Basement {
 
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData();
 
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+
 	void Renderer::BeginScene(Camera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
@@ -15,11 +20,15 @@ namespace Basement {
 	{
 	}
 
-	void Renderer::Submit(const std::shared_ptr<ShaderProgram>& shaderProgram, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& modelMatrix)
+	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& modelMatrix)
 	{
-		shaderProgram->Bind();
-		std::dynamic_pointer_cast<OpenGLShaderProgram>(shaderProgram)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		std::dynamic_pointer_cast<OpenGLShaderProgram>(shaderProgram)->UploadUniformMat4("u_ModelMatrix", modelMatrix);
+		shader->Bind();
+
+		//GLenum err;
+		//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
+
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", modelMatrix);
 		
 		vertexArray->Bind();
 		RenderCommand::DrawIndex(vertexArray);

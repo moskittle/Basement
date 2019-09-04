@@ -5,7 +5,7 @@
 
 namespace Basement {
 
-	OpenGLShaderProgram::OpenGLShaderProgram(const std::string& vertSource, const std::string& fragSource)
+	OpenGLShader::OpenGLShader(const std::string& vertSource, const std::string& fragSource)
 	{
 		// Create an empty vertex shader object
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -99,64 +99,71 @@ namespace Basement {
 
 	}
 
-	OpenGLShaderProgram::~OpenGLShaderProgram()
+	OpenGLShader::~OpenGLShader()
 	{
 		glDeleteProgram(m_ProgramID);
 	}
 
-	void OpenGLShaderProgram::Bind() const
+	void OpenGLShader::Bind() const
 	{
 		glUseProgram(m_ProgramID);
 	}
 
-	void OpenGLShaderProgram::Unbind() const
+	void OpenGLShader::Unbind() const
 	{
 		glUseProgram(0);
 	}
 
-	void OpenGLShaderProgram::UploadUniform1i(const std::string& name, const int& value)
+	void OpenGLShader::UploadUniform1i(const std::string& name, const int& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShaderProgram::UploadUniform1f(const std::string& name, const float& value)
+	void OpenGLShader::UploadUniform1f(const std::string& name, const float& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1f(location, value);
 	}
 
-	void OpenGLShaderProgram::UploadUniform2f(const std::string& name, const glm::vec2& value)
+	void OpenGLShader::UploadUniform2f(const std::string& name, const glm::vec2& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform2f(location, value.x, value.y);
 	}
 
-	void OpenGLShaderProgram::UploadUniform3f(const std::string& name, const glm::vec3& value)
+	void OpenGLShader::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform3f(location, value.x, value.y, value.z);
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
 	}
 
-	void OpenGLShaderProgram::UploadUniform4f(const std::string& name, const glm::vec4& value)
+	void OpenGLShader::UploadUniform4f(const std::string& name, const glm::vec4& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
-	void OpenGLShaderProgram::UploadUniformMat3(const std::string& name, const glm::mat3& value)
+	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
-	void OpenGLShaderProgram::UploadUniformMat4(const std::string& name, const glm::mat4& value)
+	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
+
 	}
 
-	GLint OpenGLShaderProgram::GetUniformLocation(const std::string& name) const
+	GLint OpenGLShader::GetUniformLocation(const std::string& name) const
 	{
 		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
 		{

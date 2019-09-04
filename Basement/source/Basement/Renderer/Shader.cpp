@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	ShaderProgram* ShaderProgram::Create(const std::string& vertexSource, const std::string& fragSource)
+	Shader* Shader::Create(const std::string& vertexSource, const std::string& fragSource)
 	{
 		switch (RendererAPI::GetRendererAPI())
 		{
@@ -14,7 +14,7 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr;
 		case RendererAPI::EAPI::OpenGL:
-			return new OpenGLShaderProgram(vertexSource, fragSource);
+			return new OpenGLShader(vertexSource, fragSource);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;

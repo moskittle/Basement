@@ -9,11 +9,11 @@
 
 namespace Basement {
 
-	class OpenGLShaderProgram : public ShaderProgram
+	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShaderProgram(const std::string& vertexSource, const std::string& fragSource);
-		virtual ~OpenGLShaderProgram() override;
+		OpenGLShader(const std::string& vertexSource, const std::string& fragSource);
+		virtual ~OpenGLShader() override;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

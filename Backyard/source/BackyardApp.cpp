@@ -114,7 +114,7 @@ public:
 			}
 		)";
 
-		m_FlatColorShaderProgram.reset(Basement::ShaderProgram::Create(vertSource, fragSource));
+		m_FlatColorShader.reset(Basement::Shader::Create(vertSource, fragSource));
 
 		// Texture Shaders
 		const std::string textureVertSource = R"(
@@ -149,19 +149,21 @@ public:
 				color = texture(u_Texture, v_TextureCoord);
 			}
 		)";
-		m_TextureShaderProgram.reset(Basement::ShaderProgram::Create(textureVertSource, textureFragSource));
+		m_TextureShader.reset(Basement::Shader::Create(textureVertSource, textureFragSource));
 
-		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag.jpg"));
-		m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag_art.jpg"));
+		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag_art.jpg"));
 		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/awesomeface.png"));
+		m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag.jpg"));
+		m_Texture2.reset(Basement::Texture2D::Create("resource/textures/seahawks_logo.png"));
 
-		std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_TextureShaderProgram)->Bind();
-		std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_TextureShaderProgram)->UploadUniform1i("u_Texture", 0);	// slot: 0
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(m_TextureShader)->Bind();
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(m_TextureShader)->UploadUniform1i("u_Texture", 0);	// slot: 0
 	}
 
 	void Update(const Basement::Timer& deltaTime) override
 	{
 		//BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
+		//BM_TRACE("Camera Position: {0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
 
 		// Camera Movement
 		if (Basement::Input::IsKeyPressed(BM_KEY_W))
@@ -218,9 +220,6 @@ public:
 		}
 
 
-
-		BM_TRACE("Camera Position: {0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-
 		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
 		Basement::RenderCommand::Clear();
 
@@ -237,18 +236,33 @@ public:
 				glm::vec3 position(x * 0.11f, y * 0.11f, 0.0f);
 				m_ModelMatrix = glm::translate(glm::mat4(1.0f), position) * scale;
 
-				std::dynamic_pointer_cast<Basement::OpenGLShaderProgram>(m_FlatColorShaderProgram)->UploadUniform3f("u_Color", m_SquareColor);
+				std::dynamic_pointer_cast<Basement::OpenGLShader>(m_FlatColorShader)->UploadUniform3f("u_Color", m_SquareColor);
 
-				Basement::Renderer::Submit(m_FlatColorShaderProgram, m_VertexArray, m_ModelMatrix);
+
+				//GLenum err;
+				//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
+
+
+				Basement::Renderer::Submit(m_FlatColorShader, m_VertexArray, m_ModelMatrix);
 			}
 		}
 
+
 		m_Texture->Bind();
-		Basement::Renderer::Submit(m_TextureShaderProgram, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Basement::Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		m_Texture2->Bind();
+		Basement::Renderer::Submit(m_TextureShader, m_VertexArray, 
+			glm::translate(glm::mat4(1.0f), glm::vec3(0.25, -0.25, 0.0f))*glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
 
 		//scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 		//m_ModelMatrix = glm::translate(glm::mat4(1.0f), m_Position) * scale;
-		//Basement::Renderer::Submit(m_FlatColorShaderProgram, m_TriangleVA, m_ModelMatrix);
+		//Basement::Renderer::Submit(m_FlatColorShader, m_TriangleVA, m_ModelMatrix);
+
+
 
 		Basement::Renderer::EndScene();
 	}
@@ -267,13 +281,14 @@ public:
 	}
 
 private:
-	std::shared_ptr<Basement::ShaderProgram> m_FlatColorShaderProgram, m_TextureShaderProgram;
+	std::shared_ptr<Basement::Shader> m_FlatColorShader, m_TextureShader;
 
 	std::shared_ptr<Basement::VertexArray> m_VertexArray;
 	std::shared_ptr<Basement::VertexBuffer> m_VertexBuffer;
 	std::shared_ptr<Basement::IndexBuffer> m_IndexBuffer;
 
 	std::shared_ptr<Basement::Texture2D> m_Texture;
+	std::shared_ptr<Basement::Texture2D> m_Texture2;
 
 	std::shared_ptr<Basement::VertexArray> m_TriangleVA;
 
@@ -298,7 +313,6 @@ public:
 	Backyard()
 	{
 		PushLayer(new ExampleLayer());
-		PushOverlay(new Basement::ImGuiLayer());
 	}
 
 	~Backyard() = default;
