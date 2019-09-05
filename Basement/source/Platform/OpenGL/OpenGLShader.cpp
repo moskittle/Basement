@@ -8,34 +8,19 @@ namespace Basement {
 	OpenGLShader::OpenGLShader(const std::string& vertSource, const std::string& fragSource)
 	{
 		// Create an empty vertex shader object
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 
 		// Send vertex source code to GL
 		const GLchar* source = static_cast<const GLchar*>(vertSource.c_str());
-		glShaderSource(vertexShader, 1, &source, 0);
+		glShaderSource(vertShader, 1, &source, 0);
 
 		// Compile vertex shader
-		glCompileShader(vertexShader);
+		glCompileShader(vertShader);
 
 		// Error handling
 		GLint isCompiled = 0;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
-
-		if (isCompiled == GL_FALSE)
-		{
-			GLint maxLength = 50;
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-			std::vector<GLchar> errorLog(maxLength);
-			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &errorLog[0]);
-
-			glDeleteShader(vertexShader);
-
-			BM_CORE_ERROR("{0}", errorLog.data());
-			BM_CORE_ASSERT(false, "Failed to compile vertex shader!");
-
-			return;
-		}
+		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &isCompiled);
+		CheckShaderError(isCompiled, vertShader);
 
 		// Create an empty fragment shader object
 		GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -47,30 +32,15 @@ namespace Basement {
 		// Compile fragment shader
 		glCompileShader(fragShader);
 
-
 		// Error handling
-		glGetShaderiv(fragShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
-		{
-			GLint maxLength = 50;
-			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-			std::vector<GLchar> errorLog(maxLength);
-			glGetShaderInfoLog(fragShader, maxLength, &maxLength, &errorLog[0]);
-
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragShader);
-
-			BM_CORE_ERROR("{0}", errorLog.data());
-			BM_CORE_ASSERT(false, "Failed to compile fragment shader!");
-		}
+		CheckShaderError(isCompiled, fragShader);
 
 		// Create an empty program
 		m_ProgramID = glCreateProgram();
 		GLuint& program = m_ProgramID;
 
 		// Attach shaders to program
-		glAttachShader(program, vertexShader);
+		glAttachShader(program, vertShader);
 		glAttachShader(program, fragShader);
 
 		// Link program
@@ -79,24 +49,6 @@ namespace Basement {
 		// Error handling
 		GLint isLinked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
-		if (isLinked == GL_FALSE)
-		{
-			GLint maxLength = 50;
-			glGetProgramiv(program, maxLength, &maxLength);
-
-			std::vector<GLchar> errorLog(maxLength);
-			glGetProgramInfoLog(program, maxLength, &maxLength, &errorLog[0]);
-
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragShader);
-			glDeleteProgram(program);
-
-			BM_CORE_ERROR("{0}", errorLog.data());
-			BM_CORE_ASSERT(false, "Failed to link shader");
-			return;
-		}
-
-
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -112,6 +64,44 @@ namespace Basement {
 	void OpenGLShader::Unbind() const
 	{
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::CheckShaderError(GLint isCompiled, GLuint shader)
+	{
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 50;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> errorLog(maxLength);
+			glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
+
+			glDeleteShader(shader);
+
+			BM_CORE_ERROR("{0}", errorLog.data());
+			BM_CORE_ASSERT(false, "Failed to compile vertex shader!");
+			return;
+		}
+	}
+
+	void CheckShaderProgramError(GLint isLinked, GLuint vertShader, GLuint fragShader, uint32_t program)
+	{
+		if (isLinked == GL_FALSE)
+		{
+			GLint maxLength = 50;
+			glGetProgramiv(program, maxLength, &maxLength);
+
+			std::vector<GLchar> errorLog(maxLength);
+			glGetProgramInfoLog(program, maxLength, &maxLength, &errorLog[0]);
+
+			glDeleteShader(vertShader);
+			glDeleteShader(fragShader);
+			glDeleteProgram(program);
+
+			BM_CORE_ERROR("{0}", errorLog.data());
+			BM_CORE_ASSERT(false, "Failed to link shader");
+			return;
+		}
 	}
 
 	void OpenGLShader::UploadUniform1i(const std::string& name, const int& value)
@@ -135,10 +125,10 @@ namespace Basement {
 	void OpenGLShader::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform3f(location, value.x, value.y, value.z);
+		glUniform3f(location, value.x, value.y, value.z);	// Unsolved error: 502
 
 		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
+		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << "Error: " << std::hex << err << std::endl; }
 	}
 
 	void OpenGLShader::UploadUniform4f(const std::string& name, const glm::vec4& value)
@@ -157,10 +147,6 @@ namespace Basement {
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-
-		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
-
 	}
 
 	GLint OpenGLShader::GetUniformLocation(const std::string& name) const

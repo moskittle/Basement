@@ -29,6 +29,8 @@ namespace Basement {
 		void UploadUniformMat4(const std::string& name, const glm::mat4& value);
 	private:
 		GLint GetUniformLocation(const std::string& name) const;
+		void CheckShaderError(GLint isCompiled, GLuint shader);
+		void CheckShaderProgramError(GLint isLinked, GLuint vertShader, GLuint fragShader, uint32_t program);
 	private:
 		uint32_t m_ProgramID = 0;
 		mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
