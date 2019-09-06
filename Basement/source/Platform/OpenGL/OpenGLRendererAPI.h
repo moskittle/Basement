@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Basement/Renderer/RendererAPI.h"
-#include <glad/glad.h>
 
+#include <glad/glad.h>
 
 namespace Basement {
 

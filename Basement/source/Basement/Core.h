@@ -16,6 +16,7 @@
 
 #ifdef BM_DEBUG
 	#define BM_ENABLE_ASSERTS
+	#define BM_ENABLE_OPENGL_DEBUG
 #endif	//BM_DEBUG
 
 #ifdef BM_ENABLE_ASSERTS

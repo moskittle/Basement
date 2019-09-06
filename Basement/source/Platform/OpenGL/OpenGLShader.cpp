@@ -1,5 +1,6 @@
 #include "bmpch.h"
 #include "OpenGLShader.h"
+#include "OpenGLDebug.h"
 
 #include <fstream>
 
@@ -122,8 +123,6 @@ namespace Basement {
 			// Attach shaders to program
 			glAttachShader(program, shader);
 
-			static int i = 0;
-			BM_CORE_TRACE("shaderIds push count {0}", ++i);
 			shaderIds.push_back(shader);
 		}
 
@@ -158,7 +157,7 @@ namespace Basement {
 	{
 		if (isCompiled == GL_FALSE)
 		{
-			GLint maxLength = 50;
+			GLint maxLength = 200;
 			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
 			std::vector<GLchar> errorLog(maxLength);
@@ -176,7 +175,7 @@ namespace Basement {
 	{
 		if (isLinked == GL_FALSE)
 		{
-			GLint maxLength = 50;
+			GLint maxLength = 200;
 			glGetProgramiv(program, maxLength, &maxLength);
 
 			std::vector<GLchar> errorLog(maxLength);
@@ -216,10 +215,10 @@ namespace Basement {
 	void OpenGLShader::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform3f(location, value.x, value.y, value.z);	// Unsolved error: 502
+		OpenGLCall(glUniform3f(location, value.x, value.y, value.z));	// Unsolved error: 502
 
-		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR) { std::cout << "Error: " << std::hex << err << std::endl; }
+		//GLenum err;
+		//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << "Error: " << std::hex << err << std::endl; }
 	}
 
 	void OpenGLShader::UploadUniform4f(const std::string& name, const glm::vec4& value)
