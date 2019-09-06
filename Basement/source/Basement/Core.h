@@ -20,7 +20,7 @@
 
 #ifdef BM_ENABLE_ASSERTS
 	#define BM_ASSERT(x, ...) { if(!x) { BM_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define BM_CORE_ASSERT(x, ...) { if(!x) { BM_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define BM_CORE_ASSERT(x, ...) { if(!(x)) { BM_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 #else
 	#define BM_ASSERT(x, ...)
 	#define BM_CORE_ASSERT(x, ...)

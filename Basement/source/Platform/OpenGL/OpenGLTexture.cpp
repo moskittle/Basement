@@ -31,7 +31,7 @@ namespace Basement {
 			dataFormat = GL_RGBA;
 		}
 
-		BM_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+		BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
 
 		glGenTextures(1, &m_TextureID);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);

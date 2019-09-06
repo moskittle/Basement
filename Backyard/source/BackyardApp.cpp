@@ -149,7 +149,9 @@ public:
 				color = texture(u_Texture, v_TextureCoord);
 			}
 		)";
-		m_TextureShader.reset(Basement::Shader::Create(textureVertSource, textureFragSource));
+		//m_TextureShader.reset(Basement::Shader::Create(textureVertSource, textureFragSource));
+		m_TextureShader.reset(Basement::Shader::Create("resource/shaders/BasicTextureShader.glsl"));
+
 
 		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag_art.jpg"));
 		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/awesomeface.png"));
@@ -159,14 +161,13 @@ public:
 
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(m_TextureShader)->UploadUniform1i("u_Texture", 0);	// slot: 0
-
-
 	}
 
 	void Update(const Basement::Timer& deltaTime) override
 	{
 		//BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
 		//BM_TRACE("Camera Position: {0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+		
 		static int frame = 0;
 		BM_CORE_TRACE("Frame({0})", ++frame);
 
@@ -223,7 +224,6 @@ public:
 		{
 			m_Position.x += m_MoveSpeed * deltaTime;
 		}
-
 
 		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
 		Basement::RenderCommand::Clear();

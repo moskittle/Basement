@@ -1,59 +1,147 @@
 #include "bmpch.h"
 #include "OpenGLShader.h"
 
+#include <fstream>
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Basement {
+	
+	static GLenum StringToShaderType(const std::string& type)
+	{
+		if (type == "vertex")
+		{
+			return GL_VERTEX_SHADER;
+		}
+		else if (type == "fragment" || type == "pixel")
+		{
+			return GL_FRAGMENT_SHADER;
+		}
+
+		BM_CORE_ASSERT(false, "Unknown Shader Type: {0}!", type);
+		return 0;
+	}
+
+	OpenGLShader::OpenGLShader(const std::string& path)
+	{
+		std::string sourceCode = ReadFile(path);
+		
+		auto shaderSources = PreprocessSource(sourceCode);
+		
+		Compile(shaderSources);
+	}
 
 	OpenGLShader::OpenGLShader(const std::string& vertSource, const std::string& fragSource)
 	{
-		// Create an empty vertex shader object
-		GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-
-		// Send vertex source code to GL
-		const GLchar* source = static_cast<const GLchar*>(vertSource.c_str());
-		glShaderSource(vertShader, 1, &source, 0);
-
-		// Compile vertex shader
-		glCompileShader(vertShader);
-
-		// Error handling
-		GLint isCompiled = 0;
-		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &isCompiled);
-		CheckShaderError(isCompiled, vertShader);
-
-		// Create an empty fragment shader object
-		GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-		// Send fragment source code to GL
-		source = static_cast<const GLchar*>(fragSource.c_str());
-		glShaderSource(fragShader, 1, &source, 0);
-
-		// Compile fragment shader
-		glCompileShader(fragShader);
-
-		// Error handling
-		CheckShaderError(isCompiled, fragShader);
-
-		// Create an empty program
-		m_ProgramID = glCreateProgram();
-		GLuint& program = m_ProgramID;
-
-		// Attach shaders to program
-		glAttachShader(program, vertShader);
-		glAttachShader(program, fragShader);
-
-		// Link program
-		glLinkProgram(program);
-
-		// Error handling
-		GLint isLinked = 0;
-		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+		std::unordered_map<GLenum, std::string> shaderSources;
+		
+		shaderSources[GL_VERTEX_SHADER] = vertSource;
+		shaderSources[GL_FRAGMENT_SHADER] = fragSource;
+		
+		Compile(shaderSources);
 	}
 
 	OpenGLShader::~OpenGLShader()
 	{
 		glDeleteProgram(m_ProgramID);
+	}
+
+	std::string OpenGLShader::ReadFile(const std::string& path)
+	{
+		std::string source;
+		std::ifstream input(path, std::ios::in, std::ios::binary);
+		if (input)
+		{
+			input.seekg(0, std::ios::end);
+			source.resize(input.tellg());
+			input.seekg(0, std::ios::beg);
+			input.read(&source[0], source.size());
+			input.close();
+		}
+		else
+		{
+			BM_CORE_ERROR("Failed to open file '{0}'", path);
+		}
+		return source;
+	}
+
+	std::unordered_map<GLenum, std::string> OpenGLShader::PreprocessSource(const std::string& source)
+	{
+		std::unordered_map<GLenum, std::string> shaderSources;
+		
+		std::string token = "#type";
+		size_t tokenLength = token.size();
+
+		size_t begin, end;
+		size_t pos = source.find(token);
+
+		while (pos != std::string::npos)
+		{
+			// Get shader type
+			begin = pos + tokenLength + 1;
+			end = source.find_first_of("\n", begin);
+			BM_CORE_ASSERT(end != std::string::npos, "Syntax Error!");
+			std::string shaderTypeStr = source.substr(begin, end - begin);
+			GLenum shaderType = StringToShaderType(shaderTypeStr);
+
+			// Get shader source
+			begin = source.find_first_not_of("\n", end);
+			end = source.find(token, begin);
+			shaderSources[shaderType] = source.substr(begin, end - begin);
+
+			pos = end;
+			//BM_CORE_TRACE("{0} shader\n---------------------\n{1}\n---------------------", shaderTypeStr, shaderSources[shaderType]);
+		}
+
+		return shaderSources;
+	}
+
+	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+	{
+		// Create an empty program
+		GLuint program = glCreateProgram();
+		std::vector<GLuint> shaderIds; shaderIds.reserve(shaderSources.size());
+
+		for (auto&& [shaderType, shaderSource] : shaderSources)		// Note: auto&& [first, second] supported by C++17
+		{
+			// Create an shader object
+			GLuint shader = glCreateShader(shaderType);
+
+			// Send source code to GL
+			const GLchar* source = static_cast<const GLchar*>(shaderSource.c_str());
+			glShaderSource(shader, 1, &source, 0);
+
+			// Compile shader
+			glCompileShader(shader);
+
+			// Shader error handling
+			GLint isCompiled = 0;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+			CheckShaderCompilation(isCompiled, shader);
+
+			// Attach shaders to program
+			glAttachShader(program, shader);
+
+			static int i = 0;
+			BM_CORE_TRACE("shaderIds push count {0}", ++i);
+			shaderIds.push_back(shader);
+		}
+
+		// Link program
+		glLinkProgram(program);
+
+		// Program error handling
+		GLint isLinked = 0;
+		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+		CheckProgramLinking(isLinked, program, shaderIds);
+
+		// Detach shaders
+		for (auto& shaderId : shaderIds)
+		{
+			glDetachShader(program, shaderId);
+		}
+
+		m_ProgramID = program;
 	}
 
 	void OpenGLShader::Bind() const
@@ -66,7 +154,7 @@ namespace Basement {
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::CheckShaderError(GLint isCompiled, GLuint shader)
+	void OpenGLShader::CheckShaderCompilation(GLint isCompiled, GLuint shader) const
 	{
 		if (isCompiled == GL_FALSE)
 		{
@@ -84,7 +172,7 @@ namespace Basement {
 		}
 	}
 
-	void CheckShaderProgramError(GLint isLinked, GLuint vertShader, GLuint fragShader, uint32_t program)
+	void OpenGLShader::CheckProgramLinking(GLint isLinked, uint32_t program, const std::vector<GLuint>& shaderIds) const
 	{
 		if (isLinked == GL_FALSE)
 		{
@@ -94,8 +182,11 @@ namespace Basement {
 			std::vector<GLchar> errorLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, &errorLog[0]);
 
-			glDeleteShader(vertShader);
-			glDeleteShader(fragShader);
+			for (auto& shaderId : shaderIds)
+			{
+				glDeleteShader(shaderId);
+			}
+
 			glDeleteProgram(program);
 
 			BM_CORE_ERROR("{0}", errorLog.data());
@@ -157,7 +248,7 @@ namespace Basement {
 		}
 
 		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
-		BM_CORE_ASSERT((location != -1), "Invalid Uniform location!");
+		BM_CORE_ASSERT(location != -1, "Invalid Uniform location!");
 		m_UniformLocationCache[name] = location;
 		return location;
 	}

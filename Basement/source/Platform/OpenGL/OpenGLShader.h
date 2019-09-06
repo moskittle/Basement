@@ -4,6 +4,7 @@
 
 #include <unordered_map>
 
+#include <glm/glm.hpp>
 #include <glad/glad.h>
 
 
@@ -12,12 +13,12 @@ namespace Basement {
 	class OpenGLShader : public Shader
 	{
 	public:
+		OpenGLShader(const std::string& path);
 		OpenGLShader(const std::string& vertexSource, const std::string& fragSource);
 		virtual ~OpenGLShader() override;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-
 
 		// TODO: Replace std::string with const char*
 		void UploadUniform1i(const std::string& name, const int& value);
@@ -29,8 +30,13 @@ namespace Basement {
 		void UploadUniformMat4(const std::string& name, const glm::mat4& value);
 	private:
 		GLint GetUniformLocation(const std::string& name) const;
-		void CheckShaderError(GLint isCompiled, GLuint shader);
-		void CheckShaderProgramError(GLint isLinked, GLuint vertShader, GLuint fragShader, uint32_t program);
+
+		std::string ReadFile(const std::string& path);
+		std::unordered_map<GLenum, std::string>PreprocessSource(const std::string& source);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+		
+		void CheckShaderCompilation(GLint isCompiled, GLuint shader) const;
+		void CheckProgramLinking(GLint isLinked, uint32_t program, const std::vector<GLuint>& shaderIds) const;
 	private:
 		uint32_t m_ProgramID = 0;
 		mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
