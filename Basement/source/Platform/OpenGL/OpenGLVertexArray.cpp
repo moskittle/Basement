@@ -56,11 +56,12 @@ namespace Basement {
 		vertexBuffer->Bind();
 
 		uint32_t index = 0;
-		for (const auto& element : vertexBuffer->GetLayout())
+		const BufferLayout& bufferLayout = vertexBuffer->GetLayout();
+		for (const auto& element : bufferLayout)
 		{
 			// Set vertex attributes
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
+			glEnableVertexAttribArray(index + m_VertexArrayIndexOffset);
+			glVertexAttribPointer(index + m_VertexArrayIndexOffset,
 				element.GetComponentCount(),
 				ShaderDataTypeToOpenGLBaseType(element.Type),
 				element.bIsNormalized ? GL_TRUE : GL_FALSE,
@@ -71,6 +72,7 @@ namespace Basement {
 		}
 
 		m_VertexBuffers.push_back(vertexBuffer);
+		m_VertexArrayIndexOffset += bufferLayout.GetElements().size();
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer)

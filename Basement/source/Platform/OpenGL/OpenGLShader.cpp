@@ -216,7 +216,6 @@ namespace Basement {
 	{
 		GLint location = GetUniformLocation(name);
 		OpenGLCall(glUniform3f(location, value.x, value.y, value.z));	// Unsolved error: 502
-
 		//GLenum err;
 		//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << "Error: " << std::hex << err << std::endl; }
 	}

@@ -1,5 +1,6 @@
 #include "bmpch.h"
 #include "OpenGLBuffer.h"
+#include "OpenGLDebug.h"
 
 #include <glad/glad.h>
 
@@ -33,8 +34,8 @@ namespace Basement {
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count, uint32_t* indices)
 	{
 		glGenBuffers(1, &m_IndexBufferID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, m_IndexBufferID);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 		m_Count = count;
 	}
 

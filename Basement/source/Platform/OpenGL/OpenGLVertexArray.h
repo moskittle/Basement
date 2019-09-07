@@ -23,6 +23,7 @@ namespace Basement {
 		virtual const Shared<IndexBuffer>& GetIndexBuffer() const override{ return m_IndexBuffer; }
 	private:
 		uint32_t m_VertexArrayID;
+		uint32_t m_VertexArrayIndexOffset = 0;
 		std::vector<Shared<VertexBuffer>> m_VertexBuffers;
 		Shared<IndexBuffer> m_IndexBuffer;
 	};
