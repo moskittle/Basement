@@ -17,7 +17,7 @@ namespace Basement {
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = Unique<Window>(Window::Create());
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::HandleEvent));
 
 		Renderer::Init();

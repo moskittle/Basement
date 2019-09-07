@@ -65,7 +65,7 @@ public:
 		//// Triangle
 		//m_TriangleVA.reset(Basement::VertexArray::Create());
 
-		//std::shared_ptr<Basement::VertexBuffer> VBTriangle;
+		//Basement::Shared<Basement::VertexBuffer> VBTriangle;
 		//VBTriangle.reset(Basement::VertexBuffer::Create(sizeof(verticesTri), verticesTri));
 		//Basement::BufferLayout bufferLayoutTri =
 		//{
@@ -76,7 +76,7 @@ public:
 		//VBTriangle->SetLayout(bufferLayoutTri);
 		//m_TriangleVA->AddVertexBuffer(VBTriangle);
 
-		//std::shared_ptr<Basement::IndexBuffer> IBTriangle;
+		//Basement::Shared<Basement::IndexBuffer> IBTriangle;
 		//IBTriangle.reset(Basement::IndexBuffer::Create(sizeof(indicesTri), indicesTri));
 		//m_TriangleVA->SetIndexBuffer(IBTriangle);
 
@@ -239,15 +239,15 @@ public:
 	}
 
 private:
-	std::shared_ptr<Basement::Shader> m_FlatColorShader, m_TextureShader;
+	Basement::Shared<Basement::Shader> m_FlatColorShader, m_TextureShader;
 
-	std::shared_ptr<Basement::VertexArray> m_VertexArray;
-	std::shared_ptr<Basement::VertexBuffer> m_VertexBuffer;
-	std::shared_ptr<Basement::IndexBuffer> m_IndexBuffer;
+	Basement::Shared<Basement::VertexArray> m_VertexArray;
+	Basement::Shared<Basement::VertexBuffer> m_VertexBuffer;
+	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
 
-	std::shared_ptr<Basement::Texture2D> m_Texture, m_Texture2;
+	Basement::Shared<Basement::Texture2D> m_Texture, m_Texture2;
 
-	std::shared_ptr<Basement::VertexArray> m_TriangleVA;
+	Basement::Shared<Basement::VertexArray> m_TriangleVA;
 
 	glm::vec3 m_CameraPosition;
 	Basement::OrthographicCamera m_Camera;

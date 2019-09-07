@@ -19,7 +19,6 @@ namespace Basement {
 		{ GL_INVALID_FRAMEBUFFER_OPERATION, "invalid framebuffer operation"},
 		{ GL_CONTEXT_LOST,					"context lost"}
 	};
-	
 
 	enum class OpenGLErrorCode
 	{
@@ -47,15 +46,5 @@ namespace Basement {
 #else
 #define OpenGLCallBack(x)
 #endif // BM_ENABLE_OPENGL_DEBUG
-
-	//static void OpenGLMessageCallback(
-	//	unsigned	source,
-	//	unsigned	type,
-	//	unsigned	id,
-	//	unsigned	severity,
-	//	int			length,
-	//	const char* message,
-	//	const void* userParam
-	//);
 
 }
