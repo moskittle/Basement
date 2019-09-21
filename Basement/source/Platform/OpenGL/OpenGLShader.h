@@ -14,11 +14,13 @@ namespace Basement {
 	{
 	public:
 		OpenGLShader(const std::string& path);
-		OpenGLShader(const std::string& vertexSource, const std::string& fragSource);
+		OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragSource);
 		virtual ~OpenGLShader() override;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual const std::string& GetName() const override { return m_Name; }
 
 		// TODO: Replace std::string with const char*
 		void UploadUniform1i(const std::string& name, const int& value);
@@ -35,10 +37,14 @@ namespace Basement {
 		std::unordered_map<GLenum, std::string>PreprocessSource(const std::string& source);
 		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 		
+		const std::string StripNameString(const std::string& filePath);
+		
 		void CheckShaderCompilation(GLint isCompiled, GLuint shader) const;
-		void CheckProgramLinking(GLint isLinked, uint32_t program, const std::vector<GLuint>& shaderIds) const;
+		void CheckProgramLinking(GLint isLinked, uint32_t program, const std::array<GLuint, 2>& shaderIds) const;
+
 	private:
 		uint32_t m_ProgramID = 0;
+		std::string m_Name;
 		mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
 	};
 

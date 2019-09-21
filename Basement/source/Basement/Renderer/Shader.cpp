@@ -6,7 +6,9 @@
 
 namespace Basement {
 
-	Shader* Shader::Create(const std::string& path)
+	// --Shader---------------------------------------------------
+
+	Shared<Shader> Shader::Create(const std::string& path)
 	{
 		switch (RendererAPI::GetRendererAPI())
 		{
@@ -14,14 +16,14 @@ namespace Basement {
 				BM_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr;
 			case RendererAPI::EAPI::OpenGL:
-				return new OpenGLShader(path);
+				return std::make_shared<OpenGLShader>(path);
 			default:
 				BM_CORE_ASSERT(false, "Unknown RendererAPI!");
 				return nullptr;
 		}
 	}
 
-	Shader* Shader::Create(const std::string& vertexSource, const std::string& fragSource)
+	Shared<Shader> Shader::Create(const std::string& name,  const std::string& vertexSource, const std::string& fragSource)
 	{
 		switch (RendererAPI::GetRendererAPI())
 		{
@@ -29,12 +31,56 @@ namespace Basement {
 				BM_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 					return nullptr;
 			case RendererAPI::EAPI::OpenGL:
-				return new OpenGLShader(vertexSource, fragSource);
+				return std::make_shared<OpenGLShader>(name, vertexSource, fragSource);
 			default:
 				BM_CORE_ASSERT(false, "Unknown RendererAPI!");
 				return nullptr;
 		}
 	}
 
+	// --Shader Library-----------------------------------------
+
+	void ShaderLibrary::Add(const Shared<Shader>& shader)
+	{
+		const std::string& name = shader->GetName();
+		Add(name, shader);
+	}
+
+	void ShaderLibrary::Add(const std::string& name, const Shared<Shader>& shader)
+	{
+		if (ShaderExists(name))
+		{
+			BM_CORE_WARN("{1} already exsists in ShaderMap.", name);
+		}
+		else
+		{
+			m_ShaderMap[name] = shader;
+		}
+	}
+
+	bool ShaderLibrary::ShaderExists(const std::string& name) const
+	{
+		return m_ShaderMap.find(name) != m_ShaderMap.end();
+	}
+
+	Shared<Shader> ShaderLibrary::Load(const std::string& filePath)
+	{
+		Shared<Shader> shader = Shader::Create(filePath);
+		Add(shader);
+		return shader;
+	}
+
+	Shared<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
+	{
+		Shared<Shader> shader = Shader::Create(filePath);
+		Add(name, shader);
+		return shader;
+	}
+
+	Shared<Shader> ShaderLibrary::Get(const std::string& name)
+	{
+		BM_CORE_ASSERT(ShaderExists(name), "Shader({1}) not found!", name);
+		return m_ShaderMap[name];
+	}
 
 }

@@ -23,16 +23,17 @@ namespace Basement {
 		return 0;
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& path)
+	OpenGLShader::OpenGLShader(const std::string& filePath)
 	{
-		std::string sourceCode = ReadFile(path);
-		
+		std::string sourceCode = ReadFile(filePath);
 		auto shaderSources = PreprocessSource(sourceCode);
-		
 		Compile(shaderSources);
+
+		m_Name = StripNameString(filePath);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertSource, const std::string& fragSource)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertSource, const std::string& fragSource)
+		: m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> shaderSources;
 		
@@ -50,7 +51,7 @@ namespace Basement {
 	std::string OpenGLShader::ReadFile(const std::string& path)
 	{
 		std::string source;
-		std::ifstream input(path, std::ios::in, std::ios::binary);
+		std::ifstream input(path, std::ios::in | std::ios::binary);
 		if (input)
 		{
 			input.seekg(0, std::ios::end);
@@ -80,18 +81,17 @@ namespace Basement {
 		{
 			// Get shader type
 			begin = pos + tokenLength + 1;
-			end = source.find_first_of("\n", begin);
+			end = source.find_first_of("\n\r", begin);
 			BM_CORE_ASSERT(end != std::string::npos, "Syntax Error!");
 			std::string shaderTypeStr = source.substr(begin, end - begin);
 			GLenum shaderType = StringToShaderType(shaderTypeStr);
 
 			// Get shader source
-			begin = source.find_first_not_of("\n", end);
+			begin = source.find_first_not_of("\n\r", end);
 			end = source.find(token, begin);
 			shaderSources[shaderType] = source.substr(begin, end - begin);
 
 			pos = end;
-			//BM_CORE_TRACE("{0} shader\n---------------------\n{1}\n---------------------", shaderTypeStr, shaderSources[shaderType]);
 		}
 
 		return shaderSources;
@@ -101,7 +101,8 @@ namespace Basement {
 	{
 		// Create an empty program
 		GLuint program = glCreateProgram();
-		std::vector<GLuint> shaderIds; shaderIds.reserve(shaderSources.size());
+		std::array<GLuint,2> shaderIds;
+		int shaderIdIndex = 0;
 
 		for (auto&& [shaderType, shaderSource] : shaderSources)		// Note: auto&& [first, second] supported by C++17
 		{
@@ -123,7 +124,7 @@ namespace Basement {
 			// Attach shaders to program
 			glAttachShader(program, shader);
 
-			shaderIds.push_back(shader);
+			shaderIds[shaderIdIndex++] = shader;
 		}
 
 		// Link program
@@ -141,6 +142,15 @@ namespace Basement {
 		}
 
 		m_ProgramID = program;
+	}
+
+	const std::string OpenGLShader::StripNameString(const std::string& filePath)
+	{
+		auto begin = filePath.find_last_of("/\\");
+		begin += (begin == std::string::npos) ? 0 : 1;
+		
+		auto end = filePath.find_last_of(".");
+		return filePath.substr(begin, end - begin);
 	}
 
 	void OpenGLShader::Bind() const
@@ -171,7 +181,7 @@ namespace Basement {
 		}
 	}
 
-	void OpenGLShader::CheckProgramLinking(GLint isLinked, uint32_t program, const std::vector<GLuint>& shaderIds) const
+	void OpenGLShader::CheckProgramLinking(GLint isLinked, uint32_t program, const std::array<GLuint, 2>& shaderIds) const
 	{
 		if (isLinked == GL_FALSE)
 		{
@@ -189,53 +199,53 @@ namespace Basement {
 			glDeleteProgram(program);
 
 			BM_CORE_ERROR("{0}", errorLog.data());
-			BM_CORE_ASSERT(false, "Failed to link shader");
+			BM_CORE_ASSERT(false, "Failed to link shader to program");
 			return;
 		}
 	}
 
+
 	void OpenGLShader::UploadUniform1i(const std::string& name, const int& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform1i(location, value);
+		OpenGLCall(glUniform1i(location, value));
 	}
 
 	void OpenGLShader::UploadUniform1f(const std::string& name, const float& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform1f(location, value);
+		OpenGLCall(glUniform1f(location, value));
 	}
 
 	void OpenGLShader::UploadUniform2f(const std::string& name, const glm::vec2& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform2f(location, value.x, value.y);
+		OpenGLCall(glUniform2f(location, value.x, value.y));
 	}
 
 	void OpenGLShader::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		OpenGLCall(glUniform3f(location, value.x, value.y, value.z));	// Unsolved error: 502
-		//GLenum err;
-		//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << "Error: " << std::hex << err << std::endl; }
+		OpenGLCall(glUniform3f(location, value.x, value.y, value.z));
+
 	}
 
 	void OpenGLShader::UploadUniform4f(const std::string& name, const glm::vec4& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniform4f(location, value.x, value.y, value.z, value.w);
+		OpenGLCall(glUniform4f(location, value.x, value.y, value.z, value.w));
 	}
 
 	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+		OpenGLCall(glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value)));
 	}
 
 	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& value)
 	{
 		GLint location = GetUniformLocation(name);
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+		OpenGLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)));
 	}
 
 	GLint OpenGLShader::GetUniformLocation(const std::string& name) const

@@ -52,8 +52,8 @@ namespace Basement {
 	class EventDispatcher
 	{
 	private:
-		template<typename TEventType>
-		using EventFn = std::function<bool(TEventType&)>;
+		//template<typename TEventType>
+		//using EventFn = std::function<bool(TEventType&)>;
 	public:
 		EventDispatcher() = default;
 		~EventDispatcher() = default;
@@ -61,12 +61,12 @@ namespace Basement {
 		EventDispatcher(Event& event)
 			: m_Event(event) {}
 
-		template<typename TEventType>
-		bool Dispatch(EventFn<TEventType> func)
+		template<typename TEventType, typename TEventFunc>
+		bool Dispatch(const TEventFunc& func)
 		{
 			if (m_Event.GetEventType() == TEventType::GetStaticType())
 			{
-				m_Event.m_IsHandled = func(*(TEventType*) &m_Event);
+				m_Event.m_IsHandled = func(static_cast<TEventType&>(m_Event));
 				return true;
 			}
 			return false;

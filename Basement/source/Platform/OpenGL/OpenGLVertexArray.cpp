@@ -72,7 +72,7 @@ namespace Basement {
 		}
 
 		m_VertexBuffers.push_back(vertexBuffer);
-		m_VertexArrayIndexOffset += bufferLayout.GetElements().size();
+		m_VertexArrayIndexOffset += static_cast<uint32_t>(bufferLayout.GetElements().size());
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer)
