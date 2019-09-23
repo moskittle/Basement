@@ -55,8 +55,6 @@ namespace Basement {
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BM_BIND_EVENT_FN(Application::CloseWindow));
-
-		// BM_CORE_TRACE("{0}", event);
 		
 		for (auto iter = m_LayerStack.end(); iter != m_LayerStack.begin();)
 		{

@@ -15,9 +15,8 @@ class ExampleLayer : public Basement::Layer
 	const glm::vec3 grey = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), /*m_Camera(m_Position),*/ m_CameraPosition(0.0f), m_CameraSpeed(5.0f),
-		m_CameraRotation(0.0f), m_CameraRotationSpeed(90.0f),
-		m_Position(0.0f), m_MoveSpeed(1.0f), m_Scale(glm::vec3(0.1f)), m_ModelMatrix(glm::mat4(1.0f)),
+		: Layer("Example"), m_CameraController(1280.0f/720.f, true),
+		m_Scale(glm::vec3(0.1f)), m_ModelMatrix(glm::mat4(1.0f)),
 		m_SquareColor(navy)
 	{
 		// Vertex Array
@@ -76,75 +75,19 @@ public:
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);	// slot: 0
 	}
 
-	void Update(const Basement::Timer& deltaTime) override
+
+	void Update(const Basement::Timer& dt) override
 	{
-		BM_TRACE("Delta Time: {0}s ({1}fps)", deltaTime.GetDeltaTimeInSeconds(), deltaTime.GetFramePerSecond());
-		
-		//BM_TRACE("Camera Position: {0}, {1}, {2})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-		//static int frame = 0;
-		//BM_CORE_TRACE("Frame({0})", ++frame);
+		//BM_TRACE("Delta Time: {0}s ({1}fps)", dt.GetDeltaTimeInSeconds(), dt.GetFramePerSecond());
 
-		// Camera Movement
-		if (Basement::Input::IsKeyPressed(BM_KEY_W))
-		{
-			m_CameraPosition.y += m_CameraSpeed * deltaTime;
-		}
-		else if (Basement::Input::IsKeyPressed(BM_KEY_S))
-		{
-			m_CameraPosition.y -= m_CameraSpeed * deltaTime;
-		}
-		if (Basement::Input::IsKeyPressed(BM_KEY_A))
-		{
-			m_CameraPosition.x -= m_CameraSpeed * deltaTime;
-		}
-		else if (Basement::Input::IsKeyPressed(BM_KEY_D))
-		{
-			m_CameraPosition.x += m_CameraSpeed * deltaTime;
-		}
-		//if (Basement::Input::IsKeyPressed(BM_KEY_R))
-		//{
-		//	m_CameraPosition.z -= m_CameraSpeed * deltaTime;
-		//}
-		//else if (Basement::Input::IsKeyPressed(BM_KEY_F))
-		//{
-		//	m_CameraPosition.z += m_CameraSpeed * deltaTime;
-		//}
+		//Update
+		m_CameraController.Update(dt);
 
-		// Camera Rotation
-		if (Basement::Input::IsKeyPressed(BM_KEY_Q))
-		{
-			m_CameraRotation += m_CameraRotationSpeed * deltaTime;
-		}
-		else if (Basement::Input::IsKeyPressed(BM_KEY_E))
-		{
-			m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
-		}
-
-		// Transform Movement
-		if (Basement::Input::IsKeyPressed(BM_KEY_I))
-		{
-			m_Position.y += m_MoveSpeed * deltaTime;
-		}
-		else if (Basement::Input::IsKeyPressed(BM_KEY_K))
-		{
-			m_Position.y -= m_MoveSpeed * deltaTime;
-		}
-		if (Basement::Input::IsKeyPressed(BM_KEY_J))
-		{
-			m_Position.x -= m_MoveSpeed * deltaTime;
-		}
-		else if (Basement::Input::IsKeyPressed(BM_KEY_L))
-		{
-			m_Position.x += m_MoveSpeed * deltaTime;
-		}
-
+		// Render
 		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
 		Basement::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Basement::Renderer::BeginScene(m_Camera);
+		Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
 		auto textureShader = m_ShaderLibrary.Get("Texture");
@@ -168,11 +111,8 @@ public:
 		Basement::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_Texture2->Bind();
-		Basement::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-		//scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-		//m_ModelMatrix = glm::translate(glm::mat4(1.0f), m_Position) * scale;
-		//Basement::Renderer::Submit(m_FlatColorShader, m_TriangleVA, m_ModelMatrix);
+		auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.55f, 0.55f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f));
+		Basement::Renderer::Submit(textureShader, m_VertexArray, modelMatrix);
 
 		Basement::Renderer::EndScene();
 	}
@@ -188,6 +128,7 @@ public:
 
 	void HandleEvent(Basement::Event& event) override
 	{
+		m_CameraController.HandleEvent(event);
 	}
 
 private:
@@ -201,16 +142,10 @@ private:
 
 	Basement::Shared<Basement::VertexArray> m_TriangleVA;
 
-	glm::vec3 m_CameraPosition;
-	Basement::OrthographicCamera m_Camera;
-	float m_CameraSpeed;
-	float m_CameraRotation;
-	float m_CameraRotationSpeed;
+	Basement::OrthographicCameraController m_CameraController;
 
 	glm::mat4 m_ModelMatrix;
-	glm::vec3 m_Position;
 	glm::vec3 m_Scale;
-	float m_MoveSpeed;
 
 	glm::vec3 m_SquareColor;
 };

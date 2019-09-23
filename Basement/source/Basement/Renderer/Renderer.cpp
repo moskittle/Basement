@@ -11,7 +11,7 @@ namespace Basement {
 		RenderCommand::Init();
 	}
 
-	void Renderer::BeginScene(Camera& camera)
+	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
@@ -23,9 +23,6 @@ namespace Basement {
 	void Renderer::Submit(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, const glm::mat4& modelMatrix)
 	{
 		shader->Bind();
-
-		//GLenum err;
-		//while ((err = glGetError()) != GL_NO_ERROR) { std::cout << std::hex << err << std::endl; }
 
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", modelMatrix);

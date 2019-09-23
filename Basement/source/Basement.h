@@ -11,6 +11,7 @@
 #include "Basement/Input.h"
 #include "Basement/KeyCodes.h"
 #include "Basement/MouseButtonCodes.h"
+#include "Basement/Core/CameraController.h"
 
 #include "Basement/ImGui/ImGuiLayer.h"
 

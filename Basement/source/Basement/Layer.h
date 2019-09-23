@@ -14,7 +14,7 @@ namespace Basement {
 
 		virtual void Attach() {};
 		virtual void Detach() {};
-		virtual void Update(const Timer& deltaTime) {};
+		virtual void Update(const Timer& dt) {};
 		virtual void RenderImGui() {};
 		virtual void HandleEvent(Event& event) {};
 
