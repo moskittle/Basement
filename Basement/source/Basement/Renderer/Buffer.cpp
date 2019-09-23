@@ -33,7 +33,7 @@ namespace Basement {
 
 
 	// --Vertex Buffer-----------------------------------------
-	VertexBuffer* VertexBuffer::Create(uint32_t size, float* vertices)
+	Shared<VertexBuffer> VertexBuffer::Create(uint32_t size, float* vertices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -41,7 +41,7 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 			return nullptr;
 		case RendererAPI::EAPI::OpenGL:
-			return new OpenGLVertexBuffer(size, vertices);
+			return std::make_shared<OpenGLVertexBuffer>(size, vertices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");
 			return nullptr;
@@ -50,7 +50,7 @@ namespace Basement {
 
 
 	// --Index Buffer-----------------------------------------
-	IndexBuffer* IndexBuffer::Create(uint32_t count, uint32_t* indices)
+	Shared<IndexBuffer> IndexBuffer::Create(uint32_t count, uint32_t* indices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -58,7 +58,7 @@ namespace Basement {
 			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 			return nullptr;
 		case RendererAPI::EAPI::OpenGL:
-			return new OpenGLIndexBuffer(count, indices);
+			return std::make_shared<OpenGLIndexBuffer>(count, indices);
 		default:
 			BM_CORE_ASSERT(false, "Unknown RendererAPI");
 			return nullptr;

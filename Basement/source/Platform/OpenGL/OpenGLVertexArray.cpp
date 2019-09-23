@@ -31,6 +31,7 @@ namespace Basement {
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
 		glCreateVertexArrays(1, &m_VertexArrayID);
+		// May change for compatibility
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()

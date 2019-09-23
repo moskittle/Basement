@@ -25,7 +25,7 @@ namespace Basement {
 		virtual ~Texture2D() = default;
 
 		//static std::shared_ptr<Texture2D> Create(const std::string& path);
-		static Texture2D* Create(const std::string& path);
+		static Shared<Texture2D> Create(const std::string& path);
 	};
 
 

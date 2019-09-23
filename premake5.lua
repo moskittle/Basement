@@ -151,3 +151,57 @@ project "Backyard"
 		runtime "Release"
 		optimize "On"
 		
+project "GoofyLand"
+	location "GoofyLand"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/source/**.h",
+		"%{prj.name}/source/**.cpp"
+	}
+
+	includedirs
+	{
+		"Basement/vendor/spdlog/include",
+		"Basement/source",
+		"Basement/vendor",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.glm}"
+	}
+
+	links
+	{
+		"Basement"
+	}
+
+	filter { "system:windows" }
+
+		systemversion "latest"
+
+		defines
+		{
+			"BM_PLATFORM_WINDOWS"
+		}
+
+	filter { "configurations:Debug" }
+		defines "BM_DEBUG"
+		runtime "Debug"
+		symbols "On"
+	
+	filter { "configurations:Release" }
+		defines "BM_RELEASE"
+		runtime "Release"
+		optimize "On"
+	
+	filter { "configurations:Dist" }
+		defines "BM_DIST"
+		runtime "Release"
+		optimize "On"
+		

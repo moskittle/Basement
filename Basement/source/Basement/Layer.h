@@ -12,11 +12,11 @@ namespace Basement {
 		Layer(const std::string& debugName = "Layer");
 		virtual ~Layer() = default;
 
-		virtual void Attach() {};
-		virtual void Detach() {};
-		virtual void Update(const Timer& dt) {};
-		virtual void RenderImGui() {};
-		virtual void HandleEvent(Event& event) {};
+		virtual void Attach();
+		virtual void Detach();
+		virtual void Update(const Timer& dt);
+		virtual void RenderImGui();
+		virtual void HandleEvent(Event& event);
 
 		inline const std::string& GetDebugName() const { return m_DebugName; }
 	protected:

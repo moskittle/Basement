@@ -8,4 +8,24 @@ namespace Basement {
 	{
 	}
 
+	void Layer::Attach()
+	{
+	}
+
+	void Layer::Detach()
+	{
+	}
+
+	void Layer::Update(const Timer& dt)
+	{
+	}
+
+	void Layer::RenderImGui()
+	{
+	}
+
+	void Layer::HandleEvent(Event& event)
+	{
+	}
+
 }

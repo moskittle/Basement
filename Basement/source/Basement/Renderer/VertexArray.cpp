@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	VertexArray* VertexArray::Create()
+	Shared<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -14,7 +14,7 @@ namespace Basement {
 				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
 				return nullptr;
 			case RendererAPI::EAPI::OpenGL:
-				return new OpenGLVertexArray();
+				return std::make_shared<OpenGLVertexArray>();
 			default:
 				BM_CORE_ASSERT(false, "Unknown RendererAPI");
 				return nullptr;

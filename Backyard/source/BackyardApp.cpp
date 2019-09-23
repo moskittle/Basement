@@ -10,7 +10,7 @@
 class ExampleLayer : public Basement::Layer
 {
 	const float div = 256.0f;
-	const glm::vec3 green = { 105.0f / div, 190.0f / div, 40.0f / div };	// action green	
+	const glm::vec3 green = { 105.0f / div, 190.0f / div, 40.0f / div };	// action green
 	const glm::vec3 navy = { 0.0f, 34.0f / div, 68.0f / div };			// college navy
 	const glm::vec3 grey = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 public:
@@ -20,7 +20,7 @@ public:
 		m_SquareColor(navy)
 	{
 		// Vertex Array
-		m_VertexArray.reset(Basement::VertexArray::Create());
+		m_VertexArray = Basement::VertexArray::Create();
 
 		// Vertex Buffer
 		float vertices[4 * 9] = {
@@ -30,7 +30,7 @@ public:
 			 0.5f,  0.5f, 0.0f,		0.75f, 0.75f, 0.5f, 0.0f,		1.0f, 1.0f,			// top-right
 			 0.5f, -0.5f, 0.0f,		0.25f, 0.75f, 0.5f, 0.0f,		1.0f, 0.0f			// bottom-right
 		};
-		m_VertexBuffer.reset(Basement::VertexBuffer::Create(sizeof(vertices), vertices));
+		m_VertexBuffer = Basement::VertexBuffer::Create(sizeof(vertices), vertices);
 
 		Basement::BufferLayout bufferLayout =
 		{
@@ -46,30 +46,14 @@ public:
 			0, 1, 2,
 			2, 3, 0	
 		};
-		m_IndexBuffer.reset(Basement::IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices));
+		m_IndexBuffer = Basement::IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices);
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		// triangle
-		float verticesTri[3 * 7] = {
-			// Position				// Color
-			 0.0f,  0.5f, 0.0f,		0.25f, 0.25f, 0.75f, 0.0f,
-			-0.5f, -0.5f, 0.0f,		0.75f,  0.5f, 0.25f, 0.0f,
-			 0.5f,  -0.5f, 0.0f,	0.25f, 0.25f, 0.5f, 0.0f,
-		};
-
-		uint32_t indicesTri[3] = {
-			0, 1, 2,
-		};
 
 		Basement::Shared<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("resource/shaders/FlatColor.glsl");
 		Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
 
-
-		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag_art.jpg"));
-		//m_Texture.reset(Basement::Texture2D::Create("resource/textures/awesomeface.png"));
-		//m_Texture2.reset(Basement::Texture2D::Create("resource/textures/seahawks_logo.png"));
-		m_Texture.reset(Basement::Texture2D::Create("resource/textures/bwag.jpg"));
-		m_Texture2.reset(Basement::Texture2D::Create("resource/textures/seahawks_logo.tga"));
+		m_Texture = Basement::Texture2D::Create("resource/textures/bwag.jpg");
+		m_Texture2 = Basement::Texture2D::Create("resource/textures/seahawks_logo.tga");
 
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);	// slot: 0
@@ -80,7 +64,7 @@ public:
 	{
 		//BM_TRACE("Delta Time: {0}s ({1}fps)", dt.GetDeltaTimeInSeconds(), dt.GetFramePerSecond());
 
-		//Update
+		// Update
 		m_CameraController.Update(dt);
 
 		// Render
@@ -155,6 +139,8 @@ class Backyard : public Basement::Application
 public:
 	Backyard()
 	{
+		BM_INFO("Entering Backyard...");
+
 		PushLayer(new ExampleLayer());
 	}
 

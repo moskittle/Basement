@@ -10,3 +10,4 @@ bin-interm/
 *.vcxproj.user
 *.sln
 Backyard/imgui.ini
+GoofyLand/imgui.ini

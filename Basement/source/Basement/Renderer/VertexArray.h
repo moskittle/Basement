@@ -17,7 +17,7 @@ namespace Basement {
 		virtual const std::vector<Shared<VertexBuffer>>& GetVertexBuffers() const = 0;
 		virtual const Shared<IndexBuffer>& GetIndexBuffer() const = 0;
 
-		static VertexArray* Create();
+		static Shared<VertexArray> Create();
 	};
 
 }
