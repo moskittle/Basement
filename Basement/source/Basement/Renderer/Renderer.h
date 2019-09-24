@@ -11,6 +11,7 @@ namespace Basement {
 	public:
 		static void Init();
 
+		static void BeginScene(Camera3D& camera);
 		static void BeginScene(Camera2D& camera);
 		static void EndScene();
 

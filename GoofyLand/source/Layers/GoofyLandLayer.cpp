@@ -10,7 +10,7 @@
 
 #include <GLFW/glfw3.h>
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(1280.0f/720.0f)
+GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -89,7 +89,7 @@ void GoofyLandLayer::BuildScene()
 
 	Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
 	
-	m_BoxTexture = Basement::Texture2D::Create("resource/textures/container.jpg");
+	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
 	
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);
@@ -107,10 +107,32 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
 	auto textureShader = m_ShaderLibrary.Get("Texture");
-	glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 	
-	m_BoxTexture->Bind();
-	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
+	m_VertexArray->Bind();
+	glm::mat4 model = glm::mat4(1.0f);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		model = glm::translate(glm::mat4(1.0f), cubePositions[i]) * 
+				glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(10.0f + i * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+		m_BoxTexture->Bind();
+		Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
+	}
+
+
 
 	Basement::Renderer::EndScene();
 

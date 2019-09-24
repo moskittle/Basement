@@ -19,7 +19,7 @@ public:
 	virtual void RenderImGui() override;
 	virtual void HandleEvent(Basement::Event& event) override;
 private:
-	Basement::Camera2DController m_CameraController;
+	Basement::Camera3DController m_CameraController;
 	
 	Basement::ShaderLibrary m_ShaderLibrary;
 	Basement::Shared<Basement::VertexArray> m_VertexArray;

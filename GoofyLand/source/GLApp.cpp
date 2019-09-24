@@ -8,7 +8,7 @@ class GoofyLandApp : public Basement::Application
 public:
 	GoofyLandApp()
 	{
-		BM_INFO("Entering GoofyLand...");
+		BM_WARN("Entering Goofy Land...");
 
 		PushLayer(new GoofyLandLayer());
 	}
