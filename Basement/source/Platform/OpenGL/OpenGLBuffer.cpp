@@ -12,6 +12,8 @@ namespace Basement {
 		glGenBuffers(1, &m_VertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+
+		m_Count = size;
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()

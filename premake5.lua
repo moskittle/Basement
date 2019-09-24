@@ -119,7 +119,8 @@ project "Backyard"
 		"Basement/source",
 		"Basement/vendor",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.GLFW}"
 	}
 
 	links
@@ -173,7 +174,8 @@ project "GoofyLand"
 		"Basement/source",
 		"Basement/vendor",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.GLFW}"
 	}
 
 	links

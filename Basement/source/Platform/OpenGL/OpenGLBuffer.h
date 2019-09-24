@@ -15,9 +15,12 @@ namespace Basement {
 
 		virtual const BufferLayout& GetLayout() const override { return m_BufferLayout; }
 		virtual void SetLayout(const BufferLayout& bufferLayout) override { m_BufferLayout = bufferLayout; }
+
+		virtual uint32_t GetCount() const override { return m_Count; }
 	private:
 		uint32_t m_VertexBufferID;
 		BufferLayout m_BufferLayout;
+		uint32_t m_Count;
 	};
 
 
@@ -30,7 +33,7 @@ namespace Basement {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual inline uint32_t GetCount() const override { return m_Count; }
+		virtual uint32_t GetCount() const override { return m_Count; }
 	private:
 		uint32_t m_IndexBufferID;
 		uint32_t m_Count;

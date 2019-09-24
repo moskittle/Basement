@@ -1,13 +1,14 @@
 #include "GoofyLandLayer.h"
 
 #include "Basement/Renderer/RenderCommand.h"
-#include "Basement/Renderer/VertexArray.h"
-#include "Basement/Renderer/Texture.h"
+#include "Basement/Renderer/Renderer.h"
 
 #include "ImGui/imgui.h"
 
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <GLFW/glfw3.h>
 
 GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(1280.0f/720.0f)
 {
@@ -18,7 +19,7 @@ GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(1280.0f/720.0
 
 void GoofyLandLayer::BuildScene()
 {
-	float boxVertices[] = {
+	float cubeVertices[] = {
 		// Position				// Texture Coords
 		-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,
 		 0.5f, -0.5f, -0.5f,	1.0f, 0.0f,
@@ -75,31 +76,23 @@ void GoofyLandLayer::BuildScene()
 		1, 2, 3  // second triangle
 	};
 
-	Basement::Shared<Basement::VertexArray> vertexArray = Basement::VertexArray::Create();
+	m_VertexArray = Basement::VertexArray::Create();
 
-	Basement::Shared<Basement::VertexBuffer> vertexBuffer = Basement::VertexBuffer::Create(sizeof(vertices), vertices);
+	m_VertexBuffer = Basement::VertexBuffer::Create(sizeof(cubeVertices), cubeVertices);
 
-	// buffer layout
 	Basement::BufferLayout bufferLayout= {
 		{ Basement::EShaderDataType::Float3, "a_Position" },
 		{ Basement::EShaderDataType::Float2, "a_TexCoord" }
 	};
-	vertexBuffer->SetLayout(bufferLayout);
-	vertexArray->AddVertexBuffer(vertexBuffer);
+	m_VertexBuffer->SetLayout(bufferLayout);
+	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-	// index buffer
-	Basement::Shared<Basement::IndexBuffer> indexBuffer = Basement::IndexBuffer::Create(sizeof(indices), indices);
-	vertexArray->SetIndexBuffer(indexBuffer);
-
-	// shaders
 	Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
 	
-	// texture
-	Basement::Shared<Basement::Texture2D> boxTexture = Basement::Texture2D::Create("resource/textures/container.jpg");
+	m_BoxTexture = Basement::Texture2D::Create("resource/textures/container.jpg");
 	
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);
-
 }
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
@@ -108,10 +101,18 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	Basement::RenderCommand::SetClearColor(glm::vec4(1.0f, 0.6f, 0.8f, 1.0f));
+	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::RenderCommand::Clear();
 
+	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
+	auto textureShader = m_ShaderLibrary.Get("Texture");
+	glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+	
+	m_BoxTexture->Bind();
+	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
+
+	Basement::Renderer::EndScene();
 
 }
 

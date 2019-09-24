@@ -9,23 +9,23 @@
 
 namespace Basement {
 
-	class OrthographicCameraController {
+	class Camera2DController {
 	public:
-		OrthographicCameraController(float aspectRatio, bool enableRotaion = false);
-		~OrthographicCameraController() = default;
+		Camera2DController(float aspectRatio, bool enableRotaion = false);
+		~Camera2DController() = default;
 
 		void Update(Timer dt);
 		void HandleEvent(Event& event);
 
-		OrthographicCamera& GetCamera() { return m_Camera; }
-		const OrthographicCamera& GetCamera() const { return m_Camera; }
+		Camera2D& GetCamera() { return m_Camera; }
+		const Camera2D& GetCamera() const { return m_Camera; }
 	private:
 		bool ScrollMouse(MouseScrolledEvent& event);
 		bool ResizeWindow(WindowResizeEvent& event);
 	private:
 		float m_AspectRatio;
 		float m_ZoomLevel;
-		OrthographicCamera m_Camera;
+		Camera2D m_Camera;
 
 		bool m_EnableRotation;
 		float m_Rotation;

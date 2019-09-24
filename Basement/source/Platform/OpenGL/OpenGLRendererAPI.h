@@ -17,6 +17,7 @@ namespace Basement {
 		virtual void Clear() override;
 		virtual void EnableDepthTest() override;
 		virtual void DrawIndex(const Shared<VertexArray>& vertexArray) override;
+		virtual void DrawArrays(const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count) override;
 	};
 
 }

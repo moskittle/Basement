@@ -21,6 +21,7 @@ namespace Basement {
 		virtual void Clear() = 0;
 		virtual void EnableDepthTest() = 0;
 		virtual void DrawIndex(const Shared<VertexArray>& vertexArray) = 0;
+		virtual void DrawArrays(const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count) = 0;
 
 		inline static EAPI GetRendererAPI() { return s_Instance; };
 	protected:

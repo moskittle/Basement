@@ -5,13 +5,13 @@
 #include "Basement/KeyCodes.h"
 #include "Basement/Events/Event.h"
 
-static float DefaultMoveSpeed = 3.0f;
+static const float DefaultMoveSpeed = 3.0f;
 
 
 //--------------------------------------------------------------
 //---Orthographic Camera Controller-----------------------------
 
-Basement::OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool enableRotaion) :
+Basement::Camera2DController::Camera2DController(float aspectRatio, bool enableRotaion) :
 	m_AspectRatio(aspectRatio), m_ZoomLevel(1.0f),
 	m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
 	m_EnableRotation(enableRotaion), m_Rotation(0.0f),
@@ -21,7 +21,7 @@ Basement::OrthographicCameraController::OrthographicCameraController(float aspec
 {
 }
 
-void Basement::OrthographicCameraController::Update(Timer dt)
+void Basement::Camera2DController::Update(Timer dt)
 {
 	// Camera Movement
 	if (Basement::Input::IsKeyPressed(BM_KEY_W))
@@ -58,14 +58,14 @@ void Basement::OrthographicCameraController::Update(Timer dt)
 	}
 }
 
-void Basement::OrthographicCameraController::HandleEvent(Event& event)
+void Basement::Camera2DController::HandleEvent(Event& event)
 {
 	EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<MouseScrolledEvent>(BM_BIND_EVENT_FN(OrthographicCameraController::ScrollMouse));
-	dispatcher.Dispatch<WindowResizeEvent>(BM_BIND_EVENT_FN(OrthographicCameraController::ResizeWindow));
+	dispatcher.Dispatch<MouseScrolledEvent>(BM_BIND_EVENT_FN(Camera2DController::ScrollMouse));
+	dispatcher.Dispatch<WindowResizeEvent>(BM_BIND_EVENT_FN(Camera2DController::ResizeWindow));
 }
 
-bool Basement::OrthographicCameraController::ScrollMouse(MouseScrolledEvent& event)
+bool Basement::Camera2DController::ScrollMouse(MouseScrolledEvent& event)
 {
 	m_ZoomLevel -= event.GetOffsetY() * 0.2f;
 	m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
@@ -77,7 +77,7 @@ bool Basement::OrthographicCameraController::ScrollMouse(MouseScrolledEvent& eve
 	return false;
 }
 
-bool Basement::OrthographicCameraController::ResizeWindow(WindowResizeEvent& event)
+bool Basement::Camera2DController::ResizeWindow(WindowResizeEvent& event)
 {
 	m_AspectRatio = event.GetWidth() / event.GetHeight();
 	m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);

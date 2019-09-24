@@ -126,7 +126,7 @@ private:
 
 	Basement::Shared<Basement::VertexArray> m_TriangleVA;
 
-	Basement::OrthographicCameraController m_CameraController;
+	Basement::Camera2DController m_CameraController;
 
 	glm::mat4 m_ModelMatrix;
 	glm::vec3 m_Scale;

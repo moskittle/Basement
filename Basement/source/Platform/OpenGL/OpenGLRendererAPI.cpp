@@ -1,6 +1,6 @@
 #include "bmpch.h"
 #include "OpenGLRendererAPI.h"
-
+#include "OpenGLDebug.h"
 
 namespace Basement {
 	void OpenGLRendererAPI::Init()
@@ -25,7 +25,12 @@ namespace Basement {
 
 	void OpenGLRendererAPI::DrawIndex(const Shared<VertexArray>& vertexArray)
 	{
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		OpenGLCall(glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+
+	void OpenGLRendererAPI::DrawArrays(const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count)
+	{
+		OpenGLCall(glDrawArrays(GL_TRIANGLES, first, count));
 	}
 
 }
