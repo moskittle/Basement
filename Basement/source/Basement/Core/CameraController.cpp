@@ -7,7 +7,7 @@
 
 static const float DefaultMoveSpeed = 5.0f;
 static const float DefaultZoomSpeed = 2.0f;
-static const float DefaultRotationSpeed = 0.2f;
+static const float DefaultRotationSpeed = 0.1f;
 
 
 
@@ -73,20 +73,17 @@ namespace Basement {
 
 	bool CameraController3D::DragMouse(MouseMovedEvent& event)
 	{
-		if (Basement::Input::IsKeyPressed(BM_KEY_LEFT_SHIFT))
-		{
-			m_CurrentMousePosition = glm::vec2(event.GetX(), event.GetY());
-			glm::vec2 offset = m_CurrentMousePosition - m_LastMousePosition;
-			offset = (offset.x > 30.0f || offset.y > 30.0f) ? glm::vec2(0.0f) : offset;
-			m_LastMousePosition = m_CurrentMousePosition;
+		m_CurrentMousePosition = glm::vec2(event.GetX(), event.GetY());
+		glm::vec2 offset = m_CurrentMousePosition - m_LastMousePosition;
+		offset = (offset.x > 30.0f || offset.y > 30.0f) ? glm::vec2(0.0f) : offset;
+		m_LastMousePosition = m_CurrentMousePosition;
 
-			if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_LEFT))
-			{
-				m_Yaw += (offset.x * m_RotationSpeed);
-				m_Pitch -= (offset.y * m_RotationSpeed);
-			}
+		if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_LEFT))
+		{
+			m_Yaw += (offset.x * m_RotationSpeed);
+			m_Pitch -= (offset.y * m_RotationSpeed);
 		}
-			m_Camera.SetRotation(m_Yaw, m_Pitch);
+		m_Camera.SetRotation(m_Yaw, m_Pitch);
 		
 		return false;
 	}

@@ -11,7 +11,9 @@ int main(int argc, char** argv)
 	BM_CORE_INFO("Welcome to Basement Engine!");
 
 	auto gpBackyardApp = Basement::CreateApplication();
+	
 	gpBackyardApp->Run();
+	
 	delete gpBackyardApp;
 }
 

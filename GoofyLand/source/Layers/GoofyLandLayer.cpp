@@ -2,6 +2,7 @@
 
 #include "Basement/Renderer/RenderCommand.h"
 #include "Basement/Renderer/Renderer.h"
+#include "Basement/Mesh/Sphere.h"
 
 #include "ImGui/imgui.h"
 
@@ -19,6 +20,7 @@ GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0
 
 void GoofyLandLayer::BuildScene()
 {
+	// Cubes
 	float cubeVertices[] = {
 		// Position				// Texture Coords
 		-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,
@@ -77,7 +79,6 @@ void GoofyLandLayer::BuildScene()
 	};
 
 	m_VertexArray = Basement::VertexArray::Create();
-
 	m_VertexBuffer = Basement::VertexBuffer::Create(sizeof(cubeVertices), cubeVertices);
 
 	Basement::BufferLayout bufferLayout= {
@@ -93,11 +94,20 @@ void GoofyLandLayer::BuildScene()
 	
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);
+
+	// Sphere
+	Basement::Shared<Basement::Sphere> sphere = std::make_shared<Basement::Sphere>(30);
+
+	Basement::Shared<Basement::VertexArray> sphereVAO = Basement::VertexArray::Create();
+	Basement::Shared<Basement::VertexBuffer> sphereVBO = Basement::VertexBuffer::Create(4*sphere->GetVertexCount(), sphere->GetVertexArray());
+	//Basement::Shared<Basement::IndexBuffer> sphereIBO = Basement::IndexBuffer::Create(sizeof(Basement::Mesh3D) * sphere->GetFaceCount(), sphere->GetFaceArray());
+
+
 }
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
 {
-	//BM_INFO("FPS: {0}", dt.GetFramePerSecond());
+	BM_INFO("FPS: {0}", dt.GetFramePerSecond());
 
 	// Update
 	m_CameraController.Update(dt);
@@ -134,6 +144,7 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	//	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 	//}
 
+	model = glm::translate(model, glm::vec3(-5.0f, 0.0f, -5.0f));
 	m_BoxTexture->Bind();
 	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 
