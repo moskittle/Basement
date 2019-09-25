@@ -4,38 +4,38 @@
 
 namespace Basement {
 
-	class Camera 
-	{
-	public:
-		Camera() = default;
-		~Camera() = default;
-	};
-
-	class Camera3D : public Camera
+	class Camera3D
 	{
 	public:
 		Camera3D(glm::vec3 position, float fov, float aspectRatio, float near_, float far_);
 		~Camera3D() = default;
 
-		void SetProjectionMatrix(float fov, float aspectRatio, float near_, float far_);
-
 		void SetPosition(const glm::vec3& position);
-		void SetRotation(const glm::vec3& rotation);
+		void SetRotation(float yaw, float pitch);
+		void SetFov(float fov);
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+
+		const glm::vec3& GetFront() const { return m_Front; }
+		const glm::vec3& GetUp() const { return m_Up; }
+		const glm::vec3& GetRight() const { return m_Right; }
 	private:
+		void UpdateCameraDirection();
 		void UpdateViewMatrix();
+		void UpdateProjectionMatrix(float fov, float aspectRatio, float near_, float far_);
 	private:
-		glm::mat4 m_ViewMatrix, m_ProjectionMatrix;
+		float m_Fov, m_AspectRatio, m_Near, m_Far;
+		float m_Yaw, m_Pitch;	// Euler Angles
+		glm::vec3 m_Front, m_Up, m_Right;
+		glm::vec3 m_WorldUp;
 
 		glm::vec3 m_Position, m_Rotation;
-
-		//float m_Pitch, m_Yaw;
+		glm::mat4 m_ViewMatrix, m_ProjectionMatrix;
 	};
 
 
-	class Camera2D : public Camera
+	class Camera2D
 	{
 	public:
 		Camera2D(float left, float right, float bottom, float top);

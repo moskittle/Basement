@@ -9,18 +9,11 @@
 
 namespace Basement {
 
-	class CameraController
+	class CameraController3D
 	{
 	public:
-		CameraController() = default;
-		~CameraController() = default;
-	};
-
-	class Camera3DController : public CameraController
-	{
-	public:
-		Camera3DController(glm::vec3 position, float fov, float aspectRatio, float near_, float far_);
-		~Camera3DController() = default;
+		CameraController3D(glm::vec3 position, float fov, float aspectRatio, float near_, float far_);
+		~CameraController3D() = default;
 
 		void Update(Timer dt);
 		void HandleEvent(Event& event);
@@ -28,23 +21,30 @@ namespace Basement {
 		Camera3D& GetCamera() { return m_Camera; }
 		const Camera3D& GetCamera() const { return m_Camera; }
 	private:
+		bool ScrollMouse(MouseScrolledEvent& event);
+		bool DragMouse(MouseMovedEvent& event);
+		bool ResizeWindow(WindowResizeEvent& event);
+	private:
+		float m_Fov;
+		float m_ZoomSpeed;
+
 		glm::vec3 m_Position;
-		float m_Fov, m_AspectRatio;
-		float m_ZoomLevel;
 		Camera3D m_Camera;
 
-		glm::mat4 m_Rotation;
+		float m_Yaw, m_Pitch;
 		float m_RotationSpeed;
+		glm::vec2 m_CurrentMousePosition;
+		glm::vec2 m_LastMousePosition;
 
 		float m_MoveSpeed;
 		float m_MoveSpeedFactor;
 	};
 
-	class Camera2DController : public CameraController
+	class CameraController2D
 	{
 	public:
-		Camera2DController(float aspectRatio, bool enableRotaion = false);
-		~Camera2DController() = default;
+		CameraController2D(float aspectRatio, bool enableRotaion = false);
+		~CameraController2D() = default;
 
 		void Update(Timer dt);
 		void HandleEvent(Event& event);

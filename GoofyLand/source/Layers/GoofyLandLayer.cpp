@@ -10,7 +10,7 @@
 
 #include <GLFW/glfw3.h>
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f)
+GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 3.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -97,6 +97,8 @@ void GoofyLandLayer::BuildScene()
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
 {
+	//BM_INFO("FPS: {0}", dt.GetFramePerSecond());
+
 	// Update
 	m_CameraController.Update(dt);
 
@@ -124,15 +126,16 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_VertexArray->Bind();
 	glm::mat4 model = glm::mat4(1.0f);
 
-	for (int i = 0; i < 10; ++i)
-	{
-		model = glm::translate(glm::mat4(1.0f), cubePositions[i]) * 
-				glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(10.0f + i * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-		m_BoxTexture->Bind();
-		Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
-	}
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	model = glm::translate(glm::mat4(1.0f), cubePositions[i]) * 
+	//			glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(10.0f + i * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+	//	m_BoxTexture->Bind();
+	//	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
+	//}
 
-
+	m_BoxTexture->Bind();
+	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 
 	Basement::Renderer::EndScene();
 
@@ -147,4 +150,5 @@ void GoofyLandLayer::RenderImGui()
 
 void GoofyLandLayer::HandleEvent(Basement::Event& event)
 {
+	m_CameraController.HandleEvent(event);
 }
