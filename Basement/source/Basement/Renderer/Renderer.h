@@ -10,6 +10,7 @@ namespace Basement {
 	{
 	public:
 		static void Init();
+		static void ResizeWindow(uint32_t width, uint32_t height);
 
 		static void BeginScene(Camera3D& camera);
 		static void BeginScene(Camera2D& camera);

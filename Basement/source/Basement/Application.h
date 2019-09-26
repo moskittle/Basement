@@ -29,10 +29,12 @@ namespace Basement {
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		bool CloseWindow(WindowCloseEvent& event);
+		bool ResizeWindow(WindowResizeEvent& event);
 	private:
 		Basement::Unique<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_IsRunning = true;
+		bool m_IsMinimized = false;
 		LayerStack m_LayerStack;
 		Timer m_Timer;
 	private:

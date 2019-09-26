@@ -14,7 +14,7 @@
 // Global Variables
 glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
 
-glm::vec3 White(1.0f);
+glm::vec3 White(1.0f, 1.0f, 1.0f);
 glm::vec3 Blue(0.5f, 0.9f, 0.9f);
 
 

@@ -35,9 +35,12 @@ namespace Basement {
 			m_Timer.SetCurrentFrameTime(static_cast<float>(glfwGetTime()));
 			m_Timer.CalculateDeltaTime();
 
-			for (auto& layer : m_LayerStack)
+			if (!m_IsMinimized)
 			{
-				layer->Update(m_Timer);
+				for (auto& layer : m_LayerStack)
+				{
+					layer->Update(m_Timer);
+				}
 			}
 
 			m_ImGuiLayer->Begin();
@@ -55,6 +58,7 @@ namespace Basement {
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BM_BIND_EVENT_FN(Application::CloseWindow));
+		dispatcher.Dispatch<WindowResizeEvent>(BM_BIND_EVENT_FN(Application::ResizeWindow));
 		
 		for (auto iter = m_LayerStack.end(); iter != m_LayerStack.begin();)
 		{
@@ -82,6 +86,19 @@ namespace Basement {
 		m_IsRunning = false;
 
 		return true;
+	}
+
+	bool Application::ResizeWindow(WindowResizeEvent& event)
+	{
+		if (event.GetWidth() == 0 || event.GetHeight() == 0)
+		{
+			m_IsMinimized = true;
+		}
+
+		m_IsMinimized = false;
+		Renderer::ResizeWindow(event.GetWidth(), event.GetHeight());
+
+		return false;
 	}
 
 }

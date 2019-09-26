@@ -9,9 +9,6 @@ static const float DefaultMoveSpeed = 5.0f;
 static const float DefaultZoomSpeed = 2.0f;
 static const float DefaultRotationSpeed = 0.1f;
 
-
-
-
 namespace Basement {
 	
 	//--------------------------------------------------------------

@@ -16,6 +16,11 @@ namespace Basement {
 		RenderCommand::Init();
 	}
 
+	void Renderer::ResizeWindow(uint32_t width, uint32_t height)
+	{
+		RenderCommand::SetViewport(0, 0, width, height);
+	}
+
 	void Renderer::BeginScene(Camera3D& camera)
 	{
 		m_SceneData->ViewMatrix = camera.GetViewMatrix();
