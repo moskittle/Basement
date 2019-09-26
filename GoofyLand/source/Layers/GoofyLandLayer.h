@@ -27,4 +27,9 @@ private:
 	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
 
 	Basement::Shared<Basement::Texture2D> m_BoxTexture;
+
+	// Sphere
+	Basement::Shared<Basement::VertexArray> m_SphereVAO;
+	Basement::Shared<Basement::VertexBuffer> m_SphereVBO;
+	Basement::Shared<Basement::IndexBuffer> m_SphereIBO;
 };

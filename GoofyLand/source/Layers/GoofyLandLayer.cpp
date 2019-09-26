@@ -89,25 +89,37 @@ void GoofyLandLayer::BuildScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
-	
-	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
-	
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);
 
+	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
+	
 	// Sphere
 	Basement::Shared<Basement::Sphere> sphere = std::make_shared<Basement::Sphere>(30);
 
-	Basement::Shared<Basement::VertexArray> sphereVAO = Basement::VertexArray::Create();
-	Basement::Shared<Basement::VertexBuffer> sphereVBO = Basement::VertexBuffer::Create(4*sphere->GetVertexCount(), sphere->GetVertexArray());
-	//Basement::Shared<Basement::IndexBuffer> sphereIBO = Basement::IndexBuffer::Create(sizeof(Basement::Mesh3D) * sphere->GetFaceCount(), sphere->GetFaceArray());
+	// VAO
+	m_SphereVAO = Basement::VertexArray::Create();
+	// VBO
+	m_SphereVBO = Basement::VertexBuffer::Create(4*sphere->GetVertexCount(), sphere->GetVertexArray());
+	Basement::BufferLayout sphereBufferLayout = {
+		{Basement::EShaderDataType::Float4, "a_Position"}
+	};
+	m_SphereVBO->SetLayout(sphereBufferLayout);
+	m_SphereVAO->AddVertexBuffer(m_VertexBuffer);
+
+	// IBO
+	m_SphereIBO = Basement::IndexBuffer::Create(3 * sphere->GetFaceCount(), sphere->GetFaceArray());
+	m_SphereVAO->SetIndexBuffer(m_SphereIBO);
+
+	// Shader
+	Basement::Shared<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("resource/shaders/FlatColor.glsl");
 
 
 }
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
 {
-	BM_INFO("FPS: {0}", dt.GetFramePerSecond());
+	//BM_INFO("FPS: {0}", dt.GetFramePerSecond());
 
 	// Update
 	m_CameraController.Update(dt);
@@ -144,9 +156,15 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	//	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 	//}
 
-	model = glm::translate(model, glm::vec3(-5.0f, 0.0f, -5.0f));
+	//model = glm::translate(model, glm::vec3(-5.0f, 0.0f, -5.0f));
 	m_BoxTexture->Bind();
 	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
+
+	//auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
+	//model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	//Basement::Renderer::Submit(flatColorShader, m_SphereVAO, model);
+
+
 
 	Basement::Renderer::EndScene();
 

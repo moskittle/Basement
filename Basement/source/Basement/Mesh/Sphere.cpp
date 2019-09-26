@@ -3,6 +3,7 @@
 #include "Sphere.h"
 
 #include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
 
 const float PI = 4.0f * std::atan(1.0f);
 
@@ -67,6 +68,11 @@ namespace Basement {
 			m_Faces.push_back(face);
 		}
 
+		int sizeVertexArray = 4 * GetVertexCount();
+		m_VertexArray = new float[sizeVertexArray];
+
+		int sizeIndexArray = 3 * GetFaceCount();
+		m_IndexArray = new uint32_t[sizeIndexArray];
 	}
 #undef SOUTH
 #undef NORTH
@@ -75,9 +81,9 @@ namespace Basement {
 
 	Sphere::~Sphere()
 	{
-		//delete m_VertexArray;
+		delete m_VertexArray;
 		//delete m_NormalsArray;
-		//delete m_IndexArray;
+		delete m_IndexArray;
 	}
 
 	uint32_t Sphere::GetVertexCount()
@@ -87,8 +93,25 @@ namespace Basement {
 
 	float* Sphere::GetVertexArray()
 	{
+		//// Convert cube to sphere
+		//glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(2 * PI, -PI, 1.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+		//for (int i = 0; i < m_Vertices.size(); ++i)
+		//{
+		//	auto vertex = m_Vertices[i];
+		//	//BM_CORE_TRACE("vectex{0}: {1}, {2}, {3}", i, m_Vertices[i].x, m_Vertices[i].y, m_Vertices[i].z);
+
+		//	glm::vec4 angles = model * vertex;
+
+
+		//	m_Vertices[i].x = sinf(angles[1]) * sinf(angles[0]);
+		//	m_Vertices[i].y = cosf(angles[1]);
+		//	m_Vertices[i].z = sinf(angles[1]) * cosf(angles[0]);
+		//	//BM_CORE_TRACE("vectex{0}: {1}, {2}, {3}", i, m_Vertices[i].x, m_Vertices[i].y, m_Vertices[i].z);
+		//}
+
+		// Move Vetices from std::vector to float array
 		int size = 4 * GetVertexCount();
-		m_VertexArray = new float[size];
+
 		for(int i = 0; i < size; i += 4)
 		{
 			int index = i / 4;
@@ -98,7 +121,7 @@ namespace Basement {
 			m_VertexArray[i+3] = 1.0f;
 			//BM_CORE_TRACE("Index{0}: {1}, {2}, {3}", i, m_VertexArray[i], m_VertexArray[i + 1], m_VertexArray[i + 2]);
 		}
-		
+
 		return m_VertexArray;
 	}
 
@@ -115,7 +138,7 @@ namespace Basement {
 	uint32_t* Sphere::GetFaceArray()
 	{
 		int size = 3 * GetFaceCount();
-		m_IndexArray = new uint32_t[size];
+
 		for (int i = 0; i < size; i += 3)
 		{
 			int index = i / 3;
