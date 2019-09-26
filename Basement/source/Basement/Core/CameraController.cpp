@@ -45,6 +45,14 @@ namespace Basement {
 		{
 			m_Position += m_Camera.GetRight() * (m_MoveSpeed * dt);
 		}
+		if (Basement::Input::IsKeyPressed(BM_KEY_R))
+		{
+			m_Position += m_Camera.GetUp() * (m_MoveSpeed * dt);
+		}
+		else if (Basement::Input::IsKeyPressed(BM_KEY_F))
+		{
+			m_Position -= m_Camera.GetUp() * (m_MoveSpeed * dt);
+		}
 
 		m_Camera.SetPosition(m_Position);
 	}

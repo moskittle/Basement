@@ -14,6 +14,10 @@ public:
 	~GoofyLandLayer() = default;
 
 	void BuildScene();
+	void RenderScene();
+
+	void BuildLightingScene();
+	void RenderLightingScene();
 
 	virtual void Update(const Basement::Timer& dt) override;
 	virtual void RenderImGui() override;
@@ -25,6 +29,10 @@ private:
 	Basement::Shared<Basement::VertexArray> m_VertexArray;
 	Basement::Shared<Basement::VertexBuffer> m_VertexBuffer;
 	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
+
+	Basement::Shared<Basement::VertexArray> m_LightVertexArray;
+	Basement::Shared<Basement::VertexBuffer> m_LightVertexBuffer;
+	Basement::Shared<Basement::IndexBuffer> m_LightIndexBuffer;
 
 	Basement::Shared<Basement::Texture2D> m_BoxTexture;
 
