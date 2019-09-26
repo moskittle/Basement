@@ -155,16 +155,14 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	//	m_BoxTexture->Bind();
 	//	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 	//}
-
-	//model = glm::translate(model, glm::vec3(-5.0f, 0.0f, -5.0f));
+	
+	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_BoxTexture->Bind();
 	Basement::Renderer::SubmitArrays(textureShader, m_VertexArray, 0, 36, model);
 
 	//auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
 	//model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	//Basement::Renderer::Submit(flatColorShader, m_SphereVAO, model);
-
-
 
 	Basement::Renderer::EndScene();
 

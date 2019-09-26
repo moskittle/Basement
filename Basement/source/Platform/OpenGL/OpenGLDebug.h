@@ -44,7 +44,7 @@ namespace Basement {
 					/*__debugbreak();*/\
 				}
 #else
-	#define OpenGLCall(x)
+	#define OpenGLCall(x) x
 #endif // BM_ENABLE_OPENGL_DEBUG
 
 }
