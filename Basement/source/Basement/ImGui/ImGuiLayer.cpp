@@ -67,9 +67,9 @@ namespace Basement {
 		ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
 		
 		RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
-		ImGui::Text("OpenGL Vendor:   %s", info.Vendor.c_str());
-		ImGui::Text("OpenGL Renderer: %s", info.Renderer.c_str());
-		ImGui::Text("OpenGL Verision: %s", info.Version.c_str());
+		ImGui::Text("Vendor:   %s", info.Vendor.c_str());
+		ImGui::Text("Renderer: %s", info.Renderer.c_str());
+		ImGui::Text("Verision: %s", info.Version.c_str());
 		ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::End();
 
@@ -101,7 +101,6 @@ namespace Basement {
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
-		
 	}
 
 }

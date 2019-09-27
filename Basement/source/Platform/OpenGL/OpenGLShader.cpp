@@ -176,7 +176,7 @@ namespace Basement {
 			glDeleteShader(shader);
 
 			BM_CORE_ERROR("{0}", errorLog.data());
-			BM_CORE_ASSERT(false, "Failed to compile vertex shader!");
+			BM_CORE_ASSERT(false, "Failed to compile shader!");
 			return;
 		}
 	}

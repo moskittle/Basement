@@ -17,10 +17,14 @@ glm::vec3 LightPosition(0.7f, 0.0f, 0.6f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
 
 glm::vec3 CubePosition(0.0f, 0.0f, 0.0f);
-glm::vec3 CubeColor(0.5f, 0.9f, 0.9f);
+glm::vec3 CubeColor(1.0f, 0.5f, 0.31f);
+glm::vec3& Ambient= CubeColor;
+glm::vec3& Diffuse = CubeColor;
+glm::vec3 Specular(0.5, 0.5, 0.5);
+glm::vec3 AmbientIntensity(0.2f);
+glm::vec3 DiffuseIntensity(0.5f);
+glm::vec3 SpecularIntensity(1.0f);
 
-float AmbientIntensity = 0.1f;
-float SpecularIntensity = 0.5f;
 int Shininess = 32;
 
 GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 1.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
@@ -292,7 +296,8 @@ void GoofyLandLayer::BuildLightingScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
-	Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("resource/shaders/Lighting.glsl");
+	//Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("resource/shaders/Lighting.glsl");
+	Basement::Shared<Basement::Shader> materialShader = m_ShaderLibrary.Load("resource/shaders/Material.glsl");
 	
 	//-----------------------
 	// Light
@@ -315,18 +320,21 @@ void GoofyLandLayer::BuildLightingScene()
 
 void GoofyLandLayer::RenderLightingScene()
 {
-	auto lightingShader = m_ShaderLibrary.Get("Lighting");
+	//auto lightingShader = m_ShaderLibrary.Get("Lighting");
 	auto lightSourceShader = m_ShaderLibrary.Get("LightSource");
-
+	auto materialShader = m_ShaderLibrary.Get("Material");
 	// Update uniforms to lighting shaders
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_AmbientIntensity", AmbientIntensity);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_SpecularIntensity", SpecularIntensity);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1i("u_Shininess", Shininess);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", CubeColor);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightColor", LightColor);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightPosition", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("material.ambient", Ambient);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("material.diffuse", Diffuse);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("material.specular", Specular);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform1i("material.shininess", Shininess);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("u_LightColor", LightColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("u_LightPosition", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("light.ambient", AmbientIntensity);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("light.diffuse", DiffuseIntensity);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("light.specular", SpecularIntensity);
 
 	// Update uniforms to light source shaders
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->Bind();
@@ -334,15 +342,15 @@ void GoofyLandLayer::RenderLightingScene()
 
 	// Update model matrix
 	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
-	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 	// Update normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniformMat3("u_NormalMat", normalMat);
 
 	// Submit VAO to render
 	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
-	Basement::Renderer::SubmitArrays(lightingShader, m_VertexArray, 0, 36, cubeModel);
+	Basement::Renderer::SubmitArrays(materialShader, m_VertexArray, 0, 36, cubeModel);
 }
 
 
@@ -370,7 +378,7 @@ void GoofyLandLayer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
-	if (ImGui::CollapsingHeader("Lighting"))
+	if (ImGui::CollapsingHeader("Light"))
 	{
 		if (ImGui::TreeNode("Bulb")) {
 			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
@@ -385,9 +393,13 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Cube")) {
 			ImGui::SliderFloat3("Cube Position", glm::value_ptr(CubePosition), -3.0f, 3.0f, "%.1f", 1.0f);
 			ImGui::ColorEdit3("Cube Color", glm::value_ptr(CubeColor));
-			ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.1f");
-			ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.1f");
-			ImGui::SliderInt("Shininess", &Shininess, 0, 256, "%f");
+			if (ImGui::TreeNode("Material")) {
+				ImGui::SliderFloat3("Ambient", glm::value_ptr(Ambient), 0.0f, 1.0f, "%.2f", 1.0f);
+				ImGui::SliderFloat3("Diffuse", glm::value_ptr(Diffuse), 0.0f, 1.0f, "%.2f", 1.0f);
+				ImGui::SliderFloat3("Specular", glm::value_ptr(Specular), 0.0f, 1.0f, "%.2f", 1.0f);
+				ImGui::SliderInt("Shininess", &Shininess, 0, 256, "%f");
+				ImGui::TreePop();
+			}
 			
 			ImGui::TreePop();
 			ImGui::Separator();
