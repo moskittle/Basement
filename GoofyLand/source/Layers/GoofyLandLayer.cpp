@@ -12,15 +12,18 @@
 #include <GLFW/glfw3.h>
 
 // Global Variables
-glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
-glm::vec3 ObjectPosition(0.0f, 0.0f, 0.0f);
-
+//glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
+glm::vec3 LightPosition(0.7f, 0.0f, 0.6f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
-glm::vec3 ObjectColor(0.5f, 0.9f, 0.9f);
 
-float AmbientStrength = 0.1f;
+glm::vec3 CubePosition(0.0f, 0.0f, 0.0f);
+glm::vec3 CubeColor(0.5f, 0.9f, 0.9f);
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
+float AmbientIntensity = 0.1f;
+float SpecularIntensity = 0.5f;
+int Shininess = 32;
+
+GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 1.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -315,25 +318,33 @@ void GoofyLandLayer::RenderLightingScene()
 	auto lightingShader = m_ShaderLibrary.Get("Lighting");
 	auto lightSourceShader = m_ShaderLibrary.Get("LightSource");
 
-	// Update uniforms to shaders
+	// Update uniforms to lighting shaders
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f ("u_AmbientStrength", AmbientStrength);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", ObjectColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_AmbientIntensity", AmbientIntensity);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_SpecularIntensity", SpecularIntensity);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1i("u_Shininess", Shininess);
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", CubeColor);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightColor", LightColor);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightPosition", LightPosition);
 
+	// Update uniforms to light source shaders
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->UploadUniform3f("u_LightColor", LightColor);
 
 	// Update model matrix
-	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
-	glm::mat4 objectModel = glm::translate(glm::mat4(1.0f), ObjectPosition) * glm::rotate(glm::mat4(1.0f), /*(float)glfwGetTime()*/ 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	
+	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), 0.5f* (float)glfwGetTime() , glm::vec3(0.0f, 1.0f, 0.0f));
+	// Update normal matrix
+	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniformMat3("u_NormalMat", normalMat);
+
 	// Submit VAO to render
 	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
-	Basement::Renderer::SubmitArrays(lightingShader, m_VertexArray, 0, 36, objectModel);
-
-
+	Basement::Renderer::SubmitArrays(lightingShader, m_VertexArray, 0, 36, cubeModel);
 	//// Light
 	//model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f));
 	//Basement::Renderer::SubmitArrays(textureShader, m_LightVertexArray, 0, 36, model);
@@ -366,18 +377,24 @@ void GoofyLandLayer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
-	if (ImGui::CollapsingHeader("Setting")) {
-		if (ImGui::TreeNode("Object")) {
-			ImGui::SliderFloat3("Object Position", glm::value_ptr(ObjectPosition), -3.0f, 3.0f, "%.1f", 1.0f);
-			ImGui::ColorEdit3("Object Color", glm::value_ptr(ObjectColor));
+	if (ImGui::CollapsingHeader("Lighting"))
+	{
+		if (ImGui::TreeNode("Bulb")) {
+			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
+			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
+			ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.1f");
+			ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.1f");
+			ImGui::SliderInt("Shininess", &Shininess, 0, 256, "%f");
+
 			ImGui::TreePop();
 			ImGui::Separator();
 		}
+	}
 
-		if (ImGui::TreeNode("Lighting")) {
-			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
-			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
-			ImGui::SliderFloat("Ambient", &AmbientStrength, 0.0f, 1.0f, "%.1f");
+	if (ImGui::CollapsingHeader("Object")) {
+		if (ImGui::TreeNode("Cube")) {
+			ImGui::SliderFloat3("Cube Position", glm::value_ptr(CubePosition), -3.0f, 3.0f, "%.1f", 1.0f);
+			ImGui::ColorEdit3("Cube Color", glm::value_ptr(CubeColor));
 			ImGui::TreePop();
 			ImGui::Separator();
 		}

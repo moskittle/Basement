@@ -20,6 +20,8 @@ namespace Basement {
 		const glm::vec3& GetFront() const { return m_Front; }
 		const glm::vec3& GetUp() const { return m_Up; }
 		const glm::vec3& GetRight() const { return m_Right; }
+
+		const glm::vec3& GetPosition() const { return m_Position; }
 	private:
 		void UpdateCameraDirection();
 		void UpdateViewMatrix();

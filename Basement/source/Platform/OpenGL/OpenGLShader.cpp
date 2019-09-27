@@ -254,7 +254,6 @@ namespace Basement {
 		{
 			return m_UniformLocationCache[name];
 		}
-
 		GLint location = glGetUniformLocation(m_ProgramID, name.c_str());
 		BM_CORE_ASSERT(location != -1, "Invalid Uniform location!");
 		
