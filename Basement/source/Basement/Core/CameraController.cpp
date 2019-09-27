@@ -83,7 +83,7 @@ namespace Basement {
 		offset = (offset.x > 30.0f || offset.y > 30.0f) ? glm::vec2(0.0f) : offset;
 		m_LastMousePosition = m_CurrentMousePosition;
 
-		if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_LEFT))
+		if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_LEFT) && Basement::Input::IsKeyPressed(BM_KEY_LEFT_SHIFT))
 		{
 			m_Yaw += (offset.x * m_RotationSpeed);
 			m_Pitch -= (offset.y * m_RotationSpeed);

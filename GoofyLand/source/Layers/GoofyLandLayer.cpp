@@ -13,11 +13,12 @@
 
 // Global Variables
 glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
+glm::vec3 ObjectPosition(0.0f, 0.0f, 0.0f);
 
-glm::vec3 White(1.0f, 1.0f, 1.0f);
-glm::vec3 Blue(0.5f, 0.9f, 0.9f);
+glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
+glm::vec3 ObjectColor(0.5f, 0.9f, 0.9f);
 
-
+float AmbientStrength = 0.1f;
 
 GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
@@ -183,47 +184,48 @@ void GoofyLandLayer::RenderScene()
 void GoofyLandLayer::BuildLightingScene()
 {
 	float boxVertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		// Position			  // Normals
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
 	float lightVertices[] = {
@@ -281,16 +283,13 @@ void GoofyLandLayer::BuildLightingScene()
 	m_VertexBuffer = Basement::VertexBuffer::Create(sizeof(boxVertices), boxVertices);
 	Basement::BufferLayout bufferLayout = {
 		{ Basement::EShaderDataType::Float3, "a_Position" }, 
-		{ Basement::EShaderDataType::Float2, "a_TexCoord" }
+		{ Basement::EShaderDataType::Float3, "a_Normal" }
 	};
 	m_VertexBuffer->SetLayout(bufferLayout);
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
 	Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("resource/shaders/Lighting.glsl");
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", Blue);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightColor", White);
 	
 	//-----------------------
 	// Light
@@ -307,8 +306,8 @@ void GoofyLandLayer::BuildLightingScene()
 	m_LightVertexBuffer->SetLayout(lightingLayout);
 	m_LightVertexArray->AddVertexBuffer(m_LightVertexBuffer);
 
+	// Shader
 	Basement::Shared<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("resource/shaders/LightSource.glsl");
-
 }
 
 void GoofyLandLayer::RenderLightingScene()
@@ -316,10 +315,22 @@ void GoofyLandLayer::RenderLightingScene()
 	auto lightingShader = m_ShaderLibrary.Get("Lighting");
 	auto lightSourceShader = m_ShaderLibrary.Get("LightSource");
 
-	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
+	// Update uniforms to shaders
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f ("u_AmbientStrength", AmbientStrength);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", ObjectColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightColor", LightColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightPosition", LightPosition);
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->UploadUniform3f("u_LightColor", LightColor);
+
+	// Update model matrix
+	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
+	glm::mat4 objectModel = glm::translate(glm::mat4(1.0f), ObjectPosition) * glm::rotate(glm::mat4(1.0f), /*(float)glfwGetTime()*/ 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	
-	glm::mat4 objectModel = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+	// Submit VAO to render
+	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
 	Basement::Renderer::SubmitArrays(lightingShader, m_VertexArray, 0, 36, objectModel);
 
 
@@ -338,7 +349,8 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	Basement::RenderCommand::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	//Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::RenderCommand::Clear();
 
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
@@ -352,7 +364,24 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 
 void GoofyLandLayer::RenderImGui()
 {
-	ImGui::Begin("Hello World");
+	ImGui::Begin("Scene");
+
+	if (ImGui::CollapsingHeader("Setting")) {
+		if (ImGui::TreeNode("Object")) {
+			ImGui::SliderFloat3("Object Position", glm::value_ptr(ObjectPosition), -3.0f, 3.0f, "%.1f", 1.0f);
+			ImGui::ColorEdit3("Object Color", glm::value_ptr(ObjectColor));
+			ImGui::TreePop();
+			ImGui::Separator();
+		}
+
+		if (ImGui::TreeNode("Lighting")) {
+			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
+			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
+			ImGui::SliderFloat("Ambient", &AmbientStrength, 0.0f, 1.0f, "%.1f");
+			ImGui::TreePop();
+			ImGui::Separator();
+		}
+	}
 
 	ImGui::End();
 }
