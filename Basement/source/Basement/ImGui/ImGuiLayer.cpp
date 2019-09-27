@@ -8,6 +8,7 @@
 #include "examples/imgui_impl_opengl3.h"
 
 #include "Basement/Application.h"
+#include "Basement/Renderer/Renderer.h"
 
 // TEMPORARY
 #include <GLFW/glfw3.h>
@@ -63,6 +64,15 @@ namespace Basement {
 
 	void ImGuiLayer::RenderImGui()
 	{
+		ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
+		
+		RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
+		ImGui::Text("OpenGL Vendor:   %s", info.Vendor.c_str());
+		ImGui::Text("OpenGL Renderer: %s", info.Renderer.c_str());
+		ImGui::Text("OpenGL Verision: %s", info.Version.c_str());
+		ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
+		ImGui::End();
+
 		static bool IsShowing = true;
 		ImGui::ShowDemoWindow(&IsShowing);
 	}

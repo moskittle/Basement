@@ -285,7 +285,7 @@ void GoofyLandLayer::BuildLightingScene()
 	// VBO
 	m_VertexBuffer = Basement::VertexBuffer::Create(sizeof(boxVertices), boxVertices);
 	Basement::BufferLayout bufferLayout = {
-		{ Basement::EShaderDataType::Float3, "a_Position" }, 
+		{ Basement::EShaderDataType::Float3, "a_Position" },
 		{ Basement::EShaderDataType::Float3, "a_Normal" }
 	};
 	m_VertexBuffer->SetLayout(bufferLayout);
@@ -323,9 +323,7 @@ void GoofyLandLayer::RenderLightingScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_AmbientIntensity", AmbientIntensity);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1f("u_SpecularIntensity", SpecularIntensity);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform1i("u_Shininess", Shininess);
-
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_ObjectColor", CubeColor);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightColor", LightColor);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->UploadUniform3f("u_LightPosition", LightPosition);
@@ -336,7 +334,7 @@ void GoofyLandLayer::RenderLightingScene()
 
 	// Update model matrix
 	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
-	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), 0.5f* (float)glfwGetTime() , glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	// Update normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingShader)->Bind();
@@ -345,17 +343,12 @@ void GoofyLandLayer::RenderLightingScene()
 	// Submit VAO to render
 	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
 	Basement::Renderer::SubmitArrays(lightingShader, m_VertexArray, 0, 36, cubeModel);
-	//// Light
-	//model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f));
-	//Basement::Renderer::SubmitArrays(textureShader, m_LightVertexArray, 0, 36, model);
 }
 
 
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
 {
-	//BM_INFO("FPS: {0}", dt.GetFramePerSecond());
-
 	// Update
 	m_CameraController.Update(dt);
 
@@ -382,9 +375,6 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Bulb")) {
 			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
 			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
-			ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.1f");
-			ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.1f");
-			ImGui::SliderInt("Shininess", &Shininess, 0, 256, "%f");
 
 			ImGui::TreePop();
 			ImGui::Separator();
@@ -395,6 +385,10 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Cube")) {
 			ImGui::SliderFloat3("Cube Position", glm::value_ptr(CubePosition), -3.0f, 3.0f, "%.1f", 1.0f);
 			ImGui::ColorEdit3("Cube Color", glm::value_ptr(CubeColor));
+			ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.1f");
+			ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.1f");
+			ImGui::SliderInt("Shininess", &Shininess, 0, 256, "%f");
+			
 			ImGui::TreePop();
 			ImGui::Separator();
 		}

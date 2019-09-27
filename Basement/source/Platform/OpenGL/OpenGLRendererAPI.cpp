@@ -7,6 +7,13 @@ namespace Basement {
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
+		info.Vendor = (const char*) glGetString(GL_VENDOR);
+		info.Renderer = (const char*) glGetString(GL_RENDERER);
+		info.Version= (const char*) glGetString(GL_VERSION);
+		
+		OpenGLCall() // Check errors
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

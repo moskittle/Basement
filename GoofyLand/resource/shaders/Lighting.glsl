@@ -16,16 +16,10 @@ out vec3 v_FragPosition;
 
 void main()
 {
-    // gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
+    v_FragPosition = vec3(u_Model * vec4(a_Position, 1.0));     // Fragment position in world coord
+    v_Normal = u_NormalMat * a_Normal;                          // Calculate normal vector
 
-    // v_FragPosition = vec3(u_Model * vec4(a_Position, 1.0));     // Fragment position in world coord
-    // v_Normal = u_NormalMat * a_Normal;                          // Calculate normal vector
-
-
-    v_FragPosition = vec3(u_Model * vec4(a_Position, 1.0));
-    v_Normal = u_NormalMat * a_Normal;  
-    
-    gl_Position = u_Projection * u_View * vec4(v_FragPosition, 1.0);
+    gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
 }
 
 //---------------------------------------------------------------------------
@@ -63,12 +57,6 @@ void main()
     vec3 viewDir = normalize(u_ViewPosition - v_FragPosition);
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 specular = u_SpecularIntensity * pow(max(dot(viewDir, reflectDir), 0.0), u_Shininess) * u_LightColor;
-
-    
-    // // specular
-    // vec3 viewDir = normalize(vec3(0.0f, 1.0f, 5.0f) - v_FragPosition);
-    // vec3 reflectDir = reflect(-lightDir, normal);
-    // vec3 specular = 0.5 * pow(max(dot(viewDir, reflectDir), 0.0), 32) * u_LightColor;
 
     vec3 result = (ambient + diffuse + specular) * u_ObjectColor;
     color = vec4(result, 1.0);

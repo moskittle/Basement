@@ -37,7 +37,7 @@ namespace Basement {
 		m_WindowData.Width = props.Width;
 		m_WindowData.Height = props.Height;
 
-		BM_CORE_INFO("Creating window {0} ({1}x{2})", props.Title, props.Width, props.Height);
+		BM_CORE_INFO("Creating Window ({0}x{1})", props.Width, props.Height);
 
 		// Initialize GLFW
 		if (!s_GLFWInitialized)

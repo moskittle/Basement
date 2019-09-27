@@ -13,6 +13,17 @@ namespace Basement {
 		{
 			None = 0, OpenGL = 1
 		};
+
+		struct RendererAPIInfo
+		{
+			std::string Vendor;
+			std::string Renderer;
+			std::string Version;
+
+			int MaxSamples;
+			float MaxAnisotropy;
+		};
+
 	public:
 		virtual ~RendererAPI() = default;
 
@@ -24,7 +35,8 @@ namespace Basement {
 		virtual void DrawIndex(const Shared<VertexArray>& vertexArray) = 0;
 		virtual void DrawArrays(const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count) = 0;
 
-		inline static EAPI GetRendererAPI() { return s_Instance; };
+		static EAPI GetRendererAPI() { return s_Instance; };
+		static RendererAPIInfo& GetRendererAPIInfo() { static RendererAPIInfo info; return info; }
 	protected:
 		RendererAPI() = default;
 	private:
