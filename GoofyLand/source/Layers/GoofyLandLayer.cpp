@@ -13,21 +13,28 @@
 
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
-glm::vec3 LightPosition(0.7f, 0.0f, 0.6f);
+glm::vec3 LightPosition(1.0f, 0.0f, 1.0f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
 
+// Material Shader variables
 glm::vec3 CubePosition(0.0f, 0.0f, 0.0f);
 glm::vec3 CubeColor(1.0f, 0.5f, 0.31f);
-glm::vec3& Ambient= CubeColor;
-glm::vec3& Diffuse = CubeColor;
+glm::vec3 Ambient(1.0f, 0.5f, 0.31f);
+glm::vec3 Diffuse(1.0f, 0.5f, 0.31f);
 glm::vec3 Specular(0.5, 0.5, 0.5);
 glm::vec3 AmbientIntensity(0.2f);
 glm::vec3 DiffuseIntensity(0.5f);
 glm::vec3 SpecularIntensity(1.0f);
 
+// Emerald Shader
+glm::vec3 EmeraldCubePosition(0.7f, 1.0f, 0.7f);
+glm::vec3 SilverCubePosition(1.5f, 0.0f, 0.0f);
+
+float EmeraldShininess = 32.0;
+
 int Shininess = 32;
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 1.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
+GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.6f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -298,7 +305,9 @@ void GoofyLandLayer::BuildLightingScene()
 	// Shader
 	//Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("resource/shaders/Lighting.glsl");
 	Basement::Shared<Basement::Shader> materialShader = m_ShaderLibrary.Load("resource/shaders/Material.glsl");
-	
+	Basement::Shared<Basement::Shader> emeraldShader = m_ShaderLibrary.Load("resource/shaders/Emerald.glsl");
+	Basement::Shared<Basement::Shader> silverShader = m_ShaderLibrary.Load("resource/shaders/Silver.glsl");
+
 	//-----------------------
 	// Light
 	//-----------------------
@@ -323,7 +332,14 @@ void GoofyLandLayer::RenderLightingScene()
 	//auto lightingShader = m_ShaderLibrary.Get("Lighting");
 	auto lightSourceShader = m_ShaderLibrary.Get("LightSource");
 	auto materialShader = m_ShaderLibrary.Get("Material");
-	// Update uniforms to lighting shaders
+	auto emeraldShader = m_ShaderLibrary.Get("Emerald");
+	auto silverShader = m_ShaderLibrary.Get("Silver");
+	
+	// Update uniforms to shaders
+	// Update uniforms to light source shaders
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->UploadUniform3f("u_LightColor", LightColor);
+
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("material.ambient", Ambient);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("material.diffuse", Diffuse);
@@ -336,21 +352,39 @@ void GoofyLandLayer::RenderLightingScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("light.diffuse", DiffuseIntensity);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniform3f("light.specular", SpecularIntensity);
 
-	// Update uniforms to light source shaders
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightSourceShader)->UploadUniform3f("u_LightColor", LightColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(emeraldShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(emeraldShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(emeraldShader)->UploadUniform3f("u_LightPosition", LightPosition);
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(silverShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(silverShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(silverShader)->UploadUniform3f("u_LightPosition", LightPosition);
+
 
 	// Update model matrix
 	glm::mat4 lightSourceModel = glm::translate(glm::mat4(1.0f), LightPosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
-	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 emraldModel = glm::translate(glm::mat4(1.0f), EmeraldCubePosition) * glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 silverModel = glm::translate(glm::mat4(1.0f), SilverCubePosition) * glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+	
 	// Update normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(materialShader)->UploadUniformMat3("u_NormalMat", normalMat);	
+
+	glm::mat3 emaraldNormalMat = glm::mat3(glm::transpose(glm::inverse(emraldModel)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(emeraldShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(emeraldShader)->UploadUniformMat3("u_NormalMat", emaraldNormalMat);
+
+	glm::mat3 silverNormalMat = glm::mat3(glm::transpose(glm::inverse(silverModel)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(silverShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(silverShader)->UploadUniformMat3("u_NormalMat", silverNormalMat);
 
 	// Submit VAO to render
 	Basement::Renderer::SubmitArrays(lightSourceShader, m_LightVertexArray, 0, 36, lightSourceModel);
 	Basement::Renderer::SubmitArrays(materialShader, m_VertexArray, 0, 36, cubeModel);
+	Basement::Renderer::SubmitArrays(emeraldShader, m_VertexArray, 0, 36, emraldModel);
+	Basement::Renderer::SubmitArrays(silverShader, m_VertexArray, 0, 36, silverModel);
 }
 
 
