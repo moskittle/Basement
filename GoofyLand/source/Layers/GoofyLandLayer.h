@@ -24,6 +24,9 @@ private:
 
 	void BuildLightingScene();
 	void RenderLightingScene();
+
+	void LightMappingScene();
+	void RenderLightmappingScene();
 private:
 	Basement::CameraController3D m_CameraController;
 	
@@ -34,6 +37,7 @@ private:
 	Basement::Shared<Basement::VertexBuffer> m_VertexBuffer;
 	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
 	Basement::Shared<Basement::Texture2D> m_BoxTexture;
+	Basement::Shared<Basement::Texture2D> m_BoxSpecularTexture;
 
 	// Light
 	Basement::Shared<Basement::VertexArray> m_LightVertexArray;
