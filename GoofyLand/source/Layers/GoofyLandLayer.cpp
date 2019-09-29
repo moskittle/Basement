@@ -22,8 +22,8 @@ glm::vec3 CubeColor(1.0f, 0.5f, 0.31f);
 glm::vec3 Ambient(1.0f, 0.5f, 0.31f);
 glm::vec3 Diffuse(1.0f, 0.5f, 0.31f);
 glm::vec3 Specular(0.5, 0.5, 0.5);
-float AmbientIntensity = 0.3f;
-float DiffuseIntensity = 0.5f;
+float AmbientIntensity = 0.1f;
+float DiffuseIntensity = 0.7f;
 float SpecularIntensity = 1.0f;
 
 // Emerald Shader
@@ -501,18 +501,18 @@ void GoofyLandLayer::LightMappingScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
-	Basement::Shared<Basement::Shader> lightMappingShader = m_ShaderLibrary.Load("resource/shaders/LightingMap.glsl");
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.diffuse", 0);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.specular", 1);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.emission", 2);
+	Basement::Shared<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("resource/shaders/LightingMap.glsl");
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.diffuse", 0);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.specular", 1);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.emission", 2);
 
 	// Texture
 	//m_BoxTexture = Basement::Texture2D::Create("resource/textures/container2.png");
 	//m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/container2_specular.png");
-	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
-	m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/mario-block-specular.png");
-	m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/mario-block-emission.jpg");
+	m_BoxTexture = Basement::Texture2D::Create("resource/textures/screen.png");
+	m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/container2_specular.png");
+	m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/matrix.jpg");
 	//m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/wall.jpg");
 
 
@@ -546,31 +546,32 @@ void GoofyLandLayer::RenderLightmappingScene()
 	
 	
 	// Draw cube
-	auto& lightMappingShader = m_ShaderLibrary.Get("LightingMap");
+	auto& lightingMapShader = m_ShaderLibrary.Get("LightingMap");
 	
 	// Update uniforms
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1f("material.shininess", Shininess);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("light.position", LightPosition);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("light.ambient", glm::vec3(AmbientIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("light.diffuse", glm::vec3(DiffuseIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("light.specular", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("material.shininess", Shininess);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.ambient", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.diffuse", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.specular", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("u_Time", 0.2f * (float)glfwGetTime());
 
 	// Model matrix
-	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), ROTATE, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), ROTATE_GLFW, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniformMat3("u_NormalMat", normalMat);
 
 	m_BoxTexture->Bind(0);
 	m_BoxSpecularTexture->Bind(1);
 	m_BoxEmissionTexture->Bind(2);
 	
 	// Drawcall
-	Basement::Renderer::SubmitArrays(lightMappingShader, m_VertexArray, 0, 36, cubeModel);
+	Basement::Renderer::SubmitArrays(lightingMapShader, m_VertexArray, 0, 36, cubeModel);
 }
 
 

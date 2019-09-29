@@ -56,6 +56,7 @@ uniform vec3 u_ViewPosition;
 uniform vec3 u_LightPosition;
 uniform Material material;
 uniform Light light;
+uniform float u_Time;
 
 void main()
 {
@@ -75,8 +76,17 @@ void main()
     vec3 specular = light.specular * spec * texture(material.specular, v_TexCoord).rgb;
 
     // emission
-    vec3 emission = texture(material.emission, v_TexCoord).rgb;
+    // vec3 emission = texture(material.emission, v_TexCoord).rgb;
+    vec3 emission = vec3(0.0);
+    if (texture(material.specular, v_TexCoord).rgb == vec3(0.0))   /*rough check for blackbox inside spec texture */
+    {
+        /*apply emission texture */
+        emission = texture(material.emission, v_TexCoord).rgb;
+        
+        /*some extra fun stuff with "time uniform" */
+        emission = texture(material.emission, v_TexCoord + vec2(0.0, u_Time)).rgb;   /*moving */
+        //emission = emission * (sin(u_Time) * 0.5 + 0.5) * 2.0;                     /*fading */
+    }
 
-    vec3 result = ambient + diffuse + specular + emission;
-    color = vec4(result, 1.0);
+    color = vec4(ambient + diffuse + specular + emission, 1.0);
 }
