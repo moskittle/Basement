@@ -25,8 +25,8 @@ private:
 	void BuildLightingScene();
 	void RenderLightingScene();
 
-	void LightMappingScene();
-	void RenderLightmappingScene();
+	void BuildLightingMapScene();
+	void RenderLightingMapScene();
 private:
 	Basement::CameraController3D m_CameraController;
 	
