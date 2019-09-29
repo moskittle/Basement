@@ -13,7 +13,7 @@
 
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
-glm::vec3 LightPosition(1.0f, 0.0f, 1.0f);
+glm::vec3 LightPosition(1.0f, 0.0f, 3.0f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
 
 // Material Shader variables
@@ -22,7 +22,7 @@ glm::vec3 CubeColor(1.0f, 0.5f, 0.31f);
 glm::vec3 Ambient(1.0f, 0.5f, 0.31f);
 glm::vec3 Diffuse(1.0f, 0.5f, 0.31f);
 glm::vec3 Specular(0.5, 0.5, 0.5);
-float AmbientIntensity = 0.2f;
+float AmbientIntensity = 0.3f;
 float DiffuseIntensity = 0.5f;
 float SpecularIntensity = 1.0f;
 
@@ -34,8 +34,9 @@ float EmeraldShininess = 32.0f;
 
 float Shininess = 64.0f;
 float Degree = 45.0f;
+float RotationSpeed = 0.3f;
 #define ROTATE glm::radians(Degree)
-#define ROTATE_GLFW 0.2f * (float)glfwGetTime()
+#define ROTATE_GLFW RotationSpeed * (float)glfwGetTime()
 
 GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.6f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
@@ -504,12 +505,15 @@ void GoofyLandLayer::LightMappingScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.diffuse", 0);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.specular", 1);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform1i("material.emission", 2);
 
 	// Texture
 	//m_BoxTexture = Basement::Texture2D::Create("resource/textures/container2.png");
 	//m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/container2_specular.png");
 	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
 	m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/mario-block-specular.png");
+	m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/mario-block-emission.jpg");
+	//m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/wall.jpg");
 
 
 	//----------------------------
@@ -554,16 +558,16 @@ void GoofyLandLayer::RenderLightmappingScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniform3f("light.specular", glm::vec3(SpecularIntensity));
 
 	// Model matrix
-	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), ROTATE_GLFW, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), CubePosition) * glm::rotate(glm::mat4(1.0f), ROTATE, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(cubeModel)));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightMappingShader)->UploadUniformMat3("u_NormalMat", normalMat);
 
-
 	m_BoxTexture->Bind(0);
 	m_BoxSpecularTexture->Bind(1);
+	m_BoxEmissionTexture->Bind(2);
 	
 	// Drawcall
 	Basement::Renderer::SubmitArrays(lightMappingShader, m_VertexArray, 0, 36, cubeModel);
@@ -611,6 +615,7 @@ void GoofyLandLayer::RenderImGui()
 			ImGui::SliderFloat3("Cube Position", glm::value_ptr(CubePosition), -3.0f, 3.0f, "%.1f", 1.0f);
 			ImGui::ColorEdit3("Cube Color", glm::value_ptr(CubeColor));
 			ImGui::SliderFloat("Rotation", &Degree, 0.0f, 360.0f, "%f", 1.0f);
+			ImGui::SliderFloat("Rotation Speed", &RotationSpeed, 0.0f, 1.0f, "%0.1f", 1.0f);
 			if (ImGui::TreeNode("Material")) {
 				ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
 				ImGui::SliderFloat("Diffuse", &DiffuseIntensity, 0.0f, 1.0f, "%.2f", 1.0f);

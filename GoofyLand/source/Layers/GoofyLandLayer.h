@@ -38,6 +38,7 @@ private:
 	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
 	Basement::Shared<Basement::Texture2D> m_BoxTexture;
 	Basement::Shared<Basement::Texture2D> m_BoxSpecularTexture;
+	Basement::Shared<Basement::Texture2D> m_BoxEmissionTexture;
 
 	// Light
 	Basement::Shared<Basement::VertexArray> m_LightVertexArray;
