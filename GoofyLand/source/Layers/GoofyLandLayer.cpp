@@ -17,13 +17,14 @@ glm::vec3 LightPosition(0.0f, 0.0f, 1.0f);
 glm::vec3 LightDirection(-0.2f, -1.0f, 0.5f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
 
-// Point Light
+// Point Light (attenuation)
 float PointLightConstant = 1.0f;
 float PointLightLinear = 0.045f;
 float PointLightQuadratic = 0.0075f;
 
 // Spotlight
-float CutoffAngle = glm::cos(glm::radians(12.5f));
+float InnerCutoffAngle = 12.5f;
+float OutterCutoffAngle = 17.5f;
 
 // Material Shader variables
 glm::vec3 CubePosition(0.0f, 0.0f, 0.0f);
@@ -47,7 +48,7 @@ float RotationSpeed = 0.3f;
 #define ROTATE glm::radians(Degree)
 #define ROTATE_GLFW RotationSpeed * (float)glfwGetTime()
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.6f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
+GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -557,7 +558,6 @@ void GoofyLandLayer::RenderLightingMapScene()
 	
 	
 	// Draw cube
-
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
 		glm::vec3(2.0f,  5.0f, -15.0f),
@@ -577,16 +577,16 @@ void GoofyLandLayer::RenderLightingMapScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("material.shininess", Shininess);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.direction", LightDirection);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.position", m_CameraController.GetCamera().GetPosition() + LightPosition);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.direction", LightDirection);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.direction", m_CameraController.GetCamera().GetFront());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.cutoff", CutoffAngle);
-
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.innerCutoff", glm::cos(glm::radians(InnerCutoffAngle)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.outterCutoff", glm::cos(glm::radians(OutterCutoffAngle)));
 
 	//// PointLight
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.constant", PointLightConstant);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.linear", PointLightLinear);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.quadratic", PointLightQuadratic);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.constant", PointLightConstant);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.linear", PointLightLinear);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.quadratic", PointLightQuadratic);
 
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.ambient", glm::vec3(AmbientIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.diffuse", glm::vec3(DiffuseIntensity));
@@ -655,6 +655,8 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Bulb")) {
 			//ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
 			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
+			ImGui::SliderFloat("Inner Cutoff Angle", &InnerCutoffAngle, 0.0, OutterCutoffAngle, "%.1f", 1.0f);
+			ImGui::SliderFloat("Outter Cutoff Angle", &OutterCutoffAngle, 0.0, 30.0f, "%.1f", 1.0f);
 
 			ImGui::TreePop();
 			ImGui::Separator();

@@ -42,7 +42,9 @@ struct Light
 {
     vec3 position;
     vec3 direction;
-    float cutoff;
+
+    float innerCutoff;   // pre-calculated in CPU
+    float outterCutoff;  // pre-calculated in CPU
 
     vec3 ambient;
     vec3 diffuse;
@@ -65,12 +67,16 @@ uniform float u_Time;
 
 void main()
 {
+    // update light direction
+    vec3 normal = normalize(v_Normal);
+    vec3 lightDir = normalize(light.position - v_FragPosition);
+
+
+
     // ambient
     vec3 ambient = light.ambient * texture(material.diffuse, v_TexCoord).rgb;
     
     // diffuse
-    vec3 normal = normalize(v_Normal);
-    vec3 lightDir = normalize(light.position - v_FragPosition);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * texture(material.diffuse, v_TexCoord).rgb;
 
@@ -80,7 +86,14 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * texture(material.specular, v_TexCoord).rgb;
 
-    // attenuation
+    // smooth spotlight attenuation
+    float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon = light.innerCutoff - light.outterCutoff;
+    float spotlightIntensity = clamp((theta - light.outterCutoff) / epsilon, 0.0, 1.0);
+    diffuse *= spotlightIntensity;
+    specular *= spotlightIntensity;
+
+    // point light attenuation
     float distance = length(light.position - v_FragPosition);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * pow(distance, 2));
     ambient *= attenuation;
