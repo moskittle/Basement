@@ -96,7 +96,7 @@ namespace Basement {
 		}
 
 		m_IsMinimized = false;
-		Renderer::ResizeWindow(event.GetWidth(), event.GetHeight());
+		Renderer::ResizeWindow(static_cast<uint32_t>(event.GetWidth()), static_cast<uint32_t>(event.GetHeight()));
 
 		return false;
 	}

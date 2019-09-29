@@ -13,7 +13,7 @@ namespace Basement {
 		info.Renderer = (const char*) glGetString(GL_RENDERER);
 		info.Version= (const char*) glGetString(GL_VERSION);
 		
-		OpenGLCall() // Check errors
+		OpenGLCall(;) // Check init errors
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
