@@ -1,6 +1,6 @@
 workspace "Basement"
 	architecture "x64"
-	startproject "Backyard"
+	startproject "GoofyLand"
 
 	configurations
 	{
@@ -13,11 +13,13 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
+IncludeDir["spdlog"] = "Basement/vendor/spdlog/include"
 IncludeDir["GLFW"] = "Basement/vendor/GLFW/include"
 IncludeDir["Glad"] = "Basement/vendor/Glad/include"
 IncludeDir["ImGui"] = "Basement/vendor/ImGui"
 IncludeDir["glm"] = "Basement/vendor/glm"
 IncludeDir["stb_image"] = "Basement/vendor/stb_image"
+IncludeDir["assimp"] = "Basement/vendor/assimp/include"
 
 group "Dependencies"
 	include "Basement/vendor/GLFW"
@@ -56,12 +58,13 @@ project "Basement"
 	includedirs
 	{
 		"%{prj.name}/source",
-		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links
@@ -115,12 +118,13 @@ project "Backyard"
 
 	includedirs
 	{
-		"Basement/vendor/spdlog/include",
 		"Basement/source",
 		"Basement/vendor",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links
@@ -141,16 +145,28 @@ project "Backyard"
 		defines "BM_DEBUG"
 		runtime "Debug"
 		symbols "On"
+		links
+		{
+			"Basement/vendor/assimp/bin/Debug/assimp-vc142-mtd.lib"
+		}
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
+		}
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+			"%{prj.name}/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
+		}
 		
 project "GoofyLand"
 	location "GoofyLand"
@@ -170,12 +186,13 @@ project "GoofyLand"
 
 	includedirs
 	{
-		"Basement/vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
 		"Basement/source",
 		"Basement/vendor",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links
@@ -196,14 +213,26 @@ project "GoofyLand"
 		defines "BM_DEBUG"
 		runtime "Debug"
 		symbols "On"
+		links
+		{
+			"Basement/vendor/assimp/bin/Debug/assimp-vc142-mtd.lib"
+		}
 	
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
+		}
 	
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
+		}
 		
