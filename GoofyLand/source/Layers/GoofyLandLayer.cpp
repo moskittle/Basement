@@ -11,6 +11,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <assimp/types.h>
+
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
 glm::vec3 LightPosition(0.0f, 0.0f, 1.0f);
@@ -24,7 +26,7 @@ float PointLightQuadratic = 0.0075f;
 
 // Spotlight
 float InnerCutoffAngle = 12.5f;
-float OutterCutoffAngle = 17.5f;
+float OuterCutoffAngle = 17.5f;
 
 // Material Shader variables
 glm::vec3 CubePosition(0.0f, 0.0f, 0.0f);
@@ -581,7 +583,7 @@ void GoofyLandLayer::RenderLightingMapScene()
 	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.direction", LightDirection);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform3f("light.direction", m_CameraController.GetCamera().GetFront());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.innerCutoff", glm::cos(glm::radians(InnerCutoffAngle)));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.outterCutoff", glm::cos(glm::radians(OutterCutoffAngle)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.outerCutoff", glm::cos(glm::radians(OuterCutoffAngle)));
 
 	//// PointLight
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1f("light.constant", PointLightConstant);
@@ -655,8 +657,8 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Bulb")) {
 			//ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
 			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
-			ImGui::SliderFloat("Inner Cutoff Angle", &InnerCutoffAngle, 0.0, OutterCutoffAngle, "%.1f", 1.0f);
-			ImGui::SliderFloat("Outter Cutoff Angle", &OutterCutoffAngle, 0.0, 30.0f, "%.1f", 1.0f);
+			ImGui::SliderFloat("Inner Cutoff Angle", &InnerCutoffAngle, 0.0, OuterCutoffAngle, "%.1f", 1.0f);
+			ImGui::SliderFloat("Outer Cutoff Angle", &OuterCutoffAngle, 0.0, 30.0f, "%.1f", 1.0f);
 
 			ImGui::TreePop();
 			ImGui::Separator();

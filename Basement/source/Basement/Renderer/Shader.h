@@ -34,6 +34,4 @@ namespace Basement {
 		std::unordered_map<std::string, Shared<Shader>> m_ShaderMap;
 	};
 
-
-
 }

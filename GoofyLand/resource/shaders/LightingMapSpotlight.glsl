@@ -44,7 +44,7 @@ struct Light
     vec3 direction;
 
     float innerCutoff;   // pre-calculated in CPU
-    float outterCutoff;  // pre-calculated in CPU
+    float outerCutoff;  // pre-calculated in CPU
 
     vec3 ambient;
     vec3 diffuse;
@@ -88,8 +88,8 @@ void main()
 
     // smooth spotlight attenuation
     float theta = dot(lightDir, normalize(-light.direction));
-    float epsilon = light.innerCutoff - light.outterCutoff;
-    float spotlightIntensity = clamp((theta - light.outterCutoff) / epsilon, 0.0, 1.0);
+    float epsilon = light.innerCutoff - light.outerCutoff;
+    float spotlightIntensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
     diffuse *= spotlightIntensity;
     specular *= spotlightIntensity;
 
