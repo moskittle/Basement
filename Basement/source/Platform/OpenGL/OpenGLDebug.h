@@ -41,7 +41,7 @@ namespace Basement {
 				{\
 					std::stringstream ss; ss << std::hex << error;\
 					BM_CORE_ERROR("{0}({1}): error 0x0{2}: {3}", __FILENAME__, __LINE__, ss.str(), OpenGLErrors[error]);\
-					__debugbreak();\
+					/*__debugbreak();*/\
 				}
 #else
 	#define OpenGLCall(x) x

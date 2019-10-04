@@ -15,7 +15,7 @@
 
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
-glm::vec3 LightPosition(0.0f, 0.0f, 1.0f);
+glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
 glm::vec3 LightDirection(-0.2f, -1.0f, 0.5f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
 
@@ -638,15 +638,33 @@ void GoofyLandLayer::BuildModelScene()
 	auto& nanoShader =  m_ShaderLibrary.Load("resource/shaders/NanoSuit.glsl");
 
 
+
 }
 
 void GoofyLandLayer::RenderModelScene()
 {
-	m_NanoSuit->SetShader(m_ShaderLibrary.Get("NanoSuit"));
+	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	m_NanoSuit->SetShader(nanoShader);
+
+	// Model Matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f)) *
-		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+
+	// Normal Matrix
+	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
+
+	nanoShader->Bind();
+	//BM_TRACE("{0}, {1}, {2}", m_CameraController.GetCamera().GetPosition().x, m_CameraController.GetCamera().GetPosition().y, m_CameraController.GetCamera().GetPosition().z);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Light.shininess", Shininess);
 
 	m_NanoSuit->Draw(model);
 }
@@ -681,7 +699,7 @@ void GoofyLandLayer::RenderImGui()
 	if (ImGui::CollapsingHeader("Light"))
 	{
 		if (ImGui::TreeNode("Bulb")) {
-			//ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
+			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
 			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
 			ImGui::SliderFloat("Inner Cutoff Angle", &InnerCutoffAngle, 0.0, OuterCutoffAngle, "%.1f", 1.0f);
 			ImGui::SliderFloat("Outer Cutoff Angle", &OuterCutoffAngle, 0.0, 30.0f, "%.1f", 1.0f);
@@ -702,7 +720,6 @@ void GoofyLandLayer::RenderImGui()
 				ImGui::SliderFloat("Diffuse", &DiffuseIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
 				ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
 				ImGui::SliderFloat("Shininess", &Shininess, 0, 256, "%f");
-				BM_TRACE("SpecularIntensity: {0}, Shininess: {1}", SpecularIntensity, Shininess);
 
 				ImGui::TreePop();
 			}
