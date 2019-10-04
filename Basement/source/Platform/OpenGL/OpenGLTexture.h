@@ -20,6 +20,7 @@ namespace Basement {
 		virtual const uint32_t& GetTextureID() const override { return m_TextureID; }
 
 		virtual void SetTypeName(const std::string& typeName) override { m_TypeName = typeName; }
+		virtual std::string GetTypeName() const override { return m_TypeName; }
 
 		virtual void Bind(uint32_t slot = 0) const override;
 		virtual void Activate(uint32_t unit) const override;

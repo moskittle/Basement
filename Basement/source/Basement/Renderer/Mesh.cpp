@@ -1,5 +1,9 @@
-#include "bmpch.h"
+﻿#include "bmpch.h"
+
 #include "Mesh.h"
+#include "Platform/OpenGL/OpenGLShader.h"
+#include "Platform/OpenGL/OpenGLDebug.h"
+#include "Renderer.h"
 
 namespace Basement {
 
@@ -8,16 +12,59 @@ namespace Basement {
 	{
 		m_VAO = VertexArray::Create();
 
-		//m_VBO = VertexBuffer::Create(sizeof(float) * m_Vertices.size(), &vertices[0]);
+		m_VBO = VertexBuffer::Create(vertices);
+		BufferLayout bufferLayout = {
+			{ EShaderDataType::Float3, "a_Position" },
+			{ EShaderDataType::Float3, "a_Normal" },
+			{ EShaderDataType::Float2, "a_TexCoord" }
+		};
+		m_VBO->SetLayout(bufferLayout);
+		m_VAO->AddVertexBuffer(m_VBO);
 
-
+		m_IBO = IndexBuffer::Create(indices);
+		m_VAO->SetIndexBuffer(m_IBO);
 	}
 
-	void Mesh::Draw(Shared<Shader> shader)
+	void Mesh::Draw(Shared<Shader> shader, const glm::mat4& model)
 	{
+		uint32_t diffuseIndex = 1;
+		uint32_t specularIndex = 1;
+		uint32_t normalIndex = 1;
+		uint32_t heightIndex = 1;
 
+		for (unsigned int i = 0; i < m_Textures.size(); ++i)
+		{
+			std::string index;
+			std::string& typeName = m_Textures[i]->GetTypeName();
+			if (typeName == "texture_diffuse")
+			{
+				index = std::to_string(diffuseIndex++);
+			}
+			else if (typeName == "texture_specular")
+			{
+				index = std::to_string(specularIndex++);
+			}
+			else if (typeName == "texture_normal")
+			{
+				index = std::to_string(normalIndex++);
+			}
+			else if (typeName == "texture_height")
+			{
+				index = std::to_string(heightIndex++);
+			}
+			else 
+			{
+				BM_CORE_ASSERT(true, "Unknown Texture TypeName!");
+			}
+
+			shader->Bind();
+			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("material." + typeName + index).c_str(), i);
+
+			m_Textures[i]->Activate(i);
+		}
+
+		Renderer::Submit(shader, m_VAO, model);
 	}
-
 
 }
 

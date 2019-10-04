@@ -14,12 +14,14 @@ namespace Basement {
 		Model(const std::string& filePath);
 		~Model() = default;
 
-		//void Draw();
+		static Shared<Model> Create(const std::string& filePath);
+		void Draw(const glm::mat4& model);
+
+		void SetShader(Shared<Shader> shader) { m_Shader = shader; }
 	private:
 		void Load(const std::string& filePath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-
 		std::vector<Shared<Texture2D>> LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
 	private:
 		std::vector<Mesh> m_Meshes;

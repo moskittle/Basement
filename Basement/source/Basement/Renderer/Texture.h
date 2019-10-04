@@ -16,6 +16,7 @@ namespace Basement {
 		virtual const uint32_t& GetTextureID() const = 0;
 
 		virtual void SetTypeName(const std::string& typeName) = 0;
+		virtual std::string GetTypeName() const = 0;
 
 		virtual void Bind(uint32_t slot = 0) const = 0;
 		virtual void Activate(uint32_t unit) const = 0;

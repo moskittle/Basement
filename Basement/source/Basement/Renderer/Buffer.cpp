@@ -37,14 +37,29 @@ namespace Basement {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::EAPI::None:
-			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
-			return nullptr;
-		case RendererAPI::EAPI::OpenGL:
-			return std::make_shared<OpenGLVertexBuffer>(size, vertices);
-		default:
-			BM_CORE_ASSERT(false, "Unknown RendererAPI");
-			return nullptr;
+			case RendererAPI::EAPI::None:
+				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+				return nullptr;
+			case RendererAPI::EAPI::OpenGL:
+				return std::make_shared<OpenGLVertexBuffer>(size, vertices);
+			default:
+				BM_CORE_ASSERT(false, "Unknown RendererAPI");
+				return nullptr;
+		}
+	}
+
+	Shared<VertexBuffer> VertexBuffer::Create(const std::vector<Vertex>& vertices)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::EAPI::None:
+				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+					return nullptr;
+			case RendererAPI::EAPI::OpenGL:
+				return std::make_shared<OpenGLVertexBuffer>(vertices);
+			default:
+				BM_CORE_ASSERT(false, "Unknown RendererAPI");
+				return nullptr;
 		}
 	}
 
@@ -54,14 +69,29 @@ namespace Basement {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::EAPI::None:
-			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
-			return nullptr;
-		case RendererAPI::EAPI::OpenGL:
-			return std::make_shared<OpenGLIndexBuffer>(count, indices);
-		default:
-			BM_CORE_ASSERT(false, "Unknown RendererAPI");
-			return nullptr;
+			case RendererAPI::EAPI::None:
+				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+				return nullptr;
+			case RendererAPI::EAPI::OpenGL:
+				return std::make_shared<OpenGLIndexBuffer>(count, indices);
+			default:
+				BM_CORE_ASSERT(false, "Unknown RendererAPI");
+				return nullptr;
+		}
+	}
+
+	Shared<IndexBuffer> IndexBuffer::Create(const std::vector<uint32_t>& indices)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::EAPI::None:
+				BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+					return nullptr;
+			case RendererAPI::EAPI::OpenGL:
+				return std::make_shared<OpenGLIndexBuffer>(indices);
+			default:
+				BM_CORE_ASSERT(false, "Unknown RendererAPI");
+				return nullptr;
 		}
 	}
 

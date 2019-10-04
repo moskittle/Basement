@@ -66,7 +66,7 @@ namespace Basement {
 
 	void OpenGLTexture2D::Activate(uint32_t unit) const
 	{
-		glActiveTexture(unit);
+		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 	}
 

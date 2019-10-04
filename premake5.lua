@@ -165,7 +165,7 @@ project "Backyard"
 		optimize "On"
 		links
 		{
-			"%{prj.name}/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
+			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
 		}
 		
 project "GoofyLand"

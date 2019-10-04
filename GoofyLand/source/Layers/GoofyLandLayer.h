@@ -6,6 +6,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Basement/Renderer/Texture.h"
 #include "Basement/Renderer/VertexArray.h"
+#include "Basement/Renderer/Model.h"
 
 #include <glm/glm.hpp>
 
@@ -27,6 +28,9 @@ private:
 
 	void BuildLightingMapScene();
 	void RenderLightingMapScene();
+
+	void BuildModelScene();
+	void RenderModelScene();
 private:
 	Basement::CameraController3D m_CameraController;
 	
@@ -39,6 +43,9 @@ private:
 	Basement::Shared<Basement::Texture2D> m_BoxTexture;
 	Basement::Shared<Basement::Texture2D> m_BoxSpecularTexture;
 	Basement::Shared<Basement::Texture2D> m_BoxEmissionTexture;
+
+	// Model
+	Basement::Shared<Basement::Model> m_NanoSuit;
 
 	// Light
 	Basement::Shared<Basement::VertexArray> m_LightVertexArray;

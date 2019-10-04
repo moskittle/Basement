@@ -56,7 +56,8 @@ GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0
 	
 	//BuildScene();
 	//BuildLightingScene();
-	BuildLightingMapScene();
+	//BuildLightingMapScene();
+	BuildModelScene();
 }
 
 void GoofyLandLayer::BuildScene()
@@ -544,6 +545,10 @@ void GoofyLandLayer::BuildLightingMapScene()
 
 	Basement::Shared<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("resource/shaders/LightSource.glsl");
 
+	// Model
+	//m_Model = Basement::Model::Create("resouces/models/nanosuit/nanosuit.obj");
+
+
 }
 
 void GoofyLandLayer::RenderLightingMapScene()
@@ -626,6 +631,26 @@ void GoofyLandLayer::RenderLightingMapScene()
 	//Basement::Renderer::SubmitArrays(lightingMapShader, m_VertexArray, 0, 36, cubeModel);
 }
 
+void GoofyLandLayer::BuildModelScene()
+{
+	m_NanoSuit = Basement::Model::Create("resource/models/nanosuit/nanosuit.obj");
+
+	auto& nanoShader =  m_ShaderLibrary.Load("resource/shaders/NanoSuit.glsl");
+
+
+}
+
+void GoofyLandLayer::RenderModelScene()
+{
+	m_NanoSuit->SetShader(m_ShaderLibrary.Get("NanoSuit"));
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+
+	m_NanoSuit->Draw(model);
+}
+
 
 
 void GoofyLandLayer::Update(const Basement::Timer& dt)
@@ -634,15 +659,16 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	Basement::RenderCommand::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
-	//Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	//Basement::RenderCommand::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::RenderCommand::Clear();
 
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
 	//RenderScene();
 	//RenderLightingScene();
-	RenderLightingMapScene();
+	//RenderLightingMapScene();
+	RenderModelScene();
 
 	Basement::Renderer::EndScene();
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 namespace Basement {
 
 	enum class EShaderDataType	// TODO: uint8 for packing
@@ -87,6 +89,12 @@ namespace Basement {
 		uint32_t m_Stride = 0;
 	};
 
+	struct Vertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoord;
+	};
 
 	class VertexBuffer
 	{
@@ -99,6 +107,7 @@ namespace Basement {
 		virtual uint32_t GetCount() const = 0;
 
 		static Shared<VertexBuffer> Create(uint32_t size, float* vertices);
+		static Shared<VertexBuffer> Create(const std::vector<Vertex>& vertices);
 	};
 
 
@@ -110,6 +119,7 @@ namespace Basement {
 		virtual inline uint32_t GetCount() const = 0;
 
 		static Shared<IndexBuffer> Create(uint32_t count, uint32_t* indices);
+		static Shared<IndexBuffer> Create(const std::vector<uint32_t>& indices);
 	};
 
 }
