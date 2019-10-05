@@ -1,6 +1,6 @@
 #include "bmpch.h"
 #include "WindowsInput.h"
-#include "Basement/Application.h"
+#include "Basement/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 

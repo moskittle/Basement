@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Basement/Layer.h"
+#include "Basement/Core/Layer.h"
 
-#include "Basement/Core/CameraController.h"
+#include "Basement/Renderer/CameraController.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Basement/Renderer/Texture.h"
 #include "Basement/Renderer/VertexArray.h"

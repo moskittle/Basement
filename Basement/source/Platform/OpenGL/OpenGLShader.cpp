@@ -155,12 +155,12 @@ namespace Basement {
 
 	void OpenGLShader::Bind() const
 	{
-		glUseProgram(m_ProgramID);
+		OpenGLCall(glUseProgram(m_ProgramID));
 	}
 
 	void OpenGLShader::Unbind() const
 	{
-		glUseProgram(0);
+		OpenGLCall(glUseProgram(0));
 	}
 
 	void OpenGLShader::CheckShaderCompilation(GLint isCompiled, GLuint shader) const
@@ -226,9 +226,7 @@ namespace Basement {
 	void OpenGLShader::UploadUniform3f(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = GetUniformLocation(name);
-		BM_CORE_TRACE("Uniform Name: {0} Location: {1}", name, location);
 		OpenGLCall(glUniform3f(location, value.x, value.y, value.z));
-
 	}
 
 	void OpenGLShader::UploadUniform4f(const std::string& name, const glm::vec4& value)

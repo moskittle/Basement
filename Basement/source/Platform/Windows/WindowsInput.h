@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Basement/Input.h"
+#include "Basement/Core/Input.h"
 
 namespace Basement {
 

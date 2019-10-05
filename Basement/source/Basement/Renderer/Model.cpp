@@ -11,7 +11,7 @@ namespace Basement {
 		aiProcess_Triangulate | 
 		aiProcess_FlipUVs;
 
-	static std::unordered_map<std::string, Shared<Texture2D>> LoadedTexture;
+	static std::unordered_map<std::string, Shared<Texture2D>> TextureLibrary;
 
 	Shared<Model> Model::Create(const std::string& filePath)
 	{
@@ -130,7 +130,7 @@ namespace Basement {
 
 			BM_CORE_INFO("TextureName: {0}", str.C_Str());
 
-			if (LoadedTexture.find(fileName) != LoadedTexture.end())
+			if (TextureLibrary.find(fileName) != TextureLibrary.end())
 			{
 				BM_CORE_WARN("Texture {0} already exists!", fileName);
 			}
@@ -140,7 +140,7 @@ namespace Basement {
 				texture->SetTypeName(typeName);
 				textures.push_back(texture);
 
-				LoadedTexture[fileName] = texture;
+				TextureLibrary[fileName] = texture;
 			}
 		}
 

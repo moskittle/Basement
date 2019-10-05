@@ -69,12 +69,8 @@ void main()
     // specualr
     vec3 viewDir = normalize(u_ViewPosition - v_FragPosition);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(normal, reflectDir), 0.0), u_Light.shininess);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Light.shininess);
     vec3 specular = u_Light.specular * spec * texture(material.texture_specular1, v_TexCoord).rgb;
-
-    ambient *= u_Light.ambient;
-    ambient *= u_Light.diffuse;
-    ambient *= u_Light.specular;
 
     FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

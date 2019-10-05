@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Basement/Log.h"
+#include "Basement/Core/Log.h"
 
 #ifdef BM_PLATFORM_WINDOWS
 	#include <Windows.h>

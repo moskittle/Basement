@@ -2,16 +2,16 @@
 
 // For use by Basement applications
 
-#include "Basement/Application.h"
-#include "Basement/Layer.h"
-#include "Basement/Log.h"
+#include "Basement/Core/Application.h"
+#include "Basement/Core/Layer.h"
+#include "Basement/Core/Log.h"
 
 #include "Basement/Core/Time.h"
 
-#include "Basement/Input.h"
-#include "Basement/KeyCodes.h"
-#include "Basement/MouseButtonCodes.h"
-#include "Basement/Core/CameraController.h"
+#include "Basement/Core/Input.h"
+#include "Basement/Core/KeyCodes.h"
+#include "Basement/Core/MouseButtonCodes.h"
+#include "Basement/Renderer/CameraController.h"
 
 #include "Basement/ImGui/ImGuiLayer.h"
 
@@ -28,5 +28,5 @@
 // ------------------------------------
 
 // ---Entry Point----------------------
-#include "Basement/EntryPoint.h"
+#include "Basement/Core/EntryPoint.h"
 // ------------------------------------

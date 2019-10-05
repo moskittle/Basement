@@ -3,8 +3,8 @@
 #include "Core.h"
 
 #include "Window.h"
-#include "Basement/LayerStack.h"
-#include "Events/Event.h"
+#include "Basement/Core/LayerStack.h"
+#include "Basement/Events/Event.h"
 #include "Basement/Events/ApplicationEvent.h"
 #include "Basement/Core/Time.h"
 

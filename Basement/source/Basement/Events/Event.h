@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bmpch.h"
-#include "Basement/Core.h"
+#include "Basement/Core/Core.h"
 
 namespace Basement {
 

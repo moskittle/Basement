@@ -1,8 +1,8 @@
 #include "bmpch.h"
 #include "CameraController.h"
 
-#include "Basement/Input.h"
-#include "Basement/KeyCodes.h"
+#include "Basement/Core/Input.h"
+#include "Basement/Core/KeyCodes.h"
 #include "Basement/Events/Event.h"
 
 static const float DefaultMoveSpeed = 5.0f;

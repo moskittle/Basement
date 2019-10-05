@@ -2,7 +2,7 @@
 
 #include "bmpch.h"
 
-#include "Basement/Core.h"
+#include "Basement/Core/Core.h"
 #include "Basement/Events/Event.h"
 
 namespace Basement {

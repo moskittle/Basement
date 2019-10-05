@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Basement/core.h"
+#include "Basement/Core/core.h"
 
 namespace Basement {
 

@@ -44,7 +44,7 @@ glm::vec3 SilverCubePosition(1.5f, 0.0f, 0.0f);
 
 float EmeraldShininess = 32.0f;
 
-float Shininess = 64.0f;
+float Shininess = 32.0f;
 float Degree = 45.0f;
 float RotationSpeed = 0.3f;
 #define ROTATE glm::radians(Degree)
@@ -654,12 +654,11 @@ void GoofyLandLayer::RenderModelScene()
 
 	// Normal Matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->Bind();
+	nanoShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
 
 	nanoShader->Bind();
-	//BM_TRACE("{0}, {1}, {2}", m_CameraController.GetCamera().GetPosition().x, m_CameraController.GetCamera().GetPosition().y, m_CameraController.GetCamera().GetPosition().z);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient", glm::vec3(AmbientIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse", glm::vec3(DiffuseIntensity));

@@ -1,9 +1,9 @@
 #include "bmpch.h"
 #include "Application.h"
 
-#include "Basement/Log.h"
+#include "Basement/Core/Log.h"
 #include "Basement/Events/KeyEvent.h"
-#include "Basement/Input.h"
+#include "Basement/Core/Input.h"
 #include "Basement/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
