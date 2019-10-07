@@ -7,7 +7,7 @@
 namespace Basement {
 
 	// --Vertex Buffer-----------------------------------------
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size, float* vertices)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(u32 size, float* vertices)
 	{
 		m_Count = size;
 
@@ -18,7 +18,7 @@ namespace Basement {
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(const std::vector<Vertex>& vertices)
 	{
-		m_Count = static_cast<uint32_t>(vertices.size() * sizeof(Vertex));
+		m_Count = static_cast<u32>(vertices.size() * sizeof(Vertex));
 
 		glGenBuffers(1, &m_VertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
@@ -42,22 +42,22 @@ namespace Basement {
 
 
 	// --Index Buffer-----------------------------------------
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count, uint32_t* indices)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(u32 count, u32* indices)
 	{
 		m_Count = count;
 
 		glGenBuffers(1, &m_IndexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_IndexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
 	}
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(const std::vector<uint32_t>& indices)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(const std::vector<u32>& indices)
 	{
-		m_Count = static_cast<uint32_t>(indices.size());
+		m_Count = static_cast<u32>(indices.size());
 
 		glGenBuffers(1, &m_IndexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_IndexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(u32), &indices[0], GL_STATIC_DRAW);
 
 		//GL_ELEMENT_ARRAY_BUFFER
 	}

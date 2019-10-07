@@ -38,11 +38,25 @@
 namespace Basement {
 
 	template<typename T>
-	using Shared = std::shared_ptr<T>;
+	using SharedPtr = std::shared_ptr<T>;
 
 	template<typename T>
-	using Unique = std::unique_ptr<T>;
+	using UniquePtr = std::unique_ptr<T>;
 
 	using byte = unsigned char;
+
+	// signed integer type
+	using i8 = int8_t;
+	using i16 = int16_t;
+	using i32 = int32_t;
+
+	// unsigned integer type
+	using u8 = uint8_t;
+	using u16 = uint16_t;
+	using u32 = uint32_t;
+
+	// floating point
+	using f32 = float_t;
+	using f64 = double_t;
 
 }

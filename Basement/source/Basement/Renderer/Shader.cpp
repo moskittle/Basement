@@ -8,7 +8,7 @@ namespace Basement {
 
 	// --Shader---------------------------------------------------
 
-	Shared<Shader> Shader::Create(const std::string& path)
+	SharedPtr<Shader> Shader::Create(const std::string& path)
 	{
 		switch (RendererAPI::GetRendererAPI())
 		{
@@ -23,7 +23,7 @@ namespace Basement {
 		}
 	}
 
-	Shared<Shader> Shader::Create(const std::string& name,  const std::string& vertexSource, const std::string& fragSource)
+	SharedPtr<Shader> Shader::Create(const std::string& name,  const std::string& vertexSource, const std::string& fragSource)
 	{
 		switch (RendererAPI::GetRendererAPI())
 		{
@@ -40,13 +40,13 @@ namespace Basement {
 
 	// --Shader Library-----------------------------------------
 
-	void ShaderLibrary::Add(const Shared<Shader>& shader)
+	void ShaderLibrary::Add(const SharedPtr<Shader>& shader)
 	{
 		const std::string& name = shader->GetName();
 		Add(name, shader);
 	}
 
-	void ShaderLibrary::Add(const std::string& name, const Shared<Shader>& shader)
+	void ShaderLibrary::Add(const std::string& name, const SharedPtr<Shader>& shader)
 	{
 		if (ShaderExists(name))
 		{
@@ -63,21 +63,21 @@ namespace Basement {
 		return m_ShaderMap.find(name) != m_ShaderMap.end();
 	}
 
-	Shared<Shader> ShaderLibrary::Load(const std::string& filePath)
+	SharedPtr<Shader> ShaderLibrary::Load(const std::string& filePath)
 	{
-		Shared<Shader> shader = Shader::Create(filePath);
+		SharedPtr<Shader> shader = Shader::Create(filePath);
 		Add(shader);
 		return shader;
 	}
 
-	Shared<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
+	SharedPtr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
 	{
-		Shared<Shader> shader = Shader::Create(filePath);
+		SharedPtr<Shader> shader = Shader::Create(filePath);
 		Add(name, shader);
 		return shader;
 	}
 
-	Shared<Shader> ShaderLibrary::Get(const std::string& name)
+	SharedPtr<Shader> ShaderLibrary::Get(const std::string& name)
 	{
 		BM_CORE_ASSERT(ShaderExists(name), "Shader({1}) not found!", name);
 		return m_ShaderMap[name];

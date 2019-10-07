@@ -11,15 +11,15 @@ namespace Basement {
 	public:
 		virtual ~Texture() = default;
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
-		virtual const uint32_t& GetTextureID() const = 0;
+		virtual u32 GetWidth() const = 0;
+		virtual u32 GetHeight() const = 0;
+		virtual const u32& GetTextureID() const = 0;
 
 		virtual void SetTypeName(const std::string& typeName) = 0;
 		virtual std::string GetTypeName() const = 0;
 
-		virtual void Bind(uint32_t slot = 0) const = 0;
-		virtual void Activate(uint32_t unit) const = 0;
+		virtual void Bind(u32 slot = 0) const = 0;
+		virtual void Activate(u32 unit) const = 0;
 	private:
 
 	};
@@ -29,7 +29,7 @@ namespace Basement {
 	public:
 		virtual ~Texture2D() = default;
 
-		static Shared<Texture2D> Create(const std::string& path);
+		static SharedPtr<Texture2D> Create(const std::string& path);
 	};
 
 

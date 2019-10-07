@@ -7,8 +7,10 @@
 
 namespace Basement {
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Shared<Texture2D>> textures)
-		: m_Vertices(vertices), m_Indices(indices), m_Textures(textures)
+	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<u32> indices, std::vector<SharedPtr<Texture2D>> textures) :
+		m_Vertices(vertices),
+		m_Indices(indices),
+		m_Textures(textures)
 	{
 		m_VAO = VertexArray::Create();
 
@@ -25,12 +27,12 @@ namespace Basement {
 		m_VAO->SetIndexBuffer(m_IBO);
 	}
 
-	void Mesh::Draw(Shared<Shader> shader, const glm::mat4& model)
+	void Mesh::Draw(SharedPtr<Shader> shader, const glm::mat4& model)
 	{
-		uint32_t diffuseIndex = 1;
-		uint32_t specularIndex = 1;
-		uint32_t normalIndex = 1;
-		uint32_t heightIndex = 1;
+		u32 diffuseIndex = 1;
+		u32 specularIndex = 1;
+		u32 normalIndex = 1;
+		u32 heightIndex = 1;
 
 		for (unsigned int i = 0; i < m_Textures.size(); ++i)
 		{

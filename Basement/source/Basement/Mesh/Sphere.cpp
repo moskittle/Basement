@@ -72,7 +72,7 @@ namespace Basement {
 		m_VertexArray = new float[sizeVertexArray];
 
 		int sizeIndexArray = 3 * GetFaceCount();
-		m_IndexArray = new uint32_t[sizeIndexArray];
+		m_IndexArray = new u32[sizeIndexArray];
 	}
 #undef SOUTH
 #undef NORTH
@@ -86,9 +86,9 @@ namespace Basement {
 		delete m_IndexArray;
 	}
 
-	uint32_t Sphere::GetVertexCount()
+	u32 Sphere::GetVertexCount()
 	{
-		return static_cast<uint32_t>(m_Vertices.size());
+		return static_cast<u32>(m_Vertices.size());
 	}
 
 	float* Sphere::GetVertexArray()
@@ -130,12 +130,12 @@ namespace Basement {
 		return nullptr;
 	}
 
-	uint32_t Sphere::GetFaceCount()
+	u32 Sphere::GetFaceCount()
 	{
-		return static_cast<uint32_t>(m_Faces.size());
+		return static_cast<u32>(m_Faces.size());
 	}
 
-	uint32_t* Sphere::GetFaceArray()
+	u32* Sphere::GetFaceArray()
 	{
 		int size = 3 * GetFaceCount();
 

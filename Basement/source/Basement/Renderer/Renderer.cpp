@@ -16,7 +16,7 @@ namespace Basement {
 		RenderCommand::Init();
 	}
 
-	void Renderer::ResizeWindow(uint32_t width, uint32_t height)
+	void Renderer::ResizeWindow(u32 width, u32 height)
 	{
 		RenderCommand::SetViewport(0, 0, width, height);
 	}
@@ -37,7 +37,7 @@ namespace Basement {
 	{
 	}
 
-	void Renderer::Submit(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, const glm::mat4& model)
+	void Renderer::Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& model)
 	{
 		shader->Bind();
 
@@ -49,7 +49,7 @@ namespace Basement {
 		RenderCommand::DrawIndex(vertexArray);
 	}
 
-	void Renderer::SubmitArrays(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count, const glm::mat4& model)
+	void Renderer::SubmitArrays(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& model)
 	{
 		shader->Bind();
 

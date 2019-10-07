@@ -7,7 +7,7 @@ namespace Basement {
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size, float* vertices);
+		OpenGLVertexBuffer(u32 size, float* vertices);
 		OpenGLVertexBuffer(const std::vector<Vertex>& vertices);
 		~OpenGLVertexBuffer();
 
@@ -17,28 +17,28 @@ namespace Basement {
 		virtual const BufferLayout& GetLayout() const override { return m_BufferLayout; }
 		virtual void SetLayout(const BufferLayout& bufferLayout) override { m_BufferLayout = bufferLayout; }
 
-		virtual uint32_t GetCount() const override { return m_Count; }
+		virtual u32 GetCount() const override { return m_Count; }
 	private:
-		uint32_t m_VertexBufferID;
+		u32 m_VertexBufferID;
 		BufferLayout m_BufferLayout;
-		uint32_t m_Count;
+		u32 m_Count;
 	};
 
 
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint32_t count, uint32_t* indices);
-		OpenGLIndexBuffer(const std::vector<uint32_t>& indices);
+		OpenGLIndexBuffer(u32 count, u32* indices);
+		OpenGLIndexBuffer(const std::vector<u32>& indices);
 		~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual uint32_t GetCount() const override { return m_Count; }
+		virtual u32 GetCount() const override { return m_Count; }
 	private:
-		uint32_t m_IndexBufferID;
-		uint32_t m_Count;
+		u32 m_IndexBufferID;
+		u32 m_Count;
 	};
 
 }

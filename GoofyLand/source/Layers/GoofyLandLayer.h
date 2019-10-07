@@ -37,24 +37,24 @@ private:
 	Basement::ShaderLibrary m_ShaderLibrary;
 
 	// Object
-	Basement::Shared<Basement::VertexArray> m_VertexArray;
-	Basement::Shared<Basement::VertexBuffer> m_VertexBuffer;
-	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
-	Basement::Shared<Basement::Texture2D> m_BoxTexture;
-	Basement::Shared<Basement::Texture2D> m_BoxSpecularTexture;
-	Basement::Shared<Basement::Texture2D> m_BoxEmissionTexture;
+	Basement::SharedPtr<Basement::VertexArray> m_VertexArray;
+	Basement::SharedPtr<Basement::VertexBuffer> m_VertexBuffer;
+	Basement::SharedPtr<Basement::IndexBuffer> m_IndexBuffer;
+	Basement::SharedPtr<Basement::Texture2D> m_BoxTexture;
+	Basement::SharedPtr<Basement::Texture2D> m_BoxSpecularTexture;
+	Basement::SharedPtr<Basement::Texture2D> m_BoxEmissionTexture;
 
 	// Model
-	Basement::Shared<Basement::Model> m_NanoSuit;
+	Basement::SharedPtr<Basement::Model> m_NanoSuit;
 
 	// Light
-	Basement::Shared<Basement::VertexArray> m_LightVertexArray;
-	Basement::Shared<Basement::VertexBuffer> m_LightVertexBuffer;
-	Basement::Shared<Basement::IndexBuffer> m_LightIndexBuffer;
+	Basement::SharedPtr<Basement::VertexArray> m_LightVertexArray;
+	Basement::SharedPtr<Basement::VertexBuffer> m_LightVertexBuffer;
+	Basement::SharedPtr<Basement::IndexBuffer> m_LightIndexBuffer;
 
 
 	// Sphere
-	Basement::Shared<Basement::VertexArray> m_SphereVAO;
-	Basement::Shared<Basement::VertexBuffer> m_SphereVBO;
-	Basement::Shared<Basement::IndexBuffer> m_SphereIBO;
+	Basement::SharedPtr<Basement::VertexArray> m_SphereVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_SphereVBO;
+	Basement::SharedPtr<Basement::IndexBuffer> m_SphereIBO;
 };

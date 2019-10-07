@@ -40,10 +40,10 @@ namespace Basement {
 		const std::string StripNameString(const std::string& filePath);
 		
 		void CheckShaderCompilation(GLint isCompiled, GLuint shader) const;
-		void CheckProgramLinking(GLint isLinked, uint32_t program, const std::array<GLuint, 2>& shaderIds) const;
+		void CheckProgramLinking(GLint isLinked, u32 program, const std::array<GLuint, 2>& shaderIds) const;
 
 	private:
-		uint32_t m_ProgramID = 0;
+		u32 m_ProgramID = 0;
 		std::string m_Name;
 		mutable std::unordered_map<std::string, GLint> m_UniformLocationCache;
 	};

@@ -16,7 +16,7 @@ namespace Basement {
 		OpenGLCall(;) // Check init errors
 	}
 
-	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	void OpenGLRendererAPI::SetViewport(u32 x, u32 y, u32 width, u32 height)
 	{
 		glViewport(x, y, width, height);
 	}
@@ -36,12 +36,12 @@ namespace Basement {
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void OpenGLRendererAPI::DrawIndex(const Shared<VertexArray>& vertexArray)
+	void OpenGLRendererAPI::DrawIndex(const SharedPtr<VertexArray>& vertexArray)
 	{
 		OpenGLCall(glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
-	void OpenGLRendererAPI::DrawArrays(const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count)
+	void OpenGLRendererAPI::DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count)
 	{
 		OpenGLCall(glDrawArrays(GL_TRIANGLES, first, count));
 	}

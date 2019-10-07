@@ -14,9 +14,11 @@ class ExampleLayer : public Basement::Layer
 	const glm::vec3 navy = { 0.0f, 34.0f / div, 68.0f / div };			// college navy
 	const glm::vec3 grey = { 165.0f / div, 172.0f / div, 175.0f / div };	// wolf grey
 public:
-	ExampleLayer()
-		: Layer("Example"), m_CameraController(1280.0f/720.f, true),
-		m_Scale(glm::vec3(0.1f)), m_ModelMatrix(glm::mat4(1.0f)),
+	ExampleLayer() :
+		Layer("Example"),
+		m_CameraController(1280.0f/720.f, true),
+		m_Scale(glm::vec3(0.1f)),
+		m_ModelMatrix(glm::mat4(1.0f)),
 		m_SquareColor(navy)
 	{
 		// Vertex Array
@@ -49,11 +51,11 @@ public:
 		m_IndexBuffer = Basement::IndexBuffer::Create(sizeof(indices) / sizeof(uint32_t), indices);
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		Basement::Shared<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("resource/shaders/FlatColor.glsl");
-		Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
+		Basement::SharedPtr<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
+		Basement::SharedPtr<Basement::Shader> textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
-		m_Texture = Basement::Texture2D::Create("resource/textures/bwag.jpg");
-		m_Texture2 = Basement::Texture2D::Create("resource/textures/seahawks_logo.tga");
+		m_Texture = Basement::Texture2D::Create("assets/textures/bwag.jpg");
+		m_Texture2 = Basement::Texture2D::Create("assets/textures/seahawks_logo.tga");
 
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);	// slot: 0
@@ -118,13 +120,13 @@ public:
 private:
 	Basement::ShaderLibrary m_ShaderLibrary;
 
-	Basement::Shared<Basement::VertexArray> m_VertexArray;
-	Basement::Shared<Basement::VertexBuffer> m_VertexBuffer;
-	Basement::Shared<Basement::IndexBuffer> m_IndexBuffer;
+	Basement::SharedPtr<Basement::VertexArray> m_VertexArray;
+	Basement::SharedPtr<Basement::VertexBuffer> m_VertexBuffer;
+	Basement::SharedPtr<Basement::IndexBuffer> m_IndexBuffer;
 
-	Basement::Shared<Basement::Texture2D> m_Texture, m_Texture2;
+	Basement::SharedPtr<Basement::Texture2D> m_Texture, m_Texture2;
 
-	Basement::Shared<Basement::VertexArray> m_TriangleVA;
+	Basement::SharedPtr<Basement::VertexArray> m_TriangleVA;
 
 	Basement::CameraController2D m_CameraController;
 

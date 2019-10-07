@@ -27,6 +27,7 @@ namespace Basement {
 	private:
 		float m_Fov;
 		float m_ZoomSpeed;
+		float m_ZoomLevel;
 
 		glm::vec3 m_Position;
 		Camera3D m_Camera;
@@ -37,7 +38,6 @@ namespace Basement {
 		glm::vec2 m_LastMousePosition;
 
 		float m_MoveSpeed;
-		float m_MoveSpeedFactor;
 	};
 
 	class CameraController2D
@@ -66,7 +66,6 @@ namespace Basement {
 
 		glm::vec3 m_Position;
 		float m_MoveSpeed;
-		float m_MoveSpeedFactor;
 	};
 
 }

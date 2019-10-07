@@ -14,24 +14,24 @@ namespace Basement {
 		Model(const std::string& filePath);
 		~Model() = default;
 
-		static Shared<Model> Create(const std::string& filePath);
+		static SharedPtr<Model> Create(const std::string& filePath);
 		void Draw(const glm::mat4& model);
 
-		void SetShader(Shared<Shader> shader) { m_Shader = shader; }
+		void SetShader(SharedPtr<Shader> shader) { m_Shader = shader; }
 	private:
 		void Load(const std::string& filePath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-		std::vector<Shared<Texture2D>> LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
+		std::vector<SharedPtr<Texture2D>> LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
 	private:
 		std::vector<Mesh> m_Meshes;
 		std::string m_Directory;
 		
-		Shared<Shader> m_Shader;
+		SharedPtr<Shader> m_Shader;
 		//Shared<Material> m_Material;
 
 		const aiScene* m_Scene;
-		Unique<Assimp::Importer> m_Importer;
+		UniquePtr<Assimp::Importer> m_Importer;
 
 	};
 

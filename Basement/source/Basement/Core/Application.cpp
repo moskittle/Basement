@@ -17,7 +17,7 @@ namespace Basement {
 		BM_CORE_ASSERT(!s_Instance, "Application already exsists!");
 		s_Instance = this;
 
-		m_Window = Unique<Window>(Window::Create());
+		m_Window = UniquePtr<Window>(Window::Create());
 		m_Window->SetEventCallback(BM_BIND_EVENT_FN(Application::HandleEvent));
 
 		Renderer::Init();
@@ -96,7 +96,7 @@ namespace Basement {
 		}
 
 		m_IsMinimized = false;
-		Renderer::ResizeWindow(static_cast<uint32_t>(event.GetWidth()), static_cast<uint32_t>(event.GetHeight()));
+		Renderer::ResizeWindow(static_cast<u32>(event.GetWidth()), static_cast<u32>(event.GetHeight()));
 
 		return false;
 	}

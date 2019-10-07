@@ -31,7 +31,7 @@ namespace Basement {
 		bool CloseWindow(WindowCloseEvent& event);
 		bool ResizeWindow(WindowResizeEvent& event);
 	private:
-		Basement::Unique<Window> m_Window;
+		Basement::UniquePtr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_IsRunning = true;
 		bool m_IsMinimized = false;

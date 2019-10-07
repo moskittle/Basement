@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	Shared<VertexArray> VertexArray::Create()
+	SharedPtr<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI())
 		{

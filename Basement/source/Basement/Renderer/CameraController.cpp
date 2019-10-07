@@ -7,7 +7,7 @@
 
 static const float DefaultMoveSpeed = 5.0f;
 static const float DefaultZoomSpeed = 2.0f;
-static const float DefaultRotationSpeed = 0.1f;
+static const float DefaultRotationSpeed3D = 0.02f;
 
 namespace Basement {
 	
@@ -15,11 +15,17 @@ namespace Basement {
 	//---Perspective Camera Controller------------------------------
 
 	CameraController3D::CameraController3D(glm::vec3 position, float fov, float aspectRatio, float near_, float far_) :
-		m_Position(position), m_Fov(fov), m_ZoomSpeed(DefaultZoomSpeed),
+		m_Position(position),
+		m_Fov(fov),
+		m_ZoomSpeed(DefaultZoomSpeed),
+		m_ZoomLevel(1.0f),
 		m_Camera(m_Position, m_Fov, aspectRatio, near_, far_),
-		m_Yaw(-90.0f), m_Pitch(0.0f), m_RotationSpeed(DefaultRotationSpeed),
-		m_CurrentMousePosition(glm::vec2(0.0f)), m_LastMousePosition(glm::vec2(0.0f)),
-		m_MoveSpeed(DefaultMoveSpeed), m_MoveSpeedFactor(1.0f)
+		m_Yaw(-90.0f),
+		m_Pitch(0.0f),
+		m_RotationSpeed(DefaultRotationSpeed3D),
+		m_CurrentMousePosition(glm::vec2(0.0f)),
+		m_LastMousePosition(glm::vec2(0.0f)),
+		m_MoveSpeed(DefaultMoveSpeed)
 	{
 	}
 
@@ -73,6 +79,13 @@ namespace Basement {
 		m_Fov = (m_Fov <= 90.0) ? m_Fov : 90.0f;
 
 		m_Camera.SetFov(m_Fov);
+
+		// Update move and rotate speed
+		m_ZoomLevel -= event.GetOffsetY() * 0.2f;
+		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		m_MoveSpeed = DefaultMoveSpeed * m_ZoomLevel;
+		m_RotationSpeed = DefaultRotationSpeed3D * m_ZoomLevel;
+
 		return false;
 	}
 
@@ -83,7 +96,7 @@ namespace Basement {
 		offset = (offset.x > 30.0f || offset.y > 30.0f) ? glm::vec2(0.0f) : offset;
 		m_LastMousePosition = m_CurrentMousePosition;
 
-		if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_LEFT) && Basement::Input::IsKeyPressed(BM_KEY_LEFT_SHIFT))
+		if (Basement::Input::IsMouseButtonPressed(BM_MOUSE_BUTTON_RIGHT))
 		{
 			m_Yaw += (offset.x * m_RotationSpeed);
 			m_Pitch -= (offset.y * m_RotationSpeed);
@@ -103,12 +116,14 @@ namespace Basement {
 	//---Orthographic Camera Controller-----------------------------
 
 	CameraController2D::CameraController2D(float aspectRatio, bool enableRotaion) :
-		m_AspectRatio(aspectRatio), m_ZoomLevel(1.0f),
+		m_AspectRatio(aspectRatio),
+		m_ZoomLevel(1.0f),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
-		m_EnableRotation(enableRotaion), m_Rotation(0.0f),
+		m_EnableRotation(enableRotaion),
+		m_Rotation(0.0f),
 		m_Position(glm::vec3(0.0f)),
-		m_MoveSpeed(DefaultMoveSpeed), m_RotationSpeed(180.0f),
-		m_MoveSpeedFactor(1.0f)
+		m_MoveSpeed(DefaultMoveSpeed),
+		m_RotationSpeed(180.0f)
 	{
 	}
 
@@ -163,8 +178,7 @@ namespace Basement {
 		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 
 		// Ajust move speed with zoom level
-		m_MoveSpeedFactor = m_ZoomLevel;
-		m_MoveSpeed = DefaultMoveSpeed * m_MoveSpeedFactor;
+		m_MoveSpeed = DefaultMoveSpeed * m_ZoomLevel;
 		return false;
 	}
 

@@ -49,14 +49,14 @@ namespace Basement {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const Shared<VertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::AddVertexBuffer(const SharedPtr<VertexBuffer>& vertexBuffer)
 	{
 		BM_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 		
 		glBindVertexArray(m_VertexArrayID);
 		vertexBuffer->Bind();
 
-		uint32_t index = 0;
+		u32 index = 0;
 		const BufferLayout& bufferLayout = vertexBuffer->GetLayout();
 		for (const auto& element : bufferLayout)
 		{
@@ -73,10 +73,10 @@ namespace Basement {
 		}
 
 		m_VertexBuffers.push_back(vertexBuffer);
-		m_VertexArrayIndexOffset += static_cast<uint32_t>(bufferLayout.GetElements().size());
+		m_VertexArrayIndexOffset += static_cast<u32>(bufferLayout.GetElements().size());
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer)
+	void OpenGLVertexArray::SetIndexBuffer(const SharedPtr<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(m_VertexArrayID);
 		indexBuffer->Bind();

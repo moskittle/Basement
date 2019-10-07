@@ -6,8 +6,7 @@
 
 namespace Basement {
 
-	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
-		: m_WindowHandle(windowHandle)
+	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
 	{
 		BM_CORE_ASSERT(windowHandle, "Window handle is null!");
 	}

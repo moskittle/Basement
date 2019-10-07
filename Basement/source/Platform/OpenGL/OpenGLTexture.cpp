@@ -7,8 +7,7 @@
 
 namespace Basement {
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-		: m_Path(path)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path)
 	{
 		int width, height, channels;
 
@@ -59,12 +58,12 @@ namespace Basement {
 		glDeleteTextures(1, &m_TextureID);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot) const
+	void OpenGLTexture2D::Bind(u32 slot) const
 	{
 		glBindTextureUnit(slot, m_TextureID);
 	}
 
-	void OpenGLTexture2D::Activate(uint32_t unit) const
+	void OpenGLTexture2D::Activate(u32 unit) const
 	{
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);

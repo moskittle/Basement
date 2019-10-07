@@ -15,19 +15,19 @@ namespace Basement {
 		OpenGLTexture2D(const std::string& path);
 		virtual ~OpenGLTexture2D();
 
-		virtual uint32_t GetWidth() const override { return m_Width; }
-		virtual uint32_t GetHeight() const override { return m_Height; }
-		virtual const uint32_t& GetTextureID() const override { return m_TextureID; }
+		virtual u32 GetWidth() const override { return m_Width; }
+		virtual u32 GetHeight() const override { return m_Height; }
+		virtual const u32& GetTextureID() const override { return m_TextureID; }
 
 		virtual void SetTypeName(const std::string& typeName) override { m_TypeName = typeName; }
 		virtual std::string GetTypeName() const override { return m_TypeName; }
 
-		virtual void Bind(uint32_t slot = 0) const override;
-		virtual void Activate(uint32_t unit) const override;
+		virtual void Bind(u32 slot = 0) const override;
+		virtual void Activate(u32 unit) const override;
 	private:
-		uint32_t m_Width;
-		uint32_t m_Height;
-		uint32_t m_TextureID;
+		u32 m_Width;
+		u32 m_Height;
+		u32 m_TextureID;
 		std::string m_Path;
 		std::string m_TypeName;
 	};

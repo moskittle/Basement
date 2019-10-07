@@ -7,22 +7,25 @@
 namespace Basement {
 
 	// --Buffer Element-----------------------------------------
-	BufferElement::BufferElement(EShaderDataType type, const std::string& name, bool isNormalized)
-		: Name(name), Type(type), Size(GetShaderDataTypeSize(type)), Offset(0), bIsNormalized(isNormalized)
+	BufferElement::BufferElement(EShaderDataType type, const std::string& name, bool isNormalized) :
+		Name(name),
+		Type(type),
+		Size(GetShaderDataTypeSize(type)),
+		Offset(0),
+		bIsNormalized(isNormalized)
 	{
 	}
 
 
 	// --Buffer Layout-----------------------------------------
-	BufferLayout::BufferLayout(const std::initializer_list<BufferElement>& initList)
-		: m_BufferElements(initList)
+	BufferLayout::BufferLayout(const std::initializer_list<BufferElement>& initList) : m_BufferElements(initList)
 	{
 		CalculateOffsetAndStride();
 	}
 
 	void BufferLayout::CalculateOffsetAndStride()
 	{
-		uint32_t offset = 0;
+		u32 offset = 0;
 		for (auto& element : m_BufferElements)
 		{
 			element.Offset = offset;
@@ -33,7 +36,7 @@ namespace Basement {
 
 
 	// --Vertex Buffer-----------------------------------------
-	Shared<VertexBuffer> VertexBuffer::Create(uint32_t size, float* vertices)
+	SharedPtr<VertexBuffer> VertexBuffer::Create(u32 size, float* vertices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -48,7 +51,7 @@ namespace Basement {
 		}
 	}
 
-	Shared<VertexBuffer> VertexBuffer::Create(const std::vector<Vertex>& vertices)
+	SharedPtr<VertexBuffer> VertexBuffer::Create(const std::vector<Vertex>& vertices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -65,7 +68,7 @@ namespace Basement {
 
 
 	// --Index Buffer-----------------------------------------
-	Shared<IndexBuffer> IndexBuffer::Create(uint32_t count, uint32_t* indices)
+	SharedPtr<IndexBuffer> IndexBuffer::Create(u32 count, u32* indices)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -80,7 +83,7 @@ namespace Basement {
 		}
 	}
 
-	Shared<IndexBuffer> IndexBuffer::Create(const std::vector<uint32_t>& indices)
+	SharedPtr<IndexBuffer> IndexBuffer::Create(const std::vector<u32>& indices)
 	{
 		switch (Renderer::GetAPI())
 		{

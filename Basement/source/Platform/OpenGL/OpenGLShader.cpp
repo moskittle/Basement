@@ -181,7 +181,7 @@ namespace Basement {
 		}
 	}
 
-	void OpenGLShader::CheckProgramLinking(GLint isLinked, uint32_t program, const std::array<GLuint, 2>& shaderIds) const
+	void OpenGLShader::CheckProgramLinking(GLint isLinked, u32 program, const std::array<GLuint, 2>& shaderIds) const
 	{
 		if (isLinked == GL_FALSE)
 		{

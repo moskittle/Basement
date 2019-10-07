@@ -10,14 +10,14 @@ namespace Basement {
 	{
 	public:
 		static void Init();
-		static void ResizeWindow(uint32_t width, uint32_t height);
+		static void ResizeWindow(u32 width, u32 height);
 
 		static void BeginScene(Camera3D& camera);
 		static void BeginScene(Camera2D& camera);
 		static void EndScene();
 
-		static void Submit(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
-		static void SubmitArrays(const Shared<Shader>& shader, const Shared<VertexArray>& vertexArray, uint32_t first, uint32_t count, const glm::mat4& modelMatrix);
+		static void Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
+		static void SubmitArrays(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
 
 		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
 	private:

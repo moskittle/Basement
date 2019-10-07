@@ -11,13 +11,13 @@ namespace Basement {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void AddVertexBuffer(const Shared<VertexBuffer>& vertexBuffer) = 0;
-		virtual void SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer) = 0;
+		virtual void AddVertexBuffer(const SharedPtr<VertexBuffer>& vertexBuffer) = 0;
+		virtual void SetIndexBuffer(const SharedPtr<IndexBuffer>& indexBuffer) = 0;
 
-		virtual const std::vector<Shared<VertexBuffer>>& GetVertexBuffers() const = 0;
-		virtual const Shared<IndexBuffer>& GetIndexBuffer() const = 0;
+		virtual const std::vector<SharedPtr<VertexBuffer>>& GetVertexBuffers() const = 0;
+		virtual const SharedPtr<IndexBuffer>& GetIndexBuffer() const = 0;
 
-		static Shared<VertexArray> Create();
+		static SharedPtr<VertexArray> Create();
 	};
 
 }

@@ -7,13 +7,13 @@
 
 namespace Basement {
 
-	static const uint32_t s_MeshImportFlags =
+	static const u32 s_MeshImportFlags =
 		aiProcess_Triangulate | 
 		aiProcess_FlipUVs;
 
-	static std::unordered_map<std::string, Shared<Texture2D>> TextureLibrary;
+	static std::unordered_map<std::string, SharedPtr<Texture2D>> TextureLibrary;
 
-	Shared<Model> Model::Create(const std::string& filePath)
+	SharedPtr<Model> Model::Create(const std::string& filePath)
 	{
 		return std::make_shared<Model>(filePath);
 	}
@@ -50,7 +50,7 @@ namespace Basement {
 
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	{
-		for (uint32_t i = 0; i < node->mNumMeshes; ++i)
+		for (u32 i = 0; i < node->mNumMeshes; ++i)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			m_Meshes.push_back(ProcessMesh(mesh, scene));
@@ -86,26 +86,26 @@ namespace Basement {
 		}
 
 		// process index
-		std::vector<uint32_t> indices;
-		for (uint32_t i = 0; i < mesh->mNumFaces; ++i) {
+		std::vector<u32> indices;
+		for (u32 i = 0; i < mesh->mNumFaces; ++i) {
 			aiFace& face = mesh->mFaces[i];
-			for (uint32_t j = 0; j < face.mNumIndices; ++j)
+			for (u32 j = 0; j < face.mNumIndices; ++j)
 			{
 				indices.push_back(face.mIndices[j]);
 			}
 		}
 
 		// process texture
-		std::vector<Shared<Texture2D>> textures;
+		std::vector<SharedPtr<Texture2D>> textures;
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			scene->mTextures;
 			
-			std::vector<Shared<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+			std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 			
-			std::vector<Shared<Texture2D>> specularMaps= LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+			std::vector<SharedPtr<Texture2D>> specularMaps= LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 			
 			//std::vector<Shared<Texture2D>> normalMaps= LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
@@ -119,16 +119,16 @@ namespace Basement {
 		return Mesh(vertices, indices, textures);
 	}
 
-	std::vector<Shared<Texture2D>> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
+	std::vector<SharedPtr<Texture2D>> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
 	{
-		std::vector<Shared<Texture2D>> textures;
+		std::vector<SharedPtr<Texture2D>> textures;
 		for (unsigned int i = 0; i < material->GetTextureCount(type); ++i)
 		{
 			aiString str;
 			material->GetTexture(type, i, &str);
 			std::string fileName(str.C_Str());
 
-			BM_CORE_INFO("TextureName: {0}", str.C_Str());
+			BM_CORE_INFO("Load Texture: {0}", str.C_Str());
 
 			if (TextureLibrary.find(fileName) != TextureLibrary.end())
 			{
@@ -136,7 +136,7 @@ namespace Basement {
 			}
 			else
 			{
-				Shared<Texture2D> texture = Texture2D::Create(m_Directory + "/" + fileName);
+				SharedPtr<Texture2D> texture = Texture2D::Create(m_Directory + "/" + fileName);
 				texture->SetTypeName(typeName);
 				textures.push_back(texture);
 

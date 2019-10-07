@@ -16,16 +16,16 @@ namespace Basement {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void AddVertexBuffer(const Shared<VertexBuffer>& vertexBuffer) override;
-		virtual void SetIndexBuffer(const Shared<IndexBuffer>& indexBuffer) override;
+		virtual void AddVertexBuffer(const SharedPtr<VertexBuffer>& vertexBuffer) override;
+		virtual void SetIndexBuffer(const SharedPtr<IndexBuffer>& indexBuffer) override;
 
-		virtual const std::vector<Shared<VertexBuffer>>& GetVertexBuffers() const override {	return m_VertexBuffers;	}
-		virtual const Shared<IndexBuffer>& GetIndexBuffer() const override{ return m_IndexBuffer; }
+		virtual const std::vector<SharedPtr<VertexBuffer>>& GetVertexBuffers() const override {	return m_VertexBuffers;	}
+		virtual const SharedPtr<IndexBuffer>& GetIndexBuffer() const override{ return m_IndexBuffer; }
 	private:
-		uint32_t m_VertexArrayID;
-		uint32_t m_VertexArrayIndexOffset = 0;
-		std::vector<Shared<VertexBuffer>> m_VertexBuffers;
-		Shared<IndexBuffer> m_IndexBuffer;
+		u32 m_VertexArrayID;
+		u32 m_VertexArrayIndexOffset = 0;
+		std::vector<SharedPtr<VertexBuffer>> m_VertexBuffers;
+		SharedPtr<IndexBuffer> m_IndexBuffer;
 	};
 
 }

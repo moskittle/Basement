@@ -13,7 +13,7 @@ namespace Basement {
 		Bool
 	};
 
-	static uint32_t GetShaderDataTypeSize(EShaderDataType type)
+	static u32 GetShaderDataTypeSize(EShaderDataType type)
 	{
 		switch (type)
 		{
@@ -38,14 +38,14 @@ namespace Basement {
 	{
 		std::string Name;
 		EShaderDataType Type;
-		uint32_t Offset;
-		uint32_t Size;
+		u32 Offset;
+		u32 Size;
 		bool bIsNormalized;
 
 		BufferElement(EShaderDataType type, const std::string& name, bool isNormalized = false);
 		~BufferElement() = default;
 
-		uint32_t GetComponentCount() const
+		u32 GetComponentCount() const
 		{
 			switch (Type)
 			{
@@ -76,7 +76,7 @@ namespace Basement {
 		~BufferLayout() = default;
 
 		inline const std::vector<BufferElement> GetElements() const { return m_BufferElements; }
-		inline uint32_t GetStride() const { return m_Stride; }
+		inline u32 GetStride() const { return m_Stride; }
 
 		std::vector<BufferElement>::iterator begin() { return m_BufferElements.begin(); }
 		std::vector<BufferElement>::iterator end() { return m_BufferElements.end(); }
@@ -86,7 +86,7 @@ namespace Basement {
 		void CalculateOffsetAndStride();
 	private:
 		std::vector<BufferElement> m_BufferElements;
-		uint32_t m_Stride = 0;
+		u32 m_Stride = 0;
 	};
 
 	struct Vertex
@@ -104,10 +104,10 @@ namespace Basement {
 		
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-		virtual uint32_t GetCount() const = 0;
+		virtual u32 GetCount() const = 0;
 
-		static Shared<VertexBuffer> Create(uint32_t size, float* vertices);
-		static Shared<VertexBuffer> Create(const std::vector<Vertex>& vertices);
+		static SharedPtr<VertexBuffer> Create(u32 size, float* vertices);
+		static SharedPtr<VertexBuffer> Create(const std::vector<Vertex>& vertices);
 	};
 
 
@@ -116,10 +116,10 @@ namespace Basement {
 	public:
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		virtual inline uint32_t GetCount() const = 0;
+		virtual inline u32 GetCount() const = 0;
 
-		static Shared<IndexBuffer> Create(uint32_t count, uint32_t* indices);
-		static Shared<IndexBuffer> Create(const std::vector<uint32_t>& indices);
+		static SharedPtr<IndexBuffer> Create(u32 count, u32* indices);
+		static SharedPtr<IndexBuffer> Create(const std::vector<u32>& indices);
 	};
 
 }

@@ -50,7 +50,9 @@ float RotationSpeed = 0.3f;
 #define ROTATE glm::radians(Degree)
 #define ROTATE_GLFW RotationSpeed * (float)glfwGetTime()
 
-GoofyLandLayer::GoofyLandLayer() : Layer("GL"), m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
+GoofyLandLayer::GoofyLandLayer() :
+	Layer("GL"),
+	m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -121,12 +123,12 @@ void GoofyLandLayer::BuildScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
-	Basement::Shared<Basement::Shader> textureShader = m_ShaderLibrary.Load("resource/shaders/Texture.glsl");
+	Basement::SharedPtr<Basement::Shader> textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(textureShader)->UploadUniform1i("u_Texture", 0);
 
 	// Texture
-	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
+	m_BoxTexture = Basement::Texture2D::Create("assets/textures/mario-block.png");
 
 
 	//// Light
@@ -168,7 +170,7 @@ void GoofyLandLayer::BuildScene()
 
 	//	// Shader
 	//	glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
-	//	Basement::Shared<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("resource/shaders/FlatColor.glsl");
+	//	Basement::Shared<Basement::Shader> flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
 	//	//std::dynamic_pointer_cast<Basement::OpenGLShader>(flatColorShader)->UploadUniform4f("u_Color", color);
 	//}
 }
@@ -322,10 +324,10 @@ void GoofyLandLayer::BuildLightingScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
-	//Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("resource/shaders/Lighting.glsl");
-	Basement::Shared<Basement::Shader> materialShader = m_ShaderLibrary.Load("resource/shaders/Material.glsl");
-	Basement::Shared<Basement::Shader> emeraldShader = m_ShaderLibrary.Load("resource/shaders/Emerald.glsl");
-	Basement::Shared<Basement::Shader> silverShader = m_ShaderLibrary.Load("resource/shaders/Silver.glsl");
+	//Basement::Shared<Basement::Shader> lightingShader = m_ShaderLibrary.Load("assets/shaders/Lighting.glsl");
+	Basement::SharedPtr<Basement::Shader> materialShader = m_ShaderLibrary.Load("assets/shaders/Material.glsl");
+	Basement::SharedPtr<Basement::Shader> emeraldShader = m_ShaderLibrary.Load("assets/shaders/Emerald.glsl");
+	Basement::SharedPtr<Basement::Shader> silverShader = m_ShaderLibrary.Load("assets/shaders/Silver.glsl");
 
 	//-----------------------
 	// Light
@@ -343,7 +345,7 @@ void GoofyLandLayer::BuildLightingScene()
 	m_LightVertexArray->AddVertexBuffer(m_LightVertexBuffer);
 
 	// Shader
-	Basement::Shared<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("resource/shaders/LightSource.glsl");
+	Basement::SharedPtr<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("assets/shaders/LightSource.glsl");
 }
 
 void GoofyLandLayer::RenderLightingScene()
@@ -514,20 +516,20 @@ void GoofyLandLayer::BuildLightingMapScene()
 	m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
 	// Shader
-	//Basement::Shared<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("resource/shaders/LightingMap.glsl");
-	Basement::Shared<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("resource/shaders/LightingMapSpotlight.glsl");
+	//Basement::Shared<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("assets/shaders/LightingMap.glsl");
+	Basement::SharedPtr<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("assets/shaders/LightingMapSpotlight.glsl");
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.diffuse", 0);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.specular", 1);
 	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.emission", 2);
 
 	// Texture
-	m_BoxTexture = Basement::Texture2D::Create("resource/textures/mario-block.png");
-	m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/mario-block-specular.png");
-	//m_BoxTexture = Basement::Texture2D::Create("resource/textures/screen.png");
-	//m_BoxSpecularTexture = Basement::Texture2D::Create("resource/textures/container2_specular.png");
-	//m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/matrix.jpg");
-	//m_BoxEmissionTexture = Basement::Texture2D::Create("resource/textures/wall.jpg");
+	m_BoxTexture = Basement::Texture2D::Create("assets/textures/mario-block.png");
+	m_BoxSpecularTexture = Basement::Texture2D::Create("assets/textures/mario-block-specular.png");
+	//m_BoxTexture = Basement::Texture2D::Create("assets/textures/screen.png");
+	//m_BoxSpecularTexture = Basement::Texture2D::Create("assets/textures/container2_specular.png");
+	//m_BoxEmissionTexture = Basement::Texture2D::Create("assets/textures/matrix.jpg");
+	//m_BoxEmissionTexture = Basement::Texture2D::Create("assets/textures/wall.jpg");
 
 
 	//----------------------------
@@ -543,7 +545,7 @@ void GoofyLandLayer::BuildLightingMapScene()
 	m_LightVertexBuffer->SetLayout(lightingLayout);
 	m_LightVertexArray->AddVertexBuffer(m_LightVertexBuffer);
 
-	Basement::Shared<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("resource/shaders/LightSource.glsl");
+	Basement::SharedPtr<Basement::Shader> lightSourceShader = m_ShaderLibrary.Load("assets/shaders/LightSource.glsl");
 
 	// Model
 	//m_Model = Basement::Model::Create("resouces/models/nanosuit/nanosuit.obj");
@@ -633,11 +635,9 @@ void GoofyLandLayer::RenderLightingMapScene()
 
 void GoofyLandLayer::BuildModelScene()
 {
-	m_NanoSuit = Basement::Model::Create("resource/models/nanosuit/nanosuit.obj");
+	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
-	auto& nanoShader =  m_ShaderLibrary.Load("resource/shaders/NanoSuit.glsl");
-
-
+	auto& nanoShader =  m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
 
 }
 
@@ -666,6 +666,7 @@ void GoofyLandLayer::RenderModelScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Light.shininess", Shininess);
 
 	m_NanoSuit->Draw(model);
+
 }
 
 

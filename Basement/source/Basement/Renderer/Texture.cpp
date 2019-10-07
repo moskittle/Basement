@@ -6,7 +6,7 @@
 
 namespace Basement {
 
-	Shared<Texture2D> Texture2D::Create(const std::string& path)
+	SharedPtr<Texture2D> Texture2D::Create(const std::string& path)
 	{
 		switch (Renderer::GetAPI())
 		{
