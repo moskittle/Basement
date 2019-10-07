@@ -87,7 +87,8 @@ namespace Basement {
 
 		// process index
 		std::vector<u32> indices;
-		for (u32 i = 0; i < mesh->mNumFaces; ++i) {
+		for (u32 i = 0; i < mesh->mNumFaces; ++i)
+		{
 			aiFace& face = mesh->mFaces[i];
 			for (u32 j = 0; j < face.mNumIndices; ++j)
 			{
@@ -95,13 +96,14 @@ namespace Basement {
 			}
 		}
 
-		// process texture
+		// process material
+		MaterialAttrib materialAttrib;
 		std::vector<SharedPtr<Texture2D>> textures;
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			scene->mTextures;
 			
+			// texture
 			std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 			
@@ -113,10 +115,25 @@ namespace Basement {
 			//
 			//std::vector<Shared<Texture2D>> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
 			//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+			// material attributes
+			aiColor4D ambientColor, diffuseColor, specularColor;
+			float shininess;
+
+			aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambientColor);
+			aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
+			aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specularColor);
+			aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shininess);
+
+			glm::vec3 ambient(ambientColor.r, ambientColor.g, ambientColor.b);
+			glm::vec3 diffuse(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glm::vec3 specular(specularColor.r, specularColor.g, specularColor.b);
+
+			materialAttrib.SetAttributes(ambientColor, diffuseColor, specularColor, shininess);
 		}
 
 
-		return Mesh(vertices, indices, textures);
+		return Mesh(vertices, indices, textures, materialAttrib);
 	}
 
 	std::vector<SharedPtr<Texture2D>> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)

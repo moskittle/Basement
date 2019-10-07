@@ -7,10 +7,11 @@
 
 namespace Basement {
 
-	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<u32> indices, std::vector<SharedPtr<Texture2D>> textures) :
+	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices, const std::vector<SharedPtr<Texture2D>>& textures, const MaterialAttrib& materialAttrib) :
 		m_Vertices(vertices),
 		m_Indices(indices),
-		m_Textures(textures)
+		m_Textures(textures),
+		m_MaterialAttrib(materialAttrib)
 	{
 		m_VAO = VertexArray::Create();
 
@@ -60,7 +61,11 @@ namespace Basement {
 			}
 
 			shader->Bind();
-			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("material." + typeName + index).c_str(), i);
+			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("u_Material." + typeName + index).c_str(), i);
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.ambient", m_MaterialAttrib.GetAmbientColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.diffuse", m_MaterialAttrib.GetDiffuseColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.specular", m_MaterialAttrib.GetSpecularColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1f("u_Material.shininess", m_MaterialAttrib.GetShininess());
 
 			m_Textures[i]->Activate(i);
 		}

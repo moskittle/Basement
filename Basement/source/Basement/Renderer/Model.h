@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/glm.hpp>
+
 namespace Basement {
 
 	class Model
@@ -28,7 +30,6 @@ namespace Basement {
 		std::string m_Directory;
 		
 		SharedPtr<Shader> m_Shader;
-		//Shared<Material> m_Material;
 
 		const aiScene* m_Scene;
 		UniquePtr<Assimp::Importer> m_Importer;
