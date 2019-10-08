@@ -48,6 +48,14 @@ namespace Basement {
 		}
 	}
 
+	void Model::DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model)
+	{
+		for (auto& mesh : m_Meshes)
+		{
+			mesh.DrawOutline(shader, model);
+		}
+	}
+
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	{
 		for (u32 i = 0; i < node->mNumMeshes; ++i)

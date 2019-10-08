@@ -44,6 +44,7 @@ namespace Basement {
 		~Mesh() = default;
 		
 		void Draw(SharedPtr<Shader> shader, const glm::mat4& model);
+		void DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model);
 	private:
 		std::vector<Vertex> m_Vertices;
 		std::vector<u32> m_Indices;

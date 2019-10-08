@@ -3,6 +3,7 @@
 #include "OpenGLDebug.h"
 
 namespace Basement {
+
 	void OpenGLRendererAPI::Init()
 	{
 		glEnable(GL_BLEND);
@@ -28,12 +29,37 @@ namespace Basement {
 
 	void OpenGLRendererAPI::Clear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void OpenGLRendererAPI::EnableDepthTest()
 	{
 		glEnable(GL_DEPTH_TEST);
+	}
+
+	void OpenGLRendererAPI::DisableDepthTest()
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	void OpenGLRendererAPI::EnableStencilTest()
+	{
+		glEnable(GL_STENCIL_TEST);
+	}
+
+	void OpenGLRendererAPI::SetStencilOp(u32 allFail, u32 depthFail, u32 allPass)
+	{
+		glStencilOp(allFail, depthFail, allPass);
+	}
+
+	void OpenGLRendererAPI::SetStencilMask(u32 mask)
+	{
+		glStencilMask(mask);
+	}
+
+	void OpenGLRendererAPI::SetStencilFunc(u32 func, i32 ref, u32 mask)
+	{
+		glStencilFunc(func, ref, mask);
 	}
 
 	void OpenGLRendererAPI::DrawIndex(const SharedPtr<VertexArray>& vertexArray)

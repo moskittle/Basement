@@ -52,6 +52,10 @@ private:
 	Basement::SharedPtr<Basement::VertexBuffer> m_LightVertexBuffer;
 	Basement::SharedPtr<Basement::IndexBuffer> m_LightIndexBuffer;
 
+	// Floor
+	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_FloorVBO;
+	Basement::SharedPtr<Basement::Texture2D> m_FloorTexture;
 
 	// Sphere
 	Basement::SharedPtr<Basement::VertexArray> m_SphereVAO;

@@ -18,6 +18,7 @@ namespace Basement {
 
 		static SharedPtr<Model> Create(const std::string& filePath);
 		void Draw(const glm::mat4& model);
+		void DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model);
 
 		void SetShader(SharedPtr<Shader> shader) { m_Shader = shader; }
 	private:

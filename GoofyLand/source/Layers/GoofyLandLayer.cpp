@@ -55,7 +55,10 @@ GoofyLandLayer::GoofyLandLayer() :
 	m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
-	
+	Basement::RenderCommand::EnableStencilTest();
+	Basement::RenderCommand::SetStenceilFunc(Basement::RendererGL::NotEqual, 1, 0xFF);
+	Basement::RenderCommand::SetStencilOp(Basement::RendererGL::Keep, Basement::RendererGL::Keep, Basement::RendererGL::Replace);
+
 	//BuildScene();
 	//BuildLightingScene();
 	//BuildLightingMapScene();
@@ -518,7 +521,7 @@ void GoofyLandLayer::BuildLightingMapScene()
 	// Shader
 	//Basement::Shared<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("assets/shaders/LightingMap.glsl");
 	Basement::SharedPtr<Basement::Shader> lightingMapShader = m_ShaderLibrary.Load("assets/shaders/LightingMapSpotlight.glsl");
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->Bind();
+	lightingMapShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.diffuse", 0);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.specular", 1);
 	//std::dynamic_pointer_cast<Basement::OpenGLShader>(lightingMapShader)->UploadUniform1i("material.emission", 2);
@@ -635,29 +638,60 @@ void GoofyLandLayer::RenderLightingMapScene()
 
 void GoofyLandLayer::BuildModelScene()
 {
+	//----------------
+	// Model
+	//----------------
 	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
 	auto& nanoShader =  m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& outlineShader = m_ShaderLibrary.Load("assets/shaders/Outline.glsl");
+	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
+
+	//----------------
+	// Plane
+	//----------------
+	float planeVertices[] = {
+		// note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat
+		// positions          // texture Coords
+		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+		-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+	};
+	m_FloorVAO = Basement::VertexArray::Create();
+	m_FloorVBO = Basement::VertexBuffer::Create(sizeof(planeVertices), planeVertices);
+	Basement::BufferLayout bufferLayout = {
+		{ Basement::EShaderDataType::Float3, "a_Position" },
+		{ Basement::EShaderDataType::Float2, "a_TexCood" }
+	};
+	m_FloorVBO->SetLayout(bufferLayout);
+	m_FloorVAO->AddVertexBuffer(m_FloorVBO);
+
+	floorShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("texture1", 0);
+	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wall.jpg");
+
 
 }
 
 void GoofyLandLayer::RenderModelScene()
 {
+	// set up shaders
 	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
 	m_NanoSuit->SetShader(nanoShader);
-
-	// Model Matrix
+	// model matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
-
-	// Normal Matrix
+	// normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
+
 	nanoShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
-
-	nanoShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
@@ -665,8 +699,38 @@ void GoofyLandLayer::RenderModelScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
+	auto& outlineShader = m_ShaderLibrary.Get("Outline");
+
+	auto& floorShader = m_ShaderLibrary.Get("Floor");
+	//--------------
+	// Draw Floor
+	//--------------
+	Basement::RenderCommand::SetStencilMask(0x00);
+	glm::mat4 floorModel =  glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	m_FloorTexture->Bind(0);
+	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+
+
+
+	//--------------
+	// Draw 3D Model
+	//--------------
+	// 1. draw model
+	Basement::RenderCommand::SetStenceilFunc(Basement::RendererGL::Always, 1, 0xFF);
+	Basement::RenderCommand::SetStencilMask(0xFF);
+
 	m_NanoSuit->Draw(model);
 
+	// 2. draw outline
+	Basement::RenderCommand::SetStenceilFunc(Basement::RendererGL::NotEqual, 1, 0xFF);
+	Basement::RenderCommand::SetStencilMask(0x00);
+	Basement::RenderCommand::DisableDepthTest();
+	
+	model = glm::scale(model, glm::vec3(1.005f));
+	m_NanoSuit->DrawOutline(outlineShader, model);
+
+	Basement::RenderCommand::SetStencilMask(0xFF);
+	Basement::RenderCommand::EnableDepthTest();
 }
 
 
@@ -677,7 +741,6 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	//Basement::RenderCommand::SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::RenderCommand::Clear();
 

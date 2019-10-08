@@ -79,7 +79,7 @@ namespace Basement {
 
 	SharedPtr<Shader> ShaderLibrary::Get(const std::string& name)
 	{
-		BM_CORE_ASSERT(ShaderExists(name), "Shader({1}) not found!", name);
+		BM_CORE_ASSERT(ShaderExists(name), "Shader not found!");
 		return m_ShaderMap[name];
 	}
 

@@ -73,5 +73,11 @@ namespace Basement {
 		Renderer::Submit(shader, m_VAO, model);
 	}
 
+	void Mesh::DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model)
+	{
+		shader->Bind();
+		Renderer::Submit(shader, m_VAO, model);
+	}
+
 }
 
