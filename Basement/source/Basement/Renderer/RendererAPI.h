@@ -12,6 +12,9 @@ namespace Basement {
 		static u32 DisableStencilMask = 0x00;
 
 		// GL enum
+		static bool True = 1;
+		static bool False = 0;
+
 		static u32 Always = 0x0207;
 		static u32 NotEqual = 0x0205;
 
@@ -49,6 +52,7 @@ namespace Basement {
 
 		virtual void EnableDepthTest() = 0;
 		virtual void DisableDepthTest() = 0;
+		virtual void SetDepthMask(bool mask) = 0;
 		
 		virtual void EnableStencilTest() = 0;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) = 0;

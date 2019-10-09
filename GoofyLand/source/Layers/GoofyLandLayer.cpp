@@ -34,7 +34,8 @@ glm::vec3 CubeColor(1.0f, 0.5f, 0.31f);
 glm::vec3 Ambient(1.0f, 0.5f, 0.31f);
 glm::vec3 Diffuse(1.0f, 0.5f, 0.31f);
 glm::vec3 Specular(0.5, 0.5, 0.5);
-float AmbientIntensity = 0.1f;
+//float AmbientIntensity = 0.1f;
+float AmbientIntensity = 0.7f;
 float DiffuseIntensity = 0.7f;
 float SpecularIntensity = 1.0f;
 
@@ -50,9 +51,13 @@ float RotationSpeed = 0.3f;
 #define ROTATE glm::radians(Degree)
 #define ROTATE_GLFW RotationSpeed * (float)glfwGetTime()
 
+// floor
+float FloorSize = 20.0f;
+float FloorLevel = 0.0f;
+
 GoofyLandLayer::GoofyLandLayer() :
 	Layer("GL"),
-	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 300.0f)
+	m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
 	
@@ -662,14 +667,78 @@ void GoofyLandLayer::RenderLightingMapScene()
 
 void GoofyLandLayer::BuildModelScene()
 {
+	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& outlineShader = m_ShaderLibrary.Load("assets/shaders/Outline.glsl");
+	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
+	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
+
+	//----------------
+	// Skybox
+	//----------------
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+	
+	m_SkyboxVAO = Basement::VertexArray::Create();
+	m_SkyboxVBO = Basement::VertexBuffer::Create(sizeof(skyboxVertices), skyboxVertices);
+	Basement::BufferLayout skyboxLayout = {
+		{ Basement::EShaderDataType::Float3, "a_Position"}
+	};
+	m_SkyboxVBO->SetLayout(skyboxLayout);
+	m_SkyboxVAO->AddVertexBuffer(m_SkyboxVBO);
+
+	skyboxShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(skyboxShader)->UploadUniform1i("u_SkyboxTexture", 0);
+	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
+
+
 	//----------------
 	// Model
 	//----------------
 	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
-	auto& nanoShader =  m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
-	auto& outlineShader = m_ShaderLibrary.Load("assets/shaders/Outline.glsl");
-	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
+
 
 	//----------------
 	// Plane
@@ -695,19 +764,32 @@ void GoofyLandLayer::BuildModelScene()
 	m_FloorVAO->AddVertexBuffer(m_FloorVBO);
 
 	floorShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("texture1", 0);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("u_Texture", 0);
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wall.jpg", true);
 }
 
 void GoofyLandLayer::RenderModelScene()
 {
+	//----------------
+	// Skybox
+	//----------------
+	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
+	
+	Basement::RenderCommand::SetDepthMask(Basement::RendererGL::False);
+	m_SkyboxTexture->Activate(0);
+	Basement::Renderer::SubmitArrays(skyboxShader, m_SkyboxVAO, 0, 36, glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)));
+	// glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) * 
+	Basement::RenderCommand::SetDepthMask(Basement::RendererGL::True);
+
+	//----------------
+	// Model
+	//----------------
 	// set up shaders
 	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
 	m_NanoSuit->SetShader(nanoShader);
 	// model matrix
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::scale(glm::mat4(1.0f), glm::vec3(0.6f));
+	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 	// normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
@@ -727,7 +809,8 @@ void GoofyLandLayer::RenderModelScene()
 	// Draw Floor
 	//--------------
 	Basement::RenderCommand::SetStencilMask(0x00);
-	glm::mat4 floorModel = glm::mat4(1.0f) * glm::scale(glm::mat4(1.0f), glm::vec3(10.0f));
+	glm::mat4 floorModel = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(FloorSize, 0.0f, FloorSize));
+	floorShader->Bind();
 	m_FloorTexture->Bind(0);
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
@@ -751,6 +834,10 @@ void GoofyLandLayer::RenderModelScene()
 
 	Basement::RenderCommand::SetStencilMask(0xFF);
 	Basement::RenderCommand::EnableDepthTest();
+}
+
+void GoofyLandLayer::RednerSkyboxScene()
+{
 }
 
 
@@ -791,6 +878,10 @@ void GoofyLandLayer::RenderImGui()
 			ImGui::TreePop();
 			ImGui::Separator();
 		}
+	}
+
+	if (ImGui::CollapsingHeader("Floor")) {
+		ImGui::SliderFloat("Size", &FloorSize, 0.0f, 50.0f, "%f", 1.0f);
 	}
 
 	ImGui::End();

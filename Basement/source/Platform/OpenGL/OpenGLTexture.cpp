@@ -8,6 +8,9 @@
 
 namespace Basement {
 
+	//----------------------------------------------------
+	// OpenGL Texture 2D
+	//----------------------------------------------------
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isRepeated) : 
 		m_Path(path),
 		m_IsRepeated(isRepeated)
@@ -38,23 +41,29 @@ namespace Basement {
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
 		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Width, m_Height);
 
+		SetTextureParameter();
+
+		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+
+		stbi_image_free(data);
+
+	}
+
+	void OpenGLTexture2D::SetTextureParameter()
+	{
 		if (m_IsRepeated)
 		{
 			OpenGLCall(glGenerateTextureMipmap(m_TextureID));
 			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT));
 			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT));
-			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		}
-		else 
+		else
 		{
 			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		}
-		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-
-		stbi_image_free(data);
-
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
@@ -71,6 +80,82 @@ namespace Basement {
 	{
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
+	}
+
+
+
+
+
+	//----------------------------------------------------
+	// OpenGL Texture Cube
+	//----------------------------------------------------
+
+
+	OpenGLTextureCube::OpenGLTextureCube(const std::string& directory, const std::string& format) :
+		m_Directory(directory),
+		m_Format(format)
+	{
+		std::vector<std::string> faces = { "right", "left", "top", "bottom" , "back", "front" };
+		std::string path;
+
+		OpenGLCall(glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_TextureID));
+
+		int width, height, channels;
+		for (i8 i = 0; i < 6; ++i)
+		{
+			path = directory + "/" + faces[i] + + "." + format;
+
+			stbi_set_flip_vertically_on_load(true);
+			stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+			BM_CORE_ASSERT(data, "Failed to load image!");
+
+			GLenum internalFormat = 0, dataFormat = 0;
+			if (channels == 3)
+			{
+				internalFormat = GL_RGB8;
+				dataFormat = GL_RGB;
+			}
+			else if (channels == 4)
+			{
+				internalFormat = GL_RGBA8;
+				dataFormat = GL_RGBA;
+			}
+			BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
+			
+			OpenGLCall(glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, dataFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data
+			));
+
+			stbi_image_free(data);
+		}
+
+		SetTextureParameter();
+	}
+
+	void OpenGLTextureCube::Bind(u32 slot) const
+	{
+		OpenGLCall(glBindTextureUnit(slot, m_TextureID););
+	}
+
+	void OpenGLTextureCube::Activate(u32 unit) const
+	{
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID);
+	}
+
+
+	void OpenGLTextureCube::SetTextureParameter()
+	{
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+
+	OpenGLTextureCube::~OpenGLTextureCube()
+	{
+		glDeleteTextures(1, &m_TextureID);
 	}
 
 }

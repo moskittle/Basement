@@ -42,6 +42,11 @@ namespace Basement {
 		glDisable(GL_DEPTH_TEST);
 	}
 
+	void OpenGLRendererAPI::SetDepthMask(bool mask)
+	{
+		glDepthMask(mask);
+	}
+
 	void OpenGLRendererAPI::EnableStencilTest()
 	{
 		glEnable(GL_STENCIL_TEST);

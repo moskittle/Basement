@@ -31,10 +31,16 @@ private:
 
 	void BuildModelScene();
 	void RenderModelScene();
+	void RednerSkyboxScene();
 private:
 	Basement::CameraController3D m_CameraController;
 	
 	Basement::ShaderLibrary m_ShaderLibrary;
+
+	// Skybox
+	Basement::SharedPtr<Basement::VertexArray> m_SkyboxVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_SkyboxVBO;
+	Basement::SharedPtr<Basement::TextureCube> m_SkyboxTexture;
 
 	// Object
 	Basement::SharedPtr<Basement::VertexArray> m_VertexArray;

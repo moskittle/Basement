@@ -14,6 +14,7 @@ namespace Basement {
 
 		static void EnableDepthTest() { s_RenderAPI->EnableDepthTest(); }
 		static void DisableDepthTest() { s_RenderAPI->DisableDepthTest(); }
+		static void SetDepthMask(bool mask) { s_RenderAPI->SetDepthMask(mask); }
 		
 		static void EnableStencilTest() { s_RenderAPI->EnableStencilTest(); }
 		static void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOp(allFail, depthFail, allPass); }

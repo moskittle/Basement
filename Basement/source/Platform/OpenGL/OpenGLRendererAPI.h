@@ -20,6 +20,7 @@ namespace Basement {
 		
 		virtual void EnableDepthTest() override;
 		virtual void DisableDepthTest() override;
+		virtual void SetDepthMask(bool mask) override;
 		
 		virtual void EnableStencilTest() override;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) override;

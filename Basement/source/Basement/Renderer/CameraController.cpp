@@ -5,7 +5,7 @@
 #include "Basement/Core/KeyCodes.h"
 #include "Basement/Events/Event.h"
 
-static const float DefaultMoveSpeed = 5.0f;
+static const float DefaultMoveSpeed = 20.0f;
 static const float DefaultZoomSpeed = 2.0f;
 static const float DefaultRotationSpeed3D = 0.1f;
 
