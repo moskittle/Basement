@@ -17,6 +17,7 @@ namespace Basement {
 		
 		static void EnableStencilTest() { s_RenderAPI->EnableStencilTest(); }
 		static void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOp(allFail, depthFail, allPass); }
+		static void SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOpSeperate(face, allFail, depthFail, allPass); }
 		static void SetStencilMask(u32 mask) { s_RenderAPI->SetStencilMask(mask); }
 		static void SetStenceilFunc(u32 func, i32 ref, u32 mask) { s_RenderAPI->SetStencilFunc(func, ref, mask); }
 		

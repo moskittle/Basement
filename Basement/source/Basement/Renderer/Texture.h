@@ -29,7 +29,7 @@ namespace Basement {
 	public:
 		virtual ~Texture2D() = default;
 
-		static SharedPtr<Texture2D> Create(const std::string& path);
+		static SharedPtr<Texture2D> Create(const std::string& path, bool isRepeated = false);
 	};
 
 

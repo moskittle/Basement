@@ -1,5 +1,6 @@
 #include "bmpch.h"
 #include "OpenGLTexture.h"
+#include "OpenGLDebug.h"
 
 #include <stb_image.h>
 #include <glad/glad.h>
@@ -7,7 +8,9 @@
 
 namespace Basement {
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isRepeated) : 
+		m_Path(path),
+		m_IsRepeated(isRepeated)
 	{
 		int width, height, channels;
 
@@ -32,21 +35,22 @@ namespace Basement {
 
 		BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
 
-		//glGenTextures(1, &m_TextureID);
-		//glBindTexture(GL_TEXTURE_2D, m_TextureID);
-
-		//glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, m_Width, m_Height);
-		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-
-		//glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		//glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
 		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Width, m_Height);
 
-		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
+		if (m_IsRepeated)
+		{
+			OpenGLCall(glGenerateTextureMipmap(m_TextureID));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		}
+		else 
+		{
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			OpenGLCall(glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		}
 		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);

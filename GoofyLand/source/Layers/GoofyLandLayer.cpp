@@ -52,17 +52,41 @@ float RotationSpeed = 0.3f;
 
 GoofyLandLayer::GoofyLandLayer() :
 	Layer("GL"),
-	m_CameraController(glm::vec3(0.0f, 0.0f, 5.0f), 45.0f, 1.7778f, 0.1f, 100.0f)
+	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 300.0f)
 {
 	Basement::RenderCommand::EnableDepthTest();
+	
 	Basement::RenderCommand::EnableStencilTest();
 	Basement::RenderCommand::SetStenceilFunc(Basement::RendererGL::NotEqual, 1, 0xFF);
-	Basement::RenderCommand::SetStencilOp(Basement::RendererGL::Keep, Basement::RendererGL::Keep, Basement::RendererGL::Replace);
+	//Basement::RenderCommand::SetStencilOp(Basement::RendererGL::Keep, Basement::RendererGL::Keep, Basement::RendererGL::Replace);
+	Basement::RenderCommand::SetStencilOpSeperate(Basement::RendererGL::Front, Basement::RendererGL::Keep, Basement::RendererGL::Keep, Basement::RendererGL::Replace);
+	Basement::RenderCommand::SetStencilOpSeperate(Basement::RendererGL::Back, Basement::RendererGL::Keep, Basement::RendererGL::Replace, Basement::RendererGL::Keep);
 
 	//BuildScene();
 	//BuildLightingScene();
 	//BuildLightingMapScene();
 	BuildModelScene();
+}
+
+
+void GoofyLandLayer::Update(const Basement::Timer& dt)
+{
+	// Update
+	m_CameraController.Update(dt);
+
+	// Render
+	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	Basement::RenderCommand::Clear();
+
+	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
+
+	//RenderScene();
+	//RenderLightingScene();
+	//RenderLightingMapScene();
+	RenderModelScene();
+
+	Basement::Renderer::EndScene();
+
 }
 
 void GoofyLandLayer::BuildScene()
@@ -672,9 +696,7 @@ void GoofyLandLayer::BuildModelScene()
 
 	floorShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("texture1", 0);
-	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wall.jpg");
-
-
+	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wall.jpg", true);
 }
 
 void GoofyLandLayer::RenderModelScene()
@@ -684,9 +706,8 @@ void GoofyLandLayer::RenderModelScene()
 	m_NanoSuit->SetShader(nanoShader);
 	// model matrix
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f)) *
-		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::scale(glm::mat4(1.0f), glm::vec3(0.6f));
 	// normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
@@ -706,7 +727,7 @@ void GoofyLandLayer::RenderModelScene()
 	// Draw Floor
 	//--------------
 	Basement::RenderCommand::SetStencilMask(0x00);
-	glm::mat4 floorModel =  glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	glm::mat4 floorModel = glm::mat4(1.0f) * glm::scale(glm::mat4(1.0f), glm::vec3(10.0f));
 	m_FloorTexture->Bind(0);
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
@@ -726,7 +747,6 @@ void GoofyLandLayer::RenderModelScene()
 	Basement::RenderCommand::SetStencilMask(0x00);
 	Basement::RenderCommand::DisableDepthTest();
 	
-	model = glm::scale(model, glm::vec3(1.005f));
 	m_NanoSuit->DrawOutline(outlineShader, model);
 
 	Basement::RenderCommand::SetStencilMask(0xFF);
@@ -735,25 +755,6 @@ void GoofyLandLayer::RenderModelScene()
 
 
 
-void GoofyLandLayer::Update(const Basement::Timer& dt)
-{
-	// Update
-	m_CameraController.Update(dt);
-
-	// Render
-	Basement::RenderCommand::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
-	Basement::RenderCommand::Clear();
-
-	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
-
-	//RenderScene();
-	//RenderLightingScene();
-	//RenderLightingMapScene();
-	RenderModelScene();
-
-	Basement::Renderer::EndScene();
-
-}
 
 void GoofyLandLayer::RenderImGui()
 {

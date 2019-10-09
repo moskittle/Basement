@@ -52,6 +52,11 @@ namespace Basement {
 		glStencilOp(allFail, depthFail, allPass);
 	}
 
+	void OpenGLRendererAPI::SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass)
+	{
+		glStencilOpSeparate(face, allFail, depthFail, allPass);
+	}
+
 	void OpenGLRendererAPI::SetStencilMask(u32 mask)
 	{
 		glStencilMask(mask);

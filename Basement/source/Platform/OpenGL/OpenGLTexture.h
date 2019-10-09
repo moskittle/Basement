@@ -12,7 +12,7 @@ namespace Basement {
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
-		OpenGLTexture2D(const std::string& path);
+		OpenGLTexture2D(const std::string& path, bool isRepeated = false);
 		virtual ~OpenGLTexture2D();
 
 		virtual u32 GetWidth() const override { return m_Width; }
@@ -30,6 +30,7 @@ namespace Basement {
 		u32 m_TextureID;
 		std::string m_Path;
 		std::string m_TypeName;
+		bool m_IsRepeated;
 	};
 
 }

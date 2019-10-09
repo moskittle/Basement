@@ -23,6 +23,7 @@ namespace Basement {
 		
 		virtual void EnableStencilTest() override;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) override;
+		virtual void SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass) override;
 		virtual void SetStencilMask(u32 mask) override;
 		virtual void SetStencilFunc(u32 func, i32 ref, u32 mask) override;
 		

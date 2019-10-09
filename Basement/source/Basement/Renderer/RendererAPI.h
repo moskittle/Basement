@@ -17,6 +17,8 @@ namespace Basement {
 
 		static u32 Keep = 0x1E00;
 		static u32 Replace = 0x1E01;
+		static u32 Front = 0x0404;
+		static u32 Back = 0x0405;
 	}
 
 	class RendererAPI
@@ -50,6 +52,7 @@ namespace Basement {
 		
 		virtual void EnableStencilTest() = 0;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) = 0;
+		virtual void SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass) = 0;
 		virtual void SetStencilMask(u32 mask) = 0;
 		virtual void SetStencilFunc(u32 func, i32 ref, u32 mask) = 0;
 		
