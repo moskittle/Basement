@@ -96,8 +96,6 @@ namespace Basement {
 		std::vector<std::string> faces = { "right", "left", "top", "bottom" , "front", "back" };
 		std::string path;
 
-		//OpenGLCall(glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_TextureID));
-
 		OpenGLCall(glGenTextures(1, &m_TextureID));
 		OpenGLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
 		int width, height, channels;

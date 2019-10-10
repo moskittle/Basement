@@ -67,9 +67,9 @@ namespace Basement {
 		glStencilMask(mask);
 	}
 
-	void OpenGLRendererAPI::SetStencilFunc(u32 func, i32 ref, u32 mask)
+	void OpenGLRendererAPI::SetStencilFunc(u32 predicate, i32 ref, u32 mask)
 	{
-		glStencilFunc(func, ref, mask);
+		glStencilFunc(predicate, ref, mask);
 	}
 
 	void OpenGLRendererAPI::DrawIndex(const SharedPtr<VertexArray>& vertexArray)

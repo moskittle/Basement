@@ -70,8 +70,8 @@ public:
 		m_CameraController.Update(dt);
 
 		// Render
-		Basement::RenderCommand::SetClearColor(glm::vec4(grey, 1.0f));
-		Basement::RenderCommand::Clear();
+		Basement::Renderer::SetClearColor(glm::vec4(grey, 1.0f));
+		Basement::Renderer::ClearBufferBit();
 
 		Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 

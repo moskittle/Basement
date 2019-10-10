@@ -20,7 +20,7 @@ namespace Basement {
 		static void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOp(allFail, depthFail, allPass); }
 		static void SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOpSeperate(face, allFail, depthFail, allPass); }
 		static void SetStencilMask(u32 mask) { s_RenderAPI->SetStencilMask(mask); }
-		static void SetStenceilFunc(u32 func, i32 ref, u32 mask) { s_RenderAPI->SetStencilFunc(func, ref, mask); }
+		static void SetStenceilFunc(u32 predicate, i32 ref, u32 mask) { s_RenderAPI->SetStencilFunc(predicate, ref, mask); }
 		
 		static void DrawIndex(const SharedPtr<VertexArray>& vertexArray) { s_RenderAPI->DrawIndex(vertexArray); }
 		static void DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count) { s_RenderAPI->DrawArrays(vertexArray, first, count); }

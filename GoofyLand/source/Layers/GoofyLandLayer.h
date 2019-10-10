@@ -31,6 +31,8 @@ private:
 
 	void BuildModelScene();
 	void RenderModelScene();
+
+	void BuildSkyboxScene();
 	void RednerSkyboxScene();
 private:
 	Basement::CameraController3D m_CameraController;

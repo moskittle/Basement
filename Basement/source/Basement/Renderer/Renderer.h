@@ -12,10 +12,23 @@ namespace Basement {
 		static void Init();
 		static void ResizeWindow(u32 width, u32 height);
 
+		// Scene
 		static void BeginScene(Camera3D& camera);
 		static void BeginScene(Camera2D& camera);
 		static void EndScene();
 
+		static void SetClearColor(const glm::vec4& color);
+		static void ClearBufferBit();
+
+		static void EnableDepthTest();
+		static void DisableDepthTest();
+
+		static void EnableStencilTest();
+		static void SetStencilPredicate(u32 predicate, i32 ref, u32 mask);
+		static void EnableStencilMaskOverwrite();
+		static void DisableStencilMaskOverwrite();
+
+		// Draw
 		static void Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
 		static void SubmitArrays(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
 

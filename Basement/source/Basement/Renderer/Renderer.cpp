@@ -37,6 +37,46 @@ namespace Basement {
 	{
 	}
 
+	void Renderer::SetClearColor(const glm::vec4& color)
+	{
+		RenderCommand::SetClearColor(color);
+	}
+
+	void Renderer::ClearBufferBit()
+	{
+		RenderCommand::Clear();
+	}
+
+	void Renderer::EnableDepthTest()
+	{
+		RenderCommand::EnableDepthTest();
+	}
+
+	void Renderer::DisableDepthTest()
+	{
+		RenderCommand::DisableDepthTest();
+	}
+
+	void Renderer::EnableStencilTest()
+	{
+		RenderCommand::EnableStencilTest();
+	}
+
+	void Renderer::SetStencilPredicate(u32 predicate, i32 ref, u32 mask)
+	{
+		RenderCommand::SetStenceilFunc(predicate, ref, mask);
+	}
+
+	void Renderer::EnableStencilMaskOverwrite()
+	{
+		Basement::RenderCommand::SetStencilMask(0x00);
+	}
+
+	void Renderer::DisableStencilMaskOverwrite()
+	{
+		RenderCommand::SetStencilMask(0xFF);
+	}
+
 	void Renderer::Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& model)
 	{
 		shader->Bind();
