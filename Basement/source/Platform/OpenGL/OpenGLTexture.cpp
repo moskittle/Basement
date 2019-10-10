@@ -84,8 +84,6 @@ namespace Basement {
 
 
 
-
-
 	//----------------------------------------------------
 	// OpenGL Texture Cube
 	//----------------------------------------------------
@@ -95,17 +93,19 @@ namespace Basement {
 		m_Directory(directory),
 		m_Format(format)
 	{
-		std::vector<std::string> faces = { "right", "left", "top", "bottom" , "back", "front" };
+		std::vector<std::string> faces = { "right", "left", "top", "bottom" , "front", "back" };
 		std::string path;
 
-		OpenGLCall(glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_TextureID));
+		//OpenGLCall(glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_TextureID));
 
+		OpenGLCall(glGenTextures(1, &m_TextureID));
+		OpenGLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
 		int width, height, channels;
-		for (i8 i = 0; i < 6; ++i)
+		for (u8 i = 0; i < 6; ++i)
 		{
 			path = directory + "/" + faces[i] + + "." + format;
 
-			stbi_set_flip_vertically_on_load(true);
+			stbi_set_flip_vertically_on_load(false);
 			stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 			BM_CORE_ASSERT(data, "Failed to load image!");
 
@@ -123,9 +123,7 @@ namespace Basement {
 			BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
 			
 			OpenGLCall(glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, dataFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data
-			));
-
+				0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data));
 			stbi_image_free(data);
 		}
 
@@ -139,18 +137,18 @@ namespace Basement {
 
 	void OpenGLTextureCube::Activate(u32 unit) const
 	{
-		glActiveTexture(GL_TEXTURE0 + unit);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID);
+		OpenGLCall(glActiveTexture(GL_TEXTURE0 + unit));
+		OpenGLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
 	}
 
 
 	void OpenGLTextureCube::SetTextureParameter()
 	{
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(m_TextureID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	}
 
 	OpenGLTextureCube::~OpenGLTextureCube()

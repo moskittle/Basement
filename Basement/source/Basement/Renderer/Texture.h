@@ -26,7 +26,7 @@ namespace Basement {
 		virtual std::string GetTypeName() const = 0;
 
 		virtual void Bind(u32 slot = 0) const = 0;
-		virtual void Activate(u32 unit) const = 0;
+		virtual void Activate(u32 unit = 0) const = 0;
 
 		static SharedPtr<Texture2D> Create(const std::string& path, bool isRepeated = false);
 	};
@@ -39,7 +39,7 @@ namespace Basement {
 		static SharedPtr<TextureCube> Create(const std::string& directory, const std::string& format);
 
 		virtual void Bind(u32 slot = 0) const = 0;
-		virtual void Activate(u32 unit) const = 0;
+		virtual void Activate(u32 unit = 0) const = 0;
 	};
 
 }
