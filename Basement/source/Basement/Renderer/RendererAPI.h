@@ -22,6 +22,10 @@ namespace Basement {
 		static u32 Replace = 0x1E01;
 		static u32 Front = 0x0404;
 		static u32 Back = 0x0405;
+
+		static u32 DepthBufferBit = 0x00000100;
+		static u32 StencilBufferBit = 0x00000400;
+		static u32 ColorBufferBit = 0x00004000;
 	}
 
 	class RendererAPI
@@ -48,7 +52,7 @@ namespace Basement {
 		virtual void Init() = 0;
 		virtual void SetViewport(u32 x, u32 y, u32 width, u32 height) = 0;
 		virtual void SetClearColor(const glm::vec4& color) = 0;
-		virtual void Clear() = 0;
+		virtual void Clear(u32 mask) = 0;
 
 		virtual void EnableDepthTest() = 0;
 		virtual void DisableDepthTest() = 0;

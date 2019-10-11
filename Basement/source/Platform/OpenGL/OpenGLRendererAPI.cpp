@@ -27,9 +27,9 @@ namespace Basement {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void OpenGLRendererAPI::Clear()
+	void OpenGLRendererAPI::Clear(u32 mask)
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(mask);
 	}
 
 	void OpenGLRendererAPI::EnableDepthTest()

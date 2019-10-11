@@ -24,29 +24,15 @@ namespace Basement {
 		m_Width = width;
 		m_Height = height;
 
-		GLenum internalFormat = 0, dataFormat = 0;
-		if (channels == 3)
-		{
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		}
-		else if (channels == 4)
-		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		}
-
+		auto [internalFormat, dataFormat] = GetFormat(channels);
 		BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
 		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Width, m_Height);
-
+		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 		SetTextureParameter();
 
-		glTextureSubImage2D(m_TextureID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-
 		stbi_image_free(data);
-
 	}
 
 	void OpenGLTexture2D::SetTextureParameter()
@@ -69,6 +55,23 @@ namespace Basement {
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		glDeleteTextures(1, &m_TextureID);
+	}
+
+	std::tuple<u32, u32> OpenGLTexture2D::GetFormat(u32 channels) const
+	{
+		u32 internalFormat = 0, dataFormat = 0;
+		if (channels == 3)
+		{
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+		else if (channels == 4)
+		{
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+
+		return { internalFormat, dataFormat };
 	}
 
 	void OpenGLTexture2D::Bind(u32 slot) const
@@ -98,6 +101,7 @@ namespace Basement {
 
 		OpenGLCall(glGenTextures(1, &m_TextureID));
 		OpenGLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
+		
 		int width, height, channels;
 		for (u8 i = 0; i < 6; ++i)
 		{
@@ -107,17 +111,7 @@ namespace Basement {
 			stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 			BM_CORE_ASSERT(data, "Failed to load image!");
 
-			GLenum internalFormat = 0, dataFormat = 0;
-			if (channels == 3)
-			{
-				internalFormat = GL_RGB8;
-				dataFormat = GL_RGB;
-			}
-			else if (channels == 4)
-			{
-				internalFormat = GL_RGBA8;
-				dataFormat = GL_RGBA;
-			}
+			auto [internalFormat, dataFormat] = GetFormat(channels);
 			BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
 			
 			OpenGLCall(glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -126,6 +120,22 @@ namespace Basement {
 		}
 
 		SetTextureParameter();
+	}
+
+	std::tuple<u32, u32> OpenGLTextureCube::GetFormat(u32 channels) const
+	{
+		u32 internalFormat = 0, dataFormat = 0;
+		if (channels == 3)
+		{
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+		else if (channels == 4)
+		{
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+		return { internalFormat, dataFormat };
 	}
 
 	void OpenGLTextureCube::Bind(u32 slot) const

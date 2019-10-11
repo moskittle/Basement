@@ -12,6 +12,17 @@
 
 #include <assimp/types.h>
 
+
+#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#define OpenGLCall(x) while (glGetError() != GL_NO_ERROR);\
+				x;\
+				if(GLenum error = glGetError())\
+				{\
+					std::stringstream ss; ss << std::hex << error;\
+					BM_CORE_ERROR("{0}({1}): error 0x0{2}", __FILENAME__, __LINE__, ss.str());\
+					__debugbreak();\
+				}
+
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
 glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
@@ -63,8 +74,9 @@ GoofyLandLayer::GoofyLandLayer() :
 	//BuildScene();
 	//BuildLightingScene();
 	//BuildLightingMapScene();
-	BuildModelScene();
+	//BuildModelScene();
 	//BuildSkyboxScene();
+	BuildFrameBufferScene();
 }
 
 
@@ -74,16 +86,19 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
+	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
+	Basement::Renderer::EnableDepthTest();
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
-	Basement::Renderer::ClearBufferBit();
+	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
 	//RenderScene();
 	//RenderLightingScene();
 	//RenderLightingMapScene();
-	RenderModelScene();
+	//RenderModelScene();
 	//RednerSkyboxScene();
+	RenderFrameBufferScene();
 
 	Basement::Renderer::EndScene();
 
@@ -905,14 +920,244 @@ void GoofyLandLayer::RednerSkyboxScene()
 	// Skybox
 	//----------------
 
-	glDepthFunc(GL_LEQUAL);
 	skyboxShader->Bind();
-	m_SkyboxTexture->Activate();
+	m_SkyboxTexture->Bind();
 	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
-	Basement::Renderer::SubmitArrays(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
+	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
+}
 
-	glDepthFunc(GL_LESS);
+void GoofyLandLayer::BuildFrameBufferScene()
+{
+	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
+	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
+	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
+
+	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
+	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
+	m_ScreenTexture = Basement::Texture2D::Create("assets/textures/metal.png", true);
+
+	//----------------
+	// Model
+	//----------------
+	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
+
+
+	//----------------
+	// Floor
+	//----------------
+	float planeVertices[] = {
+		// note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat
+		// positions          // texture Coords
+		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+		-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+	};
+	m_FloorVAO = Basement::VertexArray::Create();
+	m_FloorVBO = Basement::VertexBuffer::Create(sizeof(planeVertices), planeVertices);
+	Basement::BufferLayout bufferLayout = {
+		{ Basement::EShaderDataType::Float3, "a_Position" },
+		{ Basement::EShaderDataType::Float2, "a_TexCood" }
+	};
+	m_FloorVBO->SetLayout(bufferLayout);
+	m_FloorVAO->AddVertexBuffer(m_FloorVBO);
+
+	floorShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("u_Texture", 0);
+
+
+	//----------------
+	// Skybox
+	//----------------
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	m_SkyboxVAO = Basement::VertexArray::Create();
+	m_SkyboxVBO = Basement::VertexBuffer::Create(sizeof(skyboxVertices), skyboxVertices);
+	Basement::BufferLayout skyboxLayout = {
+		{ Basement::EShaderDataType::Float3, "a_Position"}
+	};
+	m_SkyboxVBO->SetLayout(skyboxLayout);
+	m_SkyboxVAO->AddVertexBuffer(m_SkyboxVBO);
+
+	skyboxShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(skyboxShader)->UploadUniform1i("u_SkyboxTexture", 0);
+
+
+	//----------------
+	// Screen Quad
+	//----------------
+	float quadVertices[] = { 
+		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	m_ScreenVAO = Basement::VertexArray::Create();
+	m_ScreenVBO = Basement::VertexBuffer::Create(sizeof(quadVertices), quadVertices);
+	Basement::BufferLayout screenLayout = {
+		{ Basement::EShaderDataType::Float2, "a_Position" },
+		{ Basement::EShaderDataType::Float2, "a_TexCoord" }
+	};
+	m_ScreenVBO->SetLayout(screenLayout);
+	m_ScreenVAO->AddVertexBuffer(m_ScreenVBO);
+
+	screenShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(screenShader)->UploadUniform1i("u_ScreenTexture", 0);
+
+
+	//-----------------------------
+	// Framebuffer configuration
+	//-----------------------------
+
+	// 1. create fbo
+	OpenGLCall(glGenFramebuffers(1, &m_Framebuffer));
+	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer));
+
+	// 2. texture attchment
+	// 2.1 create texture
+	uint32_t texColorbuffer;
+	OpenGLCall(glGenTextures(1, &texColorbuffer));
+	OpenGLCall(glBindTexture(GL_TEXTURE_2D, texColorbuffer));
+
+	OpenGLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB8, GL_UNSIGNED_BYTE, nullptr));
+	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	OpenGLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	
+	// 2.2 attach texture to framebuffer
+	OpenGLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorbuffer, 0));
+
+	// 3. renderbuffer attachment
+	// 3.1 create renderbuffer object
+	uint32_t rbo;
+	OpenGLCall(glGenBuffers(1, &rbo));
+	OpenGLCall(glBindBuffer(GL_RENDERBUFFER, rbo));
+	OpenGLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720));
+	OpenGLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+
+	// 3.2 bind depth and stencil attachment
+	OpenGLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo));
+
+	// 4. check framebuffer status
+	BM_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
+	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+
+void GoofyLandLayer::RenderFrameBufferScene()
+{
+	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	auto& floorShader = m_ShaderLibrary.Get("Floor");
+	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
+	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
+
+
+
+	//----------------
+	// Model
+	//----------------
+	// set up shaders
+	m_NanoSuit->SetShader(nanoShader);
+	// model matrix
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+	// normal matrix
+	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
+
+	nanoShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
+
+	m_NanoSuit->Draw(model);
+
+
+	//--------------
+	// Draw Floor
+	//--------------
+	glm::mat4 floorModel = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
+	floorShader->Bind();
+	m_FloorTexture->Bind(0);
+	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+
+	//----------------
+	// Skybox
+	//----------------
+	skyboxShader->Bind();
+	m_SkyboxTexture->Bind();
+	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) *
+		glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
+	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Basement::Renderer::DisableDepthTest();
+	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit);
+	//----------------
+	// Screen Quad
+	//----------------
+	screenShader->Bind();
+	m_ScreenTexture->Bind();
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 }
 
 

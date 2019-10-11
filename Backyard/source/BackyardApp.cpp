@@ -71,7 +71,7 @@ public:
 
 		// Render
 		Basement::Renderer::SetClearColor(glm::vec4(grey, 1.0f));
-		Basement::Renderer::ClearBufferBit();
+		Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
 		Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 

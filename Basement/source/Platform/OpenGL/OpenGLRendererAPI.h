@@ -16,7 +16,7 @@ namespace Basement {
 		
 		virtual void SetViewport(u32 x, u32 y, u32 width, u32 height) override;
 		virtual void SetClearColor(const glm::vec4& color) override;
-		virtual void Clear() override;
+		virtual void Clear(u32 mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) override;
 		
 		virtual void EnableDepthTest() override;
 		virtual void DisableDepthTest() override;

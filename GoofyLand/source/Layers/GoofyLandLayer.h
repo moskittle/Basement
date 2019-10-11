@@ -34,6 +34,9 @@ private:
 
 	void BuildSkyboxScene();
 	void RednerSkyboxScene();
+
+	void BuildFrameBufferScene();
+	void RenderFrameBufferScene();
 private:
 	Basement::CameraController3D m_CameraController;
 	
@@ -65,8 +68,16 @@ private:
 	Basement::SharedPtr<Basement::VertexBuffer> m_FloorVBO;
 	Basement::SharedPtr<Basement::Texture2D> m_FloorTexture;
 
+	// Screen Quad
+	Basement::SharedPtr<Basement::VertexArray> m_ScreenVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_ScreenVBO;
+	Basement::SharedPtr<Basement::Texture2D> m_ScreenTexture;
+
 	// Sphere
 	Basement::SharedPtr<Basement::VertexArray> m_SphereVAO;
 	Basement::SharedPtr<Basement::VertexBuffer> m_SphereVBO;
 	Basement::SharedPtr<Basement::IndexBuffer> m_SphereIBO;
+
+	// Framebuffer
+	uint32_t m_Framebuffer;
 };

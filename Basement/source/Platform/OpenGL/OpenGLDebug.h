@@ -10,14 +10,14 @@ namespace Basement {
 
 	static std::unordered_map<GLenum, std::string> OpenGLErrors
 	{
-		{ GL_INVALID_ENUM,					"invalid enum" },
-		{ GL_INVALID_VALUE,					"invalid value"},
-		{ GL_INVALID_OPERATION,				"invalid operation"},
-		{ GL_STACK_OVERFLOW,				"stack overflow"},
-		{ GL_STACK_UNDERFLOW,				"stack underflow"},
-		{ GL_OUT_OF_MEMORY,					"out of memory"},
-		{ GL_INVALID_FRAMEBUFFER_OPERATION, "invalid framebuffer operation"},
-		{ GL_CONTEXT_LOST,					"context lost"}
+		{ GL_INVALID_ENUM,						"invalid enum" },
+		{ GL_INVALID_VALUE,						"invalid value" },
+		{ GL_INVALID_OPERATION,					"invalid operation" },
+		{ GL_STACK_OVERFLOW,					"stack overflow" },
+		{ GL_STACK_UNDERFLOW,					"stack underflow" },
+		{ GL_OUT_OF_MEMORY,						"out of memory" },
+		{ GL_INVALID_FRAMEBUFFER_OPERATION,		"invalid framebuffer operation" },
+		{ GL_CONTEXT_LOST,						"context lost" }
 	};
 
 	enum class OpenGLErrorCode

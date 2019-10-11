@@ -42,9 +42,9 @@ namespace Basement {
 		RenderCommand::SetClearColor(color);
 	}
 
-	void Renderer::ClearBufferBit()
+	void Renderer::ClearBufferBit(u32 mask)
 	{
-		RenderCommand::Clear();
+		RenderCommand::Clear(mask);
 	}
 
 	void Renderer::EnableDepthTest()
@@ -64,7 +64,7 @@ namespace Basement {
 
 	void Renderer::SetStencilPredicate(u32 predicate, i32 ref, u32 mask)
 	{
-		RenderCommand::SetStenceilFunc(predicate, ref, mask);
+		RenderCommand::SetStencilFunc(predicate, ref, mask);
 	}
 
 	void Renderer::EnableStencilMaskOverwrite()
@@ -98,5 +98,13 @@ namespace Basement {
 		vertexArray->Bind();
 		RenderCommand::DrawArrays(vertexArray, first, count);
 	}
+
+	void Renderer::SubmitArraysForSkybox(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
+	{
+		glDepthFunc(GL_LEQUAL);
+		SubmitArrays(shader, vertexArray, first, count, modelMatrix);
+		glDepthFunc(GL_LESS);
+	}
+
 
 }

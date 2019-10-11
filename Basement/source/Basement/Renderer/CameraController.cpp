@@ -7,7 +7,7 @@
 
 static const float DefaultMoveSpeed = 20.0f;
 static const float DefaultZoomSpeed = 2.0f;
-static const float DefaultRotationSpeed3D = 0.1f;
+static const float DefaultRotationSpeed3D = 0.3f;
 
 namespace Basement {
 	
@@ -84,7 +84,7 @@ namespace Basement {
 		m_ZoomLevel -= event.GetOffsetY() * 0.2f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_MoveSpeed = DefaultMoveSpeed * m_ZoomLevel;
-		m_RotationSpeed = DefaultRotationSpeed3D * m_ZoomLevel;
+		m_RotationSpeed= DefaultRotationSpeed3D * m_ZoomLevel;
 
 		return false;
 	}

@@ -10,8 +10,9 @@ namespace Basement {
 	{
 	public:
 		virtual ~Texture() = default;
-
+	protected:
 		virtual u32 GetTextureID() const = 0;
+		virtual std::tuple<u32, u32> GetFormat(u32 channels) const = 0;
 	};
 
 	class Texture2D : public Texture

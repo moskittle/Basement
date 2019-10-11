@@ -18,7 +18,7 @@ namespace Basement {
 		static void EndScene();
 
 		static void SetClearColor(const glm::vec4& color);
-		static void ClearBufferBit();
+		static void ClearBufferBit(u32 mask);
 
 		static void EnableDepthTest();
 		static void DisableDepthTest();
@@ -31,6 +31,7 @@ namespace Basement {
 		// Draw
 		static void Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
 		static void SubmitArrays(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
+		static void SubmitArraysForSkybox(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
 
 		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
 	private:

@@ -25,6 +25,7 @@ namespace Basement {
 		virtual void Bind(u32 slot = 0) const override;
 		virtual void Activate(u32 unit) const override;
 	private:
+		virtual std::tuple<u32, u32> GetFormat(u32 channels) const override;
 		void SetTextureParameter();
 	private:
 		u32 m_Width;
@@ -42,9 +43,11 @@ namespace Basement {
 		virtual ~OpenGLTextureCube() override;
 
 		virtual u32 GetTextureID() const override { return m_TextureID; }
+
 		virtual void Bind(u32 slot) const override;
 		virtual void Activate(u32 unit) const override;
 	private:
+		virtual std::tuple<u32, u32> GetFormat(u32 channels) const override;
 		void SetTextureParameter();
 	private:
 		u32 m_TextureID;
