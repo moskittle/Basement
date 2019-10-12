@@ -40,11 +40,11 @@ namespace Basement {
 		ProcessNode(m_Scene->mRootNode, m_Scene);
 	}
 
-	void Model::Draw(const glm::mat4& model)
+	void Model::Draw(SharedPtr<Shader> shader, const glm::mat4& model)
 	{
 		for (auto& mesh : m_Meshes)
 		{
-			mesh.Draw(m_Shader, model);
+			mesh.Draw(shader, model);
 		}
 	}
 

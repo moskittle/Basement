@@ -80,4 +80,7 @@ private:
 
 	// Framebuffer
 	uint32_t m_Framebuffer;
+	uint32_t m_TexColorBuffer;
+	uint32_t m_RenderBuffer;
+
 };

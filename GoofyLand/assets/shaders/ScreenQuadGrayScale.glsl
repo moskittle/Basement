@@ -1,4 +1,4 @@
-// Screen Quad Shader
+// Screen Quad Gray Scale Shader
 
 #type vertex
 #version 330 core
@@ -26,5 +26,11 @@ uniform sampler2D u_ScreenTexture;
 
 void main()
 {
-    color = vec4(texture(u_ScreenTexture, v_TexCoord).rgb, 1.0);
+    // inversion
+    //color = vec4(vec3(1.0 - texture(u_ScreenTexture, v_TexCoord).rgb), 1.0);
+
+    // weighted gray scale
+    color = texture(u_ScreenTexture, v_TexCoord);
+    float average = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+    color = vec4(average, average, average, 1.0);
 }

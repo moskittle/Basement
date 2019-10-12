@@ -65,6 +65,10 @@ float RotationSpeed = 0.3f;
 float FloorSize = 20.0f;
 float FloorLevel = 0.0f;
 
+// Post-Processing
+static int mode = 0;
+
+
 GoofyLandLayer::GoofyLandLayer() :
 	Layer("GL"),
 	m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
@@ -86,7 +90,7 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
+	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer));
 	Basement::Renderer::EnableDepthTest();
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
@@ -726,11 +730,6 @@ void GoofyLandLayer::RenderModelScene()
 	auto& outlineShader = m_ShaderLibrary.Get("Outline");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 
-	//----------------
-	// Model
-	//----------------
-	// set up shaders
-	m_NanoSuit->SetShader(nanoShader);
 	// model matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -764,7 +763,7 @@ void GoofyLandLayer::RenderModelScene()
 	Basement::Renderer::SetStencilPredicate(Basement::RendererGL::Always, 1, 0xFF);
 	Basement::Renderer::DisableStencilMaskOverwrite();
 
-	m_NanoSuit->Draw(model);
+	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
 	// 2. draw outline
 	Basement::Renderer::SetStencilPredicate(Basement::RendererGL::NotEqual, 1, 0xFF);
@@ -888,8 +887,6 @@ void GoofyLandLayer::RednerSkyboxScene()
 	//----------------
 	// Model
 	//----------------
-	// set up shaders
-	m_NanoSuit->SetShader(nanoShader);
 	// model matrix
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -905,8 +902,7 @@ void GoofyLandLayer::RednerSkyboxScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	m_NanoSuit->Draw(model);
-
+	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
 	//--------------
 	// Draw Floor
@@ -933,10 +929,12 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
+	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadInversion.glsl");
+	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadGrayScale.glsl");
+	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadKernel.glsl");
 
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
-	m_ScreenTexture = Basement::Texture2D::Create("assets/textures/metal.png", true);
 
 	//----------------
 	// Model
@@ -1069,28 +1067,26 @@ void GoofyLandLayer::BuildFrameBufferScene()
 
 	// 2. texture attchment
 	// 2.1 create texture
-	uint32_t texColorbuffer;
-	OpenGLCall(glGenTextures(1, &texColorbuffer));
-	OpenGLCall(glBindTexture(GL_TEXTURE_2D, texColorbuffer));
+	OpenGLCall(glGenTextures(1, &m_TexColorBuffer));
+	OpenGLCall(glBindTexture(GL_TEXTURE_2D, m_TexColorBuffer));
 
-	OpenGLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB8, GL_UNSIGNED_BYTE, nullptr));
+	OpenGLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
 	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	OpenGLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	
 	// 2.2 attach texture to framebuffer
-	OpenGLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorbuffer, 0));
+	OpenGLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TexColorBuffer, 0));
 
 	// 3. renderbuffer attachment
 	// 3.1 create renderbuffer object
-	uint32_t rbo;
-	OpenGLCall(glGenBuffers(1, &rbo));
-	OpenGLCall(glBindBuffer(GL_RENDERBUFFER, rbo));
+	OpenGLCall(glGenRenderbuffers(1, &m_RenderBuffer));
+	OpenGLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer));
 	OpenGLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720));
 	OpenGLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 
 	// 3.2 bind depth and stencil attachment
-	OpenGLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo));
+	OpenGLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer));
 
 	// 4. check framebuffer status
 	BM_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
@@ -1103,18 +1099,17 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
-
+	auto& inversionShader = m_ShaderLibrary.Get("ScreenQuadInversion");
+	auto& grayShader = m_ShaderLibrary.Get("ScreenQuadGrayScale");
+	auto& kernelShader = m_ShaderLibrary.Get("ScreenQuadKernel");
 
 
 	//----------------
 	// Model
 	//----------------
-	// set up shaders
-	m_NanoSuit->SetShader(nanoShader);
-	// model matrix
-	glm::mat4 model = glm::mat4(1.0f);
+
+	glm::mat4 model(1.0f);
 	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-	// normal matrix
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
 	nanoShader->Bind();
@@ -1126,24 +1121,22 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	m_NanoSuit->Draw(model);
+	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
 
 	//--------------
 	// Draw Floor
 	//--------------
-	glm::mat4 floorModel = glm::mat4(1.0f) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
-	floorShader->Bind();
+	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
 	m_FloorTexture->Bind(0);
-	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+	//Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
 	//----------------
 	// Skybox
 	//----------------
-	skyboxShader->Bind();
 	m_SkyboxTexture->Bind();
-	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) *
-		glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
+	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) * 
+		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
 	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
 
 
@@ -1155,9 +1148,28 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	// Screen Quad
 	//----------------
 	screenShader->Bind();
-	m_ScreenTexture->Bind();
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindTexture(GL_TEXTURE_2D, m_TexColorBuffer);
+	glm::mat4 screenModel(1.0f);
+	
+	switch (mode)
+	{
+	case 0:
+		screenShader->Bind(); break;
+	case 1:
+		inversionShader->Bind(); break;
+	case 2:
+		grayShader->Bind(); break;
+	case 3:
+		kernelShader->Bind(); break;
+	default:
+		screenShader->Bind(); break;
+	}
 
+	
+	
+	m_ScreenVAO->Bind();
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	//Basement::Renderer::SubmitArrays(screenShader, m_ScreenVAO, 0, 6, screenModel);
 }
 
 
@@ -1166,6 +1178,14 @@ void GoofyLandLayer::RenderFrameBufferScene()
 void GoofyLandLayer::RenderImGui()
 {
 	ImGui::Begin("Scene");
+
+	if (ImGui::CollapsingHeader("Mode"))
+	{
+		ImGui::RadioButton("Normal", &mode, 0);
+		ImGui::RadioButton("Inversion", &mode, 1);
+		ImGui::RadioButton("Grayscale", &mode, 2);
+		ImGui::RadioButton("Kernel", &mode, 3);
+	}
 
 	if (ImGui::CollapsingHeader("Light"))
 	{

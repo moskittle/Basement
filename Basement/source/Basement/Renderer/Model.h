@@ -17,10 +17,8 @@ namespace Basement {
 		~Model() = default;
 
 		static SharedPtr<Model> Create(const std::string& filePath);
-		void Draw(const glm::mat4& model);
+		void Draw(SharedPtr<Shader> shader, const glm::mat4& model);
 		void DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model);
-
-		void SetShader(SharedPtr<Shader> shader) { m_Shader = shader; }
 	private:
 		void Load(const std::string& filePath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
@@ -29,8 +27,6 @@ namespace Basement {
 	private:
 		std::vector<Mesh> m_Meshes;
 		std::string m_Directory;
-		
-		SharedPtr<Shader> m_Shader;
 
 		const aiScene* m_Scene;
 		UniquePtr<Assimp::Importer> m_Importer;

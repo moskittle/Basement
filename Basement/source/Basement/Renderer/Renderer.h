@@ -3,6 +3,7 @@
 #include "RenderCommand.h"
 #include "Camera.h"
 #include "Shader.h"
+#include "Model.h"
 
 namespace Basement {
 	
@@ -29,9 +30,10 @@ namespace Basement {
 		static void DisableStencilMaskOverwrite();
 
 		// Draw
-		static void Submit(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, const glm::mat4& modelMatrix);
-		static void SubmitArrays(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
-		static void SubmitArraysForSkybox(const SharedPtr<Shader>& shader, const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
+		static void Submit(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix);
+		static void SubmitArrays(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
+		static void SubmitArraysForSkybox(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
+		static void SubmitModel(SharedPtr<Model> model, SharedPtr<Shader> shader, const glm::mat4& modelMatrix);
 
 		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
 	private:

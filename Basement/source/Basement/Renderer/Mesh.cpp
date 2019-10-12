@@ -59,7 +59,7 @@ namespace Basement {
 			{
 				BM_CORE_ASSERT(true, "Unknown Texture TypeName!");
 			}
-
+			
 			shader->Bind();
 			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("u_Material." + typeName + index).c_str(), i);
 			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.ambient", m_MaterialAttrib.GetAmbientColor());

@@ -1,4 +1,4 @@
-// Screen Quad Shader
+// Screen Quad Inversion Shader
 
 #type vertex
 #version 330 core
@@ -26,5 +26,6 @@ uniform sampler2D u_ScreenTexture;
 
 void main()
 {
-    color = vec4(texture(u_ScreenTexture, v_TexCoord).rgb, 1.0);
+    // inversion
+    color = vec4(vec3(1.0 - texture(u_ScreenTexture, v_TexCoord).rgb), 1.0);
 }
