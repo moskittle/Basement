@@ -57,9 +57,10 @@ namespace Basement {
 		OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	}
 
-	void OpenGLFrameBuffer::BindTexture(u32 slot) const
+	void OpenGLFrameBuffer::ActivateTexture(u32 slot) const
 	{
-		glBindTexture(GL_TEXTURE_2D + 0, m_ColorAttachmentID);
+		glActiveTexture(GL_TEXTURE0 + slot);
+		OpenGLCall(glBindTexture(GL_TEXTURE_2D, m_ColorAttachmentID));
 	}
 
 }

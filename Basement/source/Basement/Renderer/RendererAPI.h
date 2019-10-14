@@ -15,8 +15,14 @@ namespace Basement {
 		static bool True = 1;
 		static bool False = 0;
 
-		static u32 Always = 0x0207;
+		static u32 Never = 0x0200;
+		static u32 Less = 0x0201;
+		static u32 Equal = 0x0202;
+		static u32 LEqual = 0x0203;
+		static u32 Greater = 0x0204;
 		static u32 NotEqual = 0x0205;
+		static u32 GEqual = 0x0206;
+		static u32 Always = 0x0207;
 
 		static u32 Keep = 0x1E00;
 		static u32 Replace = 0x1E01;
@@ -57,6 +63,7 @@ namespace Basement {
 		virtual void EnableDepthTest() = 0;
 		virtual void DisableDepthTest() = 0;
 		virtual void SetDepthMask(bool mask) = 0;
+		virtual void SetDepthFunc(u32 predicate) = 0;
 		
 		virtual void EnableStencilTest() = 0;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) = 0;
@@ -64,8 +71,8 @@ namespace Basement {
 		virtual void SetStencilMask(u32 mask) = 0;
 		virtual void SetStencilFunc(u32 func, i32 ref, u32 mask) = 0;
 		
-		virtual void DrawIndex(const SharedPtr<VertexArray>& vertexArray) = 0;
-		virtual void DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count) = 0;
+		virtual void DrawIndex(SharedPtr<VertexArray> vertexArray) = 0;
+		virtual void DrawArrays(u32 first, u32 count) = 0;
 
 		static EAPI GetRendererAPI() { return s_Instance; };
 		static RendererAPIInfo& GetRendererAPIInfo() { static RendererAPIInfo info; return info; }

@@ -77,10 +77,10 @@ namespace Basement {
 		RenderCommand::SetStencilMask(0xFF);
 	}
 
-	void Renderer::Submit(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& model)
+	void Renderer::Submit(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix)
 	{
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", model);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
 
@@ -88,22 +88,27 @@ namespace Basement {
 		RenderCommand::DrawIndex(vertexArray);
 	}
 
-	void Renderer::SubmitArrays(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& model)
+	void Renderer::SubmitArrays(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
 	{
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", model);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
 
 		vertexArray->Bind();
-		RenderCommand::DrawArrays(vertexArray, first, count);
+		RenderCommand::DrawArrays(first, count);
+	}
+
+	void Renderer::SubmitArraysForScreen(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count)
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
 	void Renderer::SubmitArraysForSkybox(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
 	{
-		glDepthFunc(GL_LEQUAL);
+		RenderCommand::SetDepthFunc(RendererGL::LEqual);
 		SubmitArrays(shader, vertexArray, first, count, modelMatrix);
-		glDepthFunc(GL_LESS);
+		RenderCommand::SetDepthFunc(RendererGL::Less);
 	}
 
 	void Renderer::SubmitModel(SharedPtr<Model> model, SharedPtr<Shader> shader, const glm::mat4& modelMatrix)

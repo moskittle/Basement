@@ -19,7 +19,7 @@ namespace Basement {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		virtual void BindTexture(u32 slot = 0) const = 0;
+		virtual void ActivateTexture(u32 slot = 0) const = 0;
 
 		virtual u32 GetFrameBufferID() const = 0;
 		virtual u32 GetColorAttachmentID() const = 0;

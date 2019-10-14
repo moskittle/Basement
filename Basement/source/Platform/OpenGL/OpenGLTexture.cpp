@@ -85,8 +85,6 @@ namespace Basement {
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 	}
 
-
-
 	//----------------------------------------------------
 	// OpenGL Texture Cube
 	//----------------------------------------------------

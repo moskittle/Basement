@@ -47,6 +47,11 @@ namespace Basement {
 		glDepthMask(mask);
 	}
 
+	void OpenGLRendererAPI::SetDepthFunc(u32 predicate)
+	{
+		glDepthFunc(predicate);
+	}
+
 	void OpenGLRendererAPI::EnableStencilTest()
 	{
 		glEnable(GL_STENCIL_TEST);
@@ -72,12 +77,12 @@ namespace Basement {
 		glStencilFunc(predicate, ref, mask);
 	}
 
-	void OpenGLRendererAPI::DrawIndex(const SharedPtr<VertexArray>& vertexArray)
+	void OpenGLRendererAPI::DrawIndex(SharedPtr<VertexArray> vertexArray)
 	{
 		OpenGLCall(glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
-	void OpenGLRendererAPI::DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count)
+	void OpenGLRendererAPI::DrawArrays(u32 first, u32 count)
 	{
 		OpenGLCall(glDrawArrays(GL_TRIANGLES, first, count));
 	}

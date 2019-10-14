@@ -12,7 +12,7 @@ namespace Basement {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-		virtual void BindTexture(u32 slot = 0) const override;
+		virtual void ActivateTexture(u32 slot = 0) const override;
 
 		virtual u32 GetFrameBufferID() const override { return m_FrameBufferID; }
 		virtual u32 GetColorAttachmentID() const override { return m_ColorAttachmentID; }

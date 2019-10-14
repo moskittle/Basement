@@ -21,6 +21,7 @@ namespace Basement {
 		virtual void EnableDepthTest() override;
 		virtual void DisableDepthTest() override;
 		virtual void SetDepthMask(bool mask) override;
+		virtual void SetDepthFunc(u32 predicate) override;
 		
 		virtual void EnableStencilTest() override;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) override;
@@ -28,8 +29,8 @@ namespace Basement {
 		virtual void SetStencilMask(u32 mask) override;
 		virtual void SetStencilFunc(u32 func, i32 ref, u32 mask) override;
 		
-		virtual void DrawIndex(const SharedPtr<VertexArray>& vertexArray) override;
-		virtual void DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count) override;
+		virtual void DrawIndex(SharedPtr<VertexArray> vertexArray) override;
+		virtual void DrawArrays(u32 first, u32 count) override;
 	};
 
 }

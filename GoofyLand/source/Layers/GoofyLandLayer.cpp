@@ -7,6 +7,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -78,11 +79,8 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	// Update
 	m_CameraController.Update(dt);
 
-	// Render
-	m_FrameBuffer->Bind();
-	Basement::Renderer::EnableDepthTest();
-	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
-	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
+	//Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	//Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
@@ -1021,6 +1019,7 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	//----------------
 	// Screen Quad
 	//----------------
+
 	float quadVertices[] = { 
 		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 		// positions   // texCoords
@@ -1046,6 +1045,22 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(screenShader)->UploadUniform1i("u_ScreenTexture", 0);
 
 
+	float smallQuadVertices[] = {
+		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  1.0f,  1.0f, 1.0f
+	};
+	m_SmallScreenVAO = Basement::VertexArray::Create();
+	m_SmallScreenVBO = Basement::VertexBuffer::Create(sizeof(smallQuadVertices), smallQuadVertices);
+	m_SmallScreenVBO->SetLayout(screenLayout);
+	m_SmallScreenVAO->AddVertexBuffer(m_SmallScreenVBO);
+
 	//-----------------------------
 	// Framebuffer configuration
 	//-----------------------------
@@ -1062,6 +1077,11 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	auto& grayShader = m_ShaderLibrary.Get("ScreenQuadGrayScale");
 	auto& kernelShader = m_ShaderLibrary.Get("ScreenQuadKernel");
 
+	// Render
+	m_FrameBuffer->Bind();
+	Basement::Renderer::EnableDepthTest();
+	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
 	//----------------
 	// Model
@@ -1080,14 +1100,13 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
+	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
-
-	//--------------
-	// Draw Floor
-	//--------------
+	////--------------
+	//// Draw Floor
+	////--------------
 	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
-	m_FloorTexture->Bind(0);
+	m_FloorTexture->Bind();
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
 	//----------------
@@ -1099,17 +1118,17 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
 
 
+	// Swich back to default framebuffer
 	m_FrameBuffer->Unbind();
 	Basement::Renderer::DisableDepthTest();
-	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
+	//Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit);
+
 	//----------------
 	// Screen Quad
 	//----------------
-	screenShader->Bind();
-	m_FrameBuffer->BindTexture();
-	glm::mat4 screenModel(1.0f);
-	
+	m_FrameBuffer->ActivateTexture();
+
 	switch (mode)
 	{
 	case 0:
@@ -1124,10 +1143,11 @@ void GoofyLandLayer::RenderFrameBufferScene()
 		screenShader->Bind(); break;
 	}
 
-	
-	
 	m_ScreenVAO->Bind();
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	m_SmallScreenVAO->Bind();
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 	//Basement::Renderer::SubmitArrays(screenShader, m_ScreenVAO, 0, 6, screenModel);
 }
 

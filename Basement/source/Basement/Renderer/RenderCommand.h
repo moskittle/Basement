@@ -15,6 +15,7 @@ namespace Basement {
 		static void EnableDepthTest() { s_RenderAPI->EnableDepthTest(); }
 		static void DisableDepthTest() { s_RenderAPI->DisableDepthTest(); }
 		static void SetDepthMask(bool mask) { s_RenderAPI->SetDepthMask(mask); }
+		static void SetDepthFunc(u32 predicate) { s_RenderAPI->SetDepthFunc(predicate); }
 		
 		static void EnableStencilTest() { s_RenderAPI->EnableStencilTest(); }
 		static void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) { s_RenderAPI->SetStencilOp(allFail, depthFail, allPass); }
@@ -22,8 +23,8 @@ namespace Basement {
 		static void SetStencilMask(u32 mask) { s_RenderAPI->SetStencilMask(mask); }
 		static void SetStencilFunc(u32 predicate, i32 ref, u32 mask) { s_RenderAPI->SetStencilFunc(predicate, ref, mask); }
 		
-		static void DrawIndex(const SharedPtr<VertexArray>& vertexArray) { s_RenderAPI->DrawIndex(vertexArray); }
-		static void DrawArrays(const SharedPtr<VertexArray>& vertexArray, u32 first, u32 count) { s_RenderAPI->DrawArrays(vertexArray, first, count); }
+		static void DrawIndex(SharedPtr<VertexArray> vertexArray) { s_RenderAPI->DrawIndex(vertexArray); }
+		static void DrawArrays(u32 first, u32 count) { s_RenderAPI->DrawArrays(first, count); }
 	private:
 		static RendererAPI* s_RenderAPI;
 	};

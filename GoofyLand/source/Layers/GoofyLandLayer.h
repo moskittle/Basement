@@ -73,6 +73,8 @@ private:
 	Basement::SharedPtr<Basement::VertexArray> m_ScreenVAO;
 	Basement::SharedPtr<Basement::VertexBuffer> m_ScreenVBO;
 	Basement::SharedPtr<Basement::Texture2D> m_ScreenTexture;
+	Basement::SharedPtr<Basement::VertexArray> m_SmallScreenVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_SmallScreenVBO;
 
 	// Sphere
 	Basement::SharedPtr<Basement::VertexArray> m_SphereVAO;

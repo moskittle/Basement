@@ -28,7 +28,7 @@ namespace Basement {
 		m_VAO->SetIndexBuffer(m_IBO);
 	}
 
-	void Mesh::Draw(SharedPtr<Shader> shader, const glm::mat4& model)
+	void Mesh::Draw(SharedPtr<Shader> shader, const glm::mat4& modelMatrix)
 	{
 		u32 diffuseIndex = 1;
 		u32 specularIndex = 1;
@@ -70,13 +70,13 @@ namespace Basement {
 			m_Textures[i]->Activate(i);
 		}
 
-		Renderer::Submit(shader, m_VAO, model);
+		Renderer::Submit(shader, m_VAO, modelMatrix);
 	}
 
-	void Mesh::DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model)
+	void Mesh::DrawOutline(SharedPtr<Shader> shader, const glm::mat4& modelMatrix)
 	{
 		shader->Bind();
-		Renderer::Submit(shader, m_VAO, model);
+		Renderer::Submit(shader, m_VAO, modelMatrix);
 	}
 
 }

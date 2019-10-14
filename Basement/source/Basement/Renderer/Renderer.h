@@ -32,6 +32,7 @@ namespace Basement {
 		// Draw
 		static void Submit(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix);
 		static void SubmitArrays(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
+		static void SubmitArraysForScreen(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count);
 		static void SubmitArraysForSkybox(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
 		static void SubmitModel(SharedPtr<Model> model, SharedPtr<Shader> shader, const glm::mat4& modelMatrix);
 
