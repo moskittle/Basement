@@ -919,6 +919,7 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadInversion.glsl");
 	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadGrayScale.glsl");
 	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadKernel.glsl");
+	auto& blurShaderShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadBlur.glsl");
 
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
@@ -1076,6 +1077,7 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	auto& inversionShader = m_ShaderLibrary.Get("ScreenQuadInversion");
 	auto& grayShader = m_ShaderLibrary.Get("ScreenQuadGrayScale");
 	auto& kernelShader = m_ShaderLibrary.Get("ScreenQuadKernel");
+	auto& blurShader = m_ShaderLibrary.Get("ScreenQuadBlur");
 
 	// Render
 	m_FrameBuffer->Bind();
@@ -1139,6 +1141,8 @@ void GoofyLandLayer::RenderFrameBufferScene()
 		grayShader->Bind(); break;
 	case 3:
 		kernelShader->Bind(); break;
+	case 4:
+		blurShader->Bind(); break;
 	default:
 		screenShader->Bind(); break;
 	}
@@ -1164,6 +1168,7 @@ void GoofyLandLayer::RenderImGui()
 		ImGui::RadioButton("Inversion", &mode, 1);
 		ImGui::RadioButton("Grayscale", &mode, 2);
 		ImGui::RadioButton("Kernel", &mode, 3);
+		ImGui::RadioButton("Blur", &mode, 4);
 	}
 
 	if (ImGui::CollapsingHeader("Light"))
