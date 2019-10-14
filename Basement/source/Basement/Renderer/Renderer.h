@@ -35,7 +35,7 @@ namespace Basement {
 		static void SubmitArraysForSkybox(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix);
 		static void SubmitModel(SharedPtr<Model> model, SharedPtr<Shader> shader, const glm::mat4& modelMatrix);
 
-		inline static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
+		static RendererAPI::EAPI GetAPI() { return RendererAPI::GetRendererAPI(); }
 	private:
 		struct SceneData
 		{

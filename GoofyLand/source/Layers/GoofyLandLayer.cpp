@@ -12,17 +12,6 @@
 
 #include <assimp/types.h>
 
-
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-#define OpenGLCall(x) while (glGetError() != GL_NO_ERROR);\
-				x;\
-				if(GLenum error = glGetError())\
-				{\
-					std::stringstream ss; ss << std::hex << error;\
-					BM_CORE_ERROR("{0}({1}): error 0x0{2}", __FILENAME__, __LINE__, ss.str());\
-					__debugbreak();\
-				}
-
 // Global Variables
 //glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
 glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
@@ -90,7 +79,7 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 	m_CameraController.Update(dt);
 
 	// Render
-	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer));
+	m_FrameBuffer->Bind();
 	Basement::Renderer::EnableDepthTest();
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
@@ -1060,37 +1049,7 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	//-----------------------------
 	// Framebuffer configuration
 	//-----------------------------
-
-	// 1. create fbo
-	OpenGLCall(glGenFramebuffers(1, &m_Framebuffer));
-	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer));
-
-	// 2. texture attchment
-	// 2.1 create texture
-	OpenGLCall(glGenTextures(1, &m_TexColorBuffer));
-	OpenGLCall(glBindTexture(GL_TEXTURE_2D, m_TexColorBuffer));
-
-	OpenGLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
-	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	OpenGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	OpenGLCall(glBindTexture(GL_TEXTURE_2D, 0));
-	
-	// 2.2 attach texture to framebuffer
-	OpenGLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TexColorBuffer, 0));
-
-	// 3. renderbuffer attachment
-	// 3.1 create renderbuffer object
-	OpenGLCall(glGenRenderbuffers(1, &m_RenderBuffer));
-	OpenGLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer));
-	OpenGLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720));
-	OpenGLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
-
-	// 3.2 bind depth and stencil attachment
-	OpenGLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer));
-
-	// 4. check framebuffer status
-	BM_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
-	OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	m_FrameBuffer = Basement::FrameBuffer::Create(1280, 720);
 }
 
 void GoofyLandLayer::RenderFrameBufferScene()
@@ -1129,7 +1088,7 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	//--------------
 	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
 	m_FloorTexture->Bind(0);
-	//Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
 	//----------------
 	// Skybox
@@ -1140,7 +1099,7 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
 
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	m_FrameBuffer->Unbind();
 	Basement::Renderer::DisableDepthTest();
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit);
@@ -1148,7 +1107,7 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	// Screen Quad
 	//----------------
 	screenShader->Bind();
-	glBindTexture(GL_TEXTURE_2D, m_TexColorBuffer);
+	m_FrameBuffer->BindTexture();
 	glm::mat4 screenModel(1.0f);
 	
 	switch (mode)

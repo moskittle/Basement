@@ -6,6 +6,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Basement/Renderer/Texture.h"
 #include "Basement/Renderer/VertexArray.h"
+#include "Basement/Renderer/FrameBuffer.h"
 #include "Basement/Renderer/Model.h"
 
 #include <glm/glm.hpp>
@@ -79,8 +80,8 @@ private:
 	Basement::SharedPtr<Basement::IndexBuffer> m_SphereIBO;
 
 	// Framebuffer
+	Basement::SharedPtr<Basement::FrameBuffer> m_FrameBuffer;
 	uint32_t m_Framebuffer;
 	uint32_t m_TexColorBuffer;
 	uint32_t m_RenderBuffer;
-
 };
