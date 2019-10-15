@@ -140,7 +140,6 @@ namespace Basement {
 			materialAttrib.SetAttributes(ambientColor, diffuseColor, specularColor, shininess);
 		}
 
-
 		return Mesh(vertices, indices, textures, materialAttrib);
 	}
 

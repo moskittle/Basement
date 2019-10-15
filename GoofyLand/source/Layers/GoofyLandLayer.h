@@ -81,9 +81,9 @@ private:
 	Basement::SharedPtr<Basement::VertexBuffer> m_SphereVBO;
 	Basement::SharedPtr<Basement::IndexBuffer> m_SphereIBO;
 
-	// Framebuffer
+	// Frame Buffer
 	Basement::SharedPtr<Basement::FrameBuffer> m_FrameBuffer;
-	uint32_t m_Framebuffer;
-	uint32_t m_TexColorBuffer;
-	uint32_t m_RenderBuffer;
+
+	// Uniform Buffer
+	uint32_t m_CameraMatUBO;
 };

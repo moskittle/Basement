@@ -104,6 +104,7 @@ namespace Basement {
 		
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
+		
 		virtual u32 GetCount() const = 0;
 
 		static SharedPtr<VertexBuffer> Create(u32 size, float* vertices);
@@ -116,10 +117,23 @@ namespace Basement {
 	public:
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
 		virtual inline u32 GetCount() const = 0;
 
 		static SharedPtr<IndexBuffer> Create(u32 count, u32* indices);
 		static SharedPtr<IndexBuffer> Create(const std::vector<u32>& indices);
 	};
 
+
+	class UniformBuffer
+	{
+	public:
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+
+		virtual const BufferLayout& GetLayout() const = 0;
+		virtual void SetLayout(const BufferLayout& layout) = 0;
+		
+		virtual void GetIndex() = 0;
+	};
 }

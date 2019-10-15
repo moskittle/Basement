@@ -21,6 +21,7 @@ namespace Basement {
 		virtual void Unbind() const override;
 
 		virtual const std::string& GetName() const override { return m_Name; }
+		virtual u32				   GetProgramID() const override { return m_ProgramID; }
 
 		// TODO: Replace std::string with const char*
 		void UploadUniform1i(const std::string& name, const int& value);

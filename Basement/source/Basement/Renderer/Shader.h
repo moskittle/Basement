@@ -16,6 +16,7 @@ namespace Basement {
 		static SharedPtr<Shader> Create(const std::string& name, const std::string& vertexSource, const std::string& fragSource);
 
 		virtual const std::string& GetName() const = 0;
+		virtual u32				   GetProgramID() const = 0;
 	private:
 		u32 m_ProgramID = 0;
 	};

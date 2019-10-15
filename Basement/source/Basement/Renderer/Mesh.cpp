@@ -30,53 +30,44 @@ namespace Basement {
 
 	void Mesh::Draw(SharedPtr<Shader> shader, const glm::mat4& modelMatrix)
 	{
-		if (m_Textures.size() > 0)
-		{
-			u32 diffuseIndex = 1;
-			u32 specularIndex = 1;
-			u32 normalIndex = 1;
-			u32 heightIndex = 1;
+		u32 diffuseIndex = 1;
+		u32 specularIndex = 1;
+		u32 normalIndex = 1;
+		u32 heightIndex = 1;
 
-			for (unsigned int i = 0; i < m_Textures.size(); ++i)
+		for (unsigned int i = 0; i < m_Textures.size(); ++i)
+		{
+			std::string index;
+			std::string& typeName = m_Textures[i]->GetTypeName();
+			if (typeName == "texture_diffuse")
 			{
-				std::string index;
-				std::string& typeName = m_Textures[i]->GetTypeName();
-				if (typeName == "texture_diffuse")
-				{
-					index = std::to_string(diffuseIndex++);
-				}
-				else if (typeName == "texture_specular")
-				{
-					index = std::to_string(specularIndex++);
-				}
-				else if (typeName == "texture_normal")
-				{
-					index = std::to_string(normalIndex++);
-				}
-				else if (typeName == "texture_height")
-				{
-					index = std::to_string(heightIndex++);
-				}
-				else
-				{
-					BM_CORE_ASSERT(true, "Unknown Texture TypeName!");
-				}
-
-				shader->Bind();
-				std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("u_Material." + typeName + index).c_str(), i);
-				//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.ambient", m_MaterialAttrib.GetAmbientColor());
-				//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.diffuse", m_MaterialAttrib.GetDiffuseColor());
-				//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.specular", m_MaterialAttrib.GetSpecularColor());
-				//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1f("u_Material.shininess", m_MaterialAttrib.GetShininess());
-
-				m_Textures[i]->Activate(i);
+				index = std::to_string(diffuseIndex++);
 			}
-		}
-		else
-		{
-			// TODO: replace environment mapping texture with default texture
+			else if (typeName == "texture_specular")
+			{
+				index = std::to_string(specularIndex++);
+			}
+			else if (typeName == "texture_normal")
+			{
+				index = std::to_string(normalIndex++);
+			}
+			else if (typeName == "texture_height")
+			{
+				index = std::to_string(heightIndex++);
+			}
+			else
+			{
+				BM_CORE_ASSERT(true, "Unknown Texture TypeName!");
+			}
+
 			shader->Bind();
-			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i("u_Skybox", 0);
+			std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1i(("u_Material." + typeName + index).c_str(), i);
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.ambient", m_MaterialAttrib.GetAmbientColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.diffuse", m_MaterialAttrib.GetDiffuseColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform3f("u_Material.specular", m_MaterialAttrib.GetSpecularColor());
+			//std::dynamic_pointer_cast<Basement::OpenGLShader>(shader)->UploadUniform1f("u_Material.shininess", m_MaterialAttrib.GetShininess());
+
+			m_Textures[i]->Activate(i);
 		}
 
 		Renderer::Submit(shader, m_VAO, modelMatrix);
