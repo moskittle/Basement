@@ -57,6 +57,7 @@ float FloorLevel = 0.0f;
 
 // Post-Processing
 static int mode = 0;
+static int shader = 0;
 
 
 GoofyLandLayer::GoofyLandLayer() :
@@ -913,6 +914,8 @@ void GoofyLandLayer::RednerSkyboxScene()
 void GoofyLandLayer::BuildFrameBufferScene()
 {
 	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& nanoMetalShader = m_ShaderLibrary.Load("assets/shaders/NanoSuitMetal.glsl");
+	auto& nanoGlassShader = m_ShaderLibrary.Load("assets/shaders/NanoSuitGlass.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
@@ -927,7 +930,7 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	//----------------
 	// Model
 	//----------------
-	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
+	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit-metal/nanosuit.obj");
 
 
 	//----------------
@@ -1071,6 +1074,8 @@ void GoofyLandLayer::BuildFrameBufferScene()
 void GoofyLandLayer::RenderFrameBufferScene()
 {
 	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	auto& nanoMetalShader = m_ShaderLibrary.Get("NanoSuitMetal");
+	auto& nanoGlassShader = m_ShaderLibrary.Get("NanoSuitGlass");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
@@ -1102,21 +1107,40 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
+	nanoMetalShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoMetalShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoMetalShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+
+	nanoGlassShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoGlassShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoGlassShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+
+	m_SkyboxTexture->Bind();
+	switch (shader)
+	{
+	case 0:
+		Basement::Renderer::SubmitModel(m_NanoSuit, nanoMetalShader, model); break;
+	case 1:
+		Basement::Renderer::SubmitModel(m_NanoSuit, nanoGlassShader, model); break;
+	default:
+		Basement::Renderer::SubmitModel(m_NanoSuit, nanoGlassShader, model); break;
+	}
+
+	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoGlassShader, model);
 
 	////--------------
 	//// Draw Floor
 	////--------------
 	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
 	m_FloorTexture->Bind();
-	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+	//Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
 	//----------------
 	// Skybox
 	//----------------
 	m_SkyboxTexture->Bind();
-	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) * 
-		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) /** 
+		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f))*/;
 	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
 
 
@@ -1131,6 +1155,7 @@ void GoofyLandLayer::RenderFrameBufferScene()
 	//----------------
 	m_FrameBuffer->ActivateTexture();
 
+	// large
 	switch (mode)
 	{
 	case 0:
@@ -1149,6 +1174,9 @@ void GoofyLandLayer::RenderFrameBufferScene()
 
 	m_ScreenVAO->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	// small
+	screenShader->Bind();
 	m_SmallScreenVAO->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -1206,6 +1234,13 @@ void GoofyLandLayer::RenderImGui()
 
 	if (ImGui::CollapsingHeader("Floor")) {
 		ImGui::SliderFloat("Size", &FloorSize, 0.0f, 50.0f, "%f", 1.0f);
+	}
+
+	if (ImGui::CollapsingHeader("Shader"))
+	{
+		ImGui::RadioButton("Metal", &shader, 0);
+		ImGui::RadioButton("Glass", &shader, 1);
+		ImGui::RadioButton("Diamond", &shader, 2);
 	}
 
 	ImGui::End();
