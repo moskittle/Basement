@@ -49,17 +49,17 @@ namespace Basement {
 		{
 			switch (Type)
 			{
-			case EShaderDataType::Int:      return 1;
-			case EShaderDataType::Int2:     return 2;
-			case EShaderDataType::Int3:     return 3;
-			case EShaderDataType::Int4:     return 4;
-			case EShaderDataType::Float:    return 1;
-			case EShaderDataType::Float2:   return 2;
-			case EShaderDataType::Float3:   return 3;
-			case EShaderDataType::Float4:   return 4;
-			case EShaderDataType::Mat3:     return 3;
-			case EShaderDataType::Mat4:     return 4;
-			case EShaderDataType::Bool:     return 1;
+				case EShaderDataType::Int:      return 1;
+				case EShaderDataType::Int2:     return 2;
+				case EShaderDataType::Int3:     return 3;
+				case EShaderDataType::Int4:     return 4;
+				case EShaderDataType::Float:    return 1;
+				case EShaderDataType::Float2:   return 2;
+				case EShaderDataType::Float3:   return 3;
+				case EShaderDataType::Float4:   return 4;
+				case EShaderDataType::Mat3:     return 3;
+				case EShaderDataType::Mat4:     return 4;
+				case EShaderDataType::Bool:     return 1;
 			}
 
 			BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -134,6 +134,8 @@ namespace Basement {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 		
-		virtual void GetIndex() = 0;
+		//virtual void GetIndex() = 0;
+
+		static SharedPtr<UniformBuffer> Create();
 	};
 }

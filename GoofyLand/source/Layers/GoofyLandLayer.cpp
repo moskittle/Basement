@@ -926,28 +926,26 @@ void GoofyLandLayer::BuildFrameBufferScene()
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
 
 
-	// 1. Bind uniform block to index 0
-	uint32_t uniformBlockNano = glGetUniformBlockIndex(nanoShader->GetProgramID(), "CameraMat");
-	uint32_t uniformBlockFloor = glGetUniformBlockIndex(floorShader->GetProgramID(), "CameraMat");
+	//// 1. Bind uniform block to index 0
+	//uint32_t uniformBlockNano = glGetUniformBlockIndex(nanoShader->GetProgramID(), "CameraMat");
+	//uint32_t uniformBlockFloor = glGetUniformBlockIndex(floorShader->GetProgramID(), "CameraMat");
 
-	glUniformBlockBinding(nanoShader->GetProgramID(), uniformBlockNano, 0);
-	glUniformBlockBinding(floorShader->GetProgramID(), uniformBlockFloor, 0);
+	//glUniformBlockBinding(nanoShader->GetProgramID(), uniformBlockNano, 0);
+	//glUniformBlockBinding(floorShader->GetProgramID(), uniformBlockFloor, 0);
 
-	// 2. create UBO and bind it to 0
-	glGenBuffers(1, &m_CameraMatUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_CameraMatUBO, 0, 2 * sizeof(glm::mat4));
-	//glBindBufferRange(target, index, buffer, offset, SIZE);
-	//glVertexArrayVertexBuffer(vao, index, buffer, offset, stride);
+	//// 2. create UBO and bind it to 0
+	//glGenBuffers(1, &m_CameraMatUBO);
+	//glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
+	//
+	//glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+	//glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_CameraMatUBO, 0, 2 * sizeof(glm::mat4));
+	////glBindBufferRange(target, index, buffer, offset, SIZE);
+	////glVertexArrayVertexBuffer(vao, index, buffer, offset, stride);
 
-	// fill the buffer
-	glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetProjectionMatrix()));
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	//// fill the buffer
+	//glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
+	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetViewMatrix()));
+	//glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetProjectionMatrix()));
 
 	//----------------
 	// Model

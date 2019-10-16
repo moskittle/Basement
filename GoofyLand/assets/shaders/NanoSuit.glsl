@@ -8,13 +8,9 @@ layout (location = 1) in vec3 a_Normal;
 layout (location = 2) in vec2 a_TexCoord;
 
 uniform mat4 u_Model;
+uniform mat4 u_View;
+uniform mat4 u_Projection;
 uniform mat3 u_NormalMat;
-
-layout (std140) uniform CameraMat
-{
-    mat4 u_View;
-    mat4 u_Projection;
-};
 
 out vec3 v_FragPosition;
 out vec3 v_Normal;
@@ -42,7 +38,8 @@ struct Material
 {
     sampler2D texture_diffuse1;
     sampler2D texture_specular1;
-
+    // sampler2D texture_height1;
+    
     vec3 ambient_color;
     vec3 diffuse_color;
     vec3 specular_color;

@@ -6,6 +6,7 @@
 
 namespace Basement {
 
+	//----------------------------------------------------------
 	// --Buffer Element-----------------------------------------
 	BufferElement::BufferElement(EShaderDataType type, const std::string& name, bool isNormalized) :
 		Name(name),
@@ -16,7 +17,7 @@ namespace Basement {
 	{
 	}
 
-
+	//---------------------------------------------------------
 	// --Buffer Layout-----------------------------------------
 	BufferLayout::BufferLayout(const std::initializer_list<BufferElement>& initList) : m_BufferElements(initList)
 	{
@@ -34,7 +35,7 @@ namespace Basement {
 		}
 	}
 
-
+	//---------------------------------------------------------
 	// --Vertex Buffer-----------------------------------------
 	SharedPtr<VertexBuffer> VertexBuffer::Create(u32 size, float* vertices)
 	{
@@ -66,7 +67,7 @@ namespace Basement {
 		}
 	}
 
-
+	//--------------------------------------------------------
 	// --Index Buffer-----------------------------------------
 	SharedPtr<IndexBuffer> IndexBuffer::Create(u32 count, u32* indices)
 	{
@@ -95,6 +96,24 @@ namespace Basement {
 			default:
 				BM_CORE_ASSERT(false, "Unknown RendererAPI");
 				return nullptr;
+		}
+	}
+
+
+	//----------------------------------------------------------
+	//--Uniform Buffer------------------------------------------
+	SharedPtr<UniformBuffer> UniformBuffer::Create()
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::EAPI::None:
+			BM_CORE_ASSERT(false, "RendererAPI::None is currently supported")
+				return nullptr;
+		case RendererAPI::EAPI::OpenGL:
+			return std::make_shared<OpenGLUniformBuffer>();
+		default:
+			BM_CORE_ASSERT(false, "Unknown RendererAPI");
+			return nullptr;
 		}
 	}
 

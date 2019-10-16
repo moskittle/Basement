@@ -8,13 +8,9 @@ layout (location = 1) in vec2 a_TexCoord;
 
 out vec2 v_TexCoord;
 
-
 uniform mat4 u_Model;
-layout (std140) uniform CameraMat
-{
-    mat4 u_View;
-    mat4 u_Projection;
-};
+uniform mat4 u_View;
+uniform mat4 u_Projection;
 
 void main()
 {

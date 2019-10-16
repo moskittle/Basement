@@ -41,4 +41,26 @@ namespace Basement {
 		u32 m_Count;
 	};
 
+	class OpenGLUniformBuffer : public UniformBuffer
+	{
+	public:
+		OpenGLUniformBuffer();
+		~OpenGLUniformBuffer();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual const BufferLayout& GetLayout() const override { return m_BufferLayout; }
+		virtual void SetLayout(const BufferLayout& layout) override { m_BufferLayout = layout; }
+
+		//virtual void GetIndex() override;
+	private:
+		u32 m_UniformBufferID;
+		u32 m_UniformBufferIndexOffset = 0;
+		BufferLayout m_BufferLayout;
+		u32 m_Count = 0;
+		std::vector<SharedPtr<UniformBuffer>> m_UniformBuffers;
+
+	};
+
 }

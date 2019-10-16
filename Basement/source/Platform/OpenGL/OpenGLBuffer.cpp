@@ -6,7 +6,8 @@
 
 namespace Basement {
 
-	// --Vertex Buffer-----------------------------------------
+	//---------------------------------------------------------
+	//---Vertex Buffer-----------------------------------------
 	OpenGLVertexBuffer::OpenGLVertexBuffer(u32 size, float* vertices)
 	{
 		m_Count = size;
@@ -40,8 +41,8 @@ namespace Basement {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-
-	// --Index Buffer-----------------------------------------
+	//---------------------------------------------------------
+	//---Index Buffer-----------------------------------------
 	OpenGLIndexBuffer::OpenGLIndexBuffer(u32 count, u32* indices)
 	{
 		m_Count = count;
@@ -75,6 +76,30 @@ namespace Basement {
 	void OpenGLIndexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	//---------------------------------------------------------
+	//---Uniform Buffer----------------------------------------
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer()
+	{
+		glGenBuffers(1, &m_UniformBufferID);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBufferID);
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer()
+	{
+		glDeleteBuffers(1, &m_UniformBufferID);
+	}
+
+	void OpenGLUniformBuffer::Bind() const
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBufferID);
+	}
+
+	void OpenGLUniformBuffer::Unbind() const
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 }

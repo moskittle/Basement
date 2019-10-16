@@ -62,12 +62,15 @@ namespace Basement {
 		{
 			// Set vertex attributes
 			glEnableVertexAttribArray(index + m_VertexArrayIndexOffset);
-			glVertexAttribPointer(index + m_VertexArrayIndexOffset,
+			glVertexAttribPointer
+			(
+				index + m_VertexArrayIndexOffset,
 				element.GetComponentCount(),
 				ShaderDataTypeToOpenGLBaseType(element.Type),
 				element.bIsNormalized ? GL_TRUE : GL_FALSE,
 				vertexBuffer->GetLayout().GetStride(),
-				(const void*)(intptr_t)element.Offset);
+				(const void*)(intptr_t)element.Offset
+			);
 
 			++index;
 		}
