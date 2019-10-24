@@ -7,7 +7,6 @@ A game engine developed in a basement. It is not a metonymy... Or is it?
 ## Table of Contents <!-- omit in toc -->
 - [Install](#install)
 - [Feature](#feature)
-- [Third Party Library](#third-party-library)
 - [License](#license)
 
 
@@ -22,15 +21,6 @@ Make sure to clone with `--recursive` to fetch all submodules.
 2. Run `scripts/Win-GenProjects.bat` to generate Visual Studio solution.
 
 ## Feature
-
-## Third Party Library
-[![glfw](https://img.shields.io/badge/3rd--party-glfw-blue)](https://github.com/glfw/glfw)
-[![glad](https://img.shields.io/badge/3rd--party-glad-blueviolet)](https://github.com/Dav1dde/glad)
-[![glm](https://img.shields.io/badge/3rd--party-glm-orange)](https://github.com/g-truc/glm)
-[![spdlog](https://img.shields.io/badge/3rd--party-spdlog-blue)](https://github.com/gabime/spdlog)
-[![stb](https://img.shields.io/badge/3rd--party-stb-green)](https://github.com/nothings/stb)
-[![imgui](https://img.shields.io/badge/3rd--party-imgui-orange)](https://github.com/ocornut/imgui)
-[![assimp](https://img.shields.io/badge/3rd--party-assimp-blueviolet)](https://github.com/assimp/assimp)
 
 ## License
 [MIT License](https://github.com/moskittle/Basement/blob/master/LICENSE)
