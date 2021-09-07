@@ -74,7 +74,8 @@ namespace Basement {
 		ImGui::End();
 
 		static bool IsShowing = true;
-		ImGui::ShowDemoWindow(&IsShowing);
+		
+		//ImGui::ShowDemoWindow(&IsShowing);
 	}
 
 	void ImGuiLayer::Begin()

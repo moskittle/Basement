@@ -1,6 +1,6 @@
 workspace "Basement"
 	architecture "x64"
-	startproject "GoofyLand"
+	startproject "cs560"
 
 	configurations
 	{
@@ -100,76 +100,8 @@ project "Basement"
 		runtime "Release"		
 		optimize "on"
 
-project "Backyard"
-	location "Backyard"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-interm/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/source/**.h",
-		"%{prj.name}/source/**.cpp"
-	}
-
-	includedirs
-	{
-		"Basement/source",
-		"Basement/vendor",
-		"%{IncludeDir.spdlog}",
-		"%{IncludeDir.Glad}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.assimp}"
-	}
-
-	links
-	{
-		"Basement"
-	}
-
-	filter { "system:windows" }
-
-		systemversion "latest"
-
-		defines
-		{
-			"BM_PLATFORM_WINDOWS"
-		}
-
-	filter { "configurations:Debug" }
-		defines "BM_DEBUG"
-		runtime "Debug"
-		symbols "On"
-		links
-		{
-			"Basement/vendor/assimp/bin/Debug/assimp-vc142-mtd.lib"
-		}
-	
-	filter { "configurations:Release" }
-		defines "BM_RELEASE"
-		runtime "Release"
-		optimize "On"
-		links
-		{
-			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
-		}
-	
-	filter { "configurations:Dist" }
-		defines "BM_DIST"
-		runtime "Release"
-		optimize "On"
-		links
-		{
-			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
-		}
-		
-project "GoofyLand"
-	location "GoofyLand"
+project "cs560"
+	location "cs560"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -217,7 +149,7 @@ project "GoofyLand"
 		{
 			"Basement/vendor/assimp/bin/Debug/assimp-vc142-mtd.lib"
 		}
-	
+
 	filter { "configurations:Release" }
 		defines "BM_RELEASE"
 		runtime "Release"
@@ -226,7 +158,7 @@ project "GoofyLand"
 		{
 			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
 		}
-	
+
 	filter { "configurations:Dist" }
 		defines "BM_DIST"
 		runtime "Release"
@@ -235,4 +167,3 @@ project "GoofyLand"
 		{
 			"Basement/vendor/assimp/bin/Release/assimp-vc142-mtd.lib"
 		}
-		

@@ -9,11 +9,11 @@ int main(int argc, char** argv)
 	Basement::Log::Init();
 	BM_CORE_WARN("Successfully initialized Log");
 
-	auto gpBackyardApp = Basement::CreateApplication();
+	auto pApp = Basement::CreateApplication();
 	
-	gpBackyardApp->Run();
+	pApp->Run();
 	
-	delete gpBackyardApp;
+	delete pApp;
 }
 
 #endif // BM_PLATFORM_WINDOWS
