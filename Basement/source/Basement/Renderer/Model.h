@@ -23,14 +23,19 @@ namespace Basement {
 		void Load(const std::string& filePath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+
+
+		void ProcessVertices(aiMesh* mesh, const aiScene* scene, std::vector<Vertex>& vertices);
+		void ProcessIndices(aiMesh* mesh, const aiScene* scene, std::vector<u32>& indices);
+		void ProcessMaterial(aiMesh* mesh, const aiScene* scene, MaterialAttrib& materialAttrib, std::vector<SharedPtr<Texture2D>>& textures);
+
+
 		std::vector<SharedPtr<Texture2D>> LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
-	private:
+
 		std::vector<Mesh> m_Meshes;
 		std::string m_Directory;
-
 		const aiScene* m_Scene;
 		UniquePtr<Assimp::Importer> m_Importer;
-
 	};
 
 

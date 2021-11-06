@@ -32,7 +32,7 @@ static int mode = 0;
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
-	  m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -61,48 +61,6 @@ void cs560Layer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
-	//if (ImGui::CollapsingHeader("Mode"))
-	//{
-	//	ImGui::RadioButton("Normal", &mode, 0);
-	//	ImGui::RadioButton("Inversion", &mode, 1);
-	//	ImGui::RadioButton("Grayscale", &mode, 2);
-	//	ImGui::RadioButton("Kernel", &mode, 3);
-	//	ImGui::RadioButton("Blur", &mode, 4);
-	//}
-
-	//if (ImGui::CollapsingHeader("Light"))
-	//{
-	//	if (ImGui::TreeNode("Bulb")) {
-	//		ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -3.0f, 3.0f, "%.1f", 2.0f);
-	//		ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
-	//		ImGui::SliderFloat("Inner Cutoff Angle", &InnerCutoffAngle, 0.0, OuterCutoffAngle, "%.1f", 1.0f);
-	//		ImGui::SliderFloat("Outer Cutoff Angle", &OuterCutoffAngle, 0.0, 30.0f, "%.1f", 1.0f);
-
-	//		ImGui::TreePop();
-	//		ImGui::Separator();
-	//	}
-	//}
-
-	//if (ImGui::CollapsingHeader("Object")) {
-	//	if (ImGui::TreeNode("Cube")) {
-	//		ImGui::SliderFloat3("Cube Position", glm::value_ptr(CubePosition), -3.0f, 3.0f, "%.1f", 1.0f);
-	//		ImGui::ColorEdit3("Cube Color", glm::value_ptr(CubeColor));
-	//		ImGui::SliderFloat("Rotation", &Degree, 0.0f, 360.0f, "%f", 1.0f);
-	//		ImGui::SliderFloat("Rotation Speed", &RotationSpeed, 0.0f, 1.0f, "%0.1f", 1.0f);
-	//		if (ImGui::TreeNode("Material")) {
-	//			ImGui::SliderFloat("Ambient", &AmbientIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
-	//			ImGui::SliderFloat("Diffuse", &DiffuseIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
-	//			ImGui::SliderFloat("Specular", &SpecularIntensity, 0.0f, 1.0f, "%.2f", 1.0f);
-	//			ImGui::SliderFloat("Shininess", &Shininess, 0, 256, "%f");
-
-	//			ImGui::TreePop();
-	//		}
-
-	//		ImGui::TreePop();
-	//		ImGui::Separator();
-	//	}
-	//}
-
 	if (ImGui::CollapsingHeader("Floor")) {
 		ImGui::SliderFloat("Size", &FloorSize, 0.0f, 50.0f, "%f", 1.0f);
 	}
@@ -120,37 +78,10 @@ void cs560Layer::BuildScene()
 	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
-
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
-	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadInversion.glsl");
-	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadGrayScale.glsl");
-	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadKernel.glsl");
-	auto& blurShaderShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadBlur.glsl");
 
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
-
-
-	//// 1. Bind uniform block to index 0
-	//uint32_t uniformBlockNano = glGetUniformBlockIndex(nanoShader->GetProgramID(), "CameraMat");
-	//uint32_t uniformBlockFloor = glGetUniformBlockIndex(floorShader->GetProgramID(), "CameraMat");
-
-	//glUniformBlockBinding(nanoShader->GetProgramID(), uniformBlockNano, 0);
-	//glUniformBlockBinding(floorShader->GetProgramID(), uniformBlockFloor, 0);
-
-	//// 2. create UBO and bind it to 0
-	//glGenBuffers(1, &m_CameraMatUBO);
-	//glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
-	//
-	//glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-	//glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_CameraMatUBO, 0, 2 * sizeof(glm::mat4));
-	////glBindBufferRange(target, index, buffer, offset, SIZE);
-	////glVertexArrayVertexBuffer(vao, index, buffer, offset, stride);
-
-	//// fill the buffer
-	//glBindBuffer(GL_UNIFORM_BUFFER, m_CameraMatUBO);
-	//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetViewMatrix()));
-	//glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(m_CameraController.GetCamera().GetProjectionMatrix()));
 
 	//----------------
 	// Model
@@ -248,7 +179,6 @@ void cs560Layer::BuildScene()
 	//----------------
 	// Screen Quad
 	//----------------
-
 	float quadVertices[] = {
 		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 		// positions   // texCoords
@@ -273,23 +203,6 @@ void cs560Layer::BuildScene()
 	screenShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(screenShader)->UploadUniform1i("u_ScreenTexture", 0);
 
-
-	float smallQuadVertices[] = {
-		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-		// positions   // texCoords
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  1.0f,  1.0f, 1.0f
-	};
-	m_SmallScreenVAO = Basement::VertexArray::Create();
-	m_SmallScreenVBO = Basement::VertexBuffer::Create(sizeof(smallQuadVertices), smallQuadVertices);
-	m_SmallScreenVBO->SetLayout(screenLayout);
-	m_SmallScreenVAO->AddVertexBuffer(m_SmallScreenVBO);
-
 	//-----------------------------
 	// Framebuffer configuration
 	//-----------------------------
@@ -302,10 +215,6 @@ void cs560Layer::RenderScene()
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
-	auto& inversionShader = m_ShaderLibrary.Get("ScreenQuadInversion");
-	auto& grayShader = m_ShaderLibrary.Get("ScreenQuadGrayScale");
-	auto& kernelShader = m_ShaderLibrary.Get("ScreenQuadKernel");
-	auto& blurShader = m_ShaderLibrary.Get("ScreenQuadBlur");
 
 	// Render
 	m_FrameBuffer->Bind();
@@ -317,8 +226,7 @@ void cs560Layer::RenderScene()
 	// Model
 	//----------------
 
-	glm::mat4 model(1.0f);
-	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
 	nanoShader->Bind();
@@ -343,48 +251,22 @@ void cs560Layer::RenderScene()
 	// Skybox
 	//----------------
 	m_SkyboxTexture->Bind();
-	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition()) /**
-		glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f))*/;
+	glm::mat4 skyboxModel = glm::translate(glm::mat4(1.0f), m_CameraController.GetCamera().GetPosition());
 	Basement::Renderer::SubmitArraysForSkybox(skyboxShader, m_SkyboxVAO, 0, 36, skyboxModel);
 
 
 	// Swich back to default framebuffer
 	m_FrameBuffer->Unbind();
 	Basement::Renderer::DisableDepthTest();
-	//Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit);
 
 	//----------------
 	// Screen Quad
 	//----------------
 	m_FrameBuffer->ActivateTexture();
-
-	// large
-	switch (mode)
-	{
-	case 0:
-		screenShader->Bind(); break;
-	case 1:
-		inversionShader->Bind(); break;
-	case 2:
-		grayShader->Bind(); break;
-	case 3:
-		kernelShader->Bind(); break;
-	case 4:
-		blurShader->Bind(); break;
-	default:
-		screenShader->Bind(); break;
-	}
-
+	screenShader->Bind();
 	m_ScreenVAO->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	// small
-	screenShader->Bind();
-	m_SmallScreenVAO->Bind();
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	//Basement::Renderer::SubmitArrays(screenShader, m_ScreenVAO, 0, 6, screenModel);
 }
 
 

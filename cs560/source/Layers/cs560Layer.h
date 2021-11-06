@@ -17,40 +17,39 @@
 class cs560Layer : public Basement::Layer
 {
 public:
-    cs560Layer();
-    ~cs560Layer() = default;
+	cs560Layer();
+	~cs560Layer() = default;
 
 
-    virtual void Update(const Basement::Timer& dt) override;
-    virtual void RenderImGui() override;
-    virtual void HandleEvent(Basement::Event& event) override;
+	virtual void Update(const Basement::Timer& dt) override;
+	virtual void RenderImGui() override;
+	virtual void HandleEvent(Basement::Event& event) override;
 private:
-    void BuildScene();
-    void RenderScene();
+	void BuildScene();
+	void RenderScene();
 
-    Basement::CameraController3D m_CameraController;
-    Basement::ShaderLibrary m_ShaderLibrary;
+	Basement::CameraController3D m_CameraController;
+	Basement::ShaderLibrary m_ShaderLibrary;
 
-    // Floor
-    Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
-    Basement::SharedPtr<Basement::VertexBuffer> m_FloorVBO;
-    Basement::SharedPtr<Basement::Texture2D> m_FloorTexture;
+	// Model
+	Basement::SharedPtr<Basement::Model> m_NanoSuit;
 
-    // Screen Quad
-    Basement::SharedPtr<Basement::VertexArray> m_ScreenVAO;
-    Basement::SharedPtr<Basement::VertexBuffer> m_ScreenVBO;
-    Basement::SharedPtr<Basement::Texture2D> m_ScreenTexture;
-    Basement::SharedPtr<Basement::VertexArray> m_SmallScreenVAO;
-    Basement::SharedPtr<Basement::VertexBuffer> m_SmallScreenVBO;
+	// Floor
+	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_FloorVBO;
+	Basement::SharedPtr<Basement::Texture2D> m_FloorTexture;
 
-    // Model
-    Basement::SharedPtr<Basement::Model> m_NanoSuit;
+	// Screen Quad
+	Basement::SharedPtr<Basement::VertexArray> m_ScreenVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_ScreenVBO;
+	Basement::SharedPtr<Basement::Texture2D> m_ScreenTexture;
 
-    // Skybox
-    Basement::SharedPtr<Basement::VertexArray> m_SkyboxVAO;
-    Basement::SharedPtr<Basement::VertexBuffer> m_SkyboxVBO;
-    Basement::SharedPtr<Basement::TextureCube> m_SkyboxTexture;
 
-    // FrameBuffer
-    Basement::SharedPtr<Basement::FrameBuffer> m_FrameBuffer;
+	// Skybox
+	Basement::SharedPtr<Basement::VertexArray> m_SkyboxVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_SkyboxVBO;
+	Basement::SharedPtr<Basement::TextureCube> m_SkyboxTexture;
+
+	// FrameBuffer
+	Basement::SharedPtr<Basement::FrameBuffer> m_FrameBuffer;
 };

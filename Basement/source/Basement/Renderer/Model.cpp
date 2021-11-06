@@ -8,7 +8,7 @@
 namespace Basement {
 
 	static const u32 s_MeshImportFlags =
-		aiProcess_Triangulate | 
+		aiProcess_Triangulate |
 		aiProcess_FlipUVs;
 
 	static std::unordered_map<std::string, SharedPtr<Texture2D>> TextureLibrary;
@@ -63,7 +63,7 @@ namespace Basement {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			m_Meshes.push_back(ProcessMesh(mesh, scene));
 		}
-		
+
 		// recursion
 		for (unsigned int i = 0; i < node->mNumChildren; ++i)
 		{
@@ -73,7 +73,27 @@ namespace Basement {
 
 	Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
+		// process vertices
 		std::vector<Vertex> vertices;
+		ProcessVertices(mesh, m_Scene, vertices);
+
+		// process index
+		std::vector<u32> indices;
+		ProcessIndices(mesh, m_Scene, indices);
+
+		// process material
+		MaterialAttrib materialAttrib;
+		std::vector<SharedPtr<Texture2D>> textures;
+		if (mesh->mMaterialIndex >= 0)
+		{
+			ProcessMaterial(mesh, m_Scene, materialAttrib, textures);
+		}
+
+		return Mesh(vertices, indices, textures, materialAttrib);
+	}
+
+	void Model::ProcessVertices(aiMesh* mesh, const aiScene* scene, std::vector<Vertex>& vertices)
+	{
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			// process vertex
@@ -92,9 +112,10 @@ namespace Basement {
 
 			vertices.push_back(vertex);
 		}
+	}
 
-		// process index
-		std::vector<u32> indices;
+	void Model::ProcessIndices(aiMesh* mesh, const aiScene* scene, std::vector<u32>& indices)
+	{
 		for (u32 i = 0; i < mesh->mNumFaces; ++i)
 		{
 			aiFace& face = mesh->mFaces[i];
@@ -103,44 +124,39 @@ namespace Basement {
 				indices.push_back(face.mIndices[j]);
 			}
 		}
+	}
 
-		// process material
-		MaterialAttrib materialAttrib;
-		std::vector<SharedPtr<Texture2D>> textures;
-		if (mesh->mMaterialIndex >= 0)
-		{
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			
-			// texture
-			std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-			
-			std::vector<SharedPtr<Texture2D>> specularMaps= LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-			
-			//std::vector<Shared<Texture2D>> normalMaps= LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
-			//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-			//
-			//std::vector<Shared<Texture2D>> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
-			//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+	void Model::ProcessMaterial(aiMesh* mesh, const aiScene* scene, MaterialAttrib& materialAttrib, std::vector<SharedPtr<Texture2D>>& textures)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			// material attributes
-			aiColor4D ambientColor, diffuseColor, specularColor;
-			float shininess;
+		// texture
+		std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-			aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambientColor);
-			aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
-			aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specularColor);
-			aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shininess);
+		std::vector<SharedPtr<Texture2D>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-			glm::vec3 ambient(ambientColor.r, ambientColor.g, ambientColor.b);
-			glm::vec3 diffuse(diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glm::vec3 specular(specularColor.r, specularColor.g, specularColor.b);
+		//std::vector<Shared<Texture2D>> normalMaps= LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+		//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+		//
+		//std::vector<Shared<Texture2D>> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
+		//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-			materialAttrib.SetAttributes(ambientColor, diffuseColor, specularColor, shininess);
-		}
+		// material attributes
+		aiColor4D ambientColor, diffuseColor, specularColor;
+		float shininess;
 
-		return Mesh(vertices, indices, textures, materialAttrib);
+		aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &ambientColor);
+		aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
+		aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specularColor);
+		aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shininess);
+
+		glm::vec3 ambient(ambientColor.r, ambientColor.g, ambientColor.b);
+		glm::vec3 diffuse(diffuseColor.r, diffuseColor.g, diffuseColor.b);
+		glm::vec3 specular(specularColor.r, specularColor.g, specularColor.b);
+
+		materialAttrib.SetAttributes(ambientColor, diffuseColor, specularColor, shininess);
 	}
 
 	std::vector<SharedPtr<Texture2D>> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)

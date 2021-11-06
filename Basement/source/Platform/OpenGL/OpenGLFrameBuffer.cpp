@@ -18,7 +18,7 @@ namespace Basement {
 		CreateDepthAttechment(width, height);
 
 		// Check framebuffer status
-		BM_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
+		BM_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == (bool)GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete!");
 		
 		OpenGLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
