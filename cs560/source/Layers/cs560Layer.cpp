@@ -2,30 +2,15 @@
 
 #include "Basement/Renderer/Renderer.h"
 
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/string_cast.hpp"
-
-#include "GLFW/glfw3.h"
-
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <GLFW/glfw3.h>
 #include <assimp/types.h>
-
 #include <ImGui/imgui.h>
 
-
-// floor
 float FloorSize = 20.0f;
-float FloorLevel = 0.0f;
-
-//glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
-//// Material Shader variables
-//float AmbientIntensity = 0.7f;
-//float DiffuseIntensity = 0.7f;
-//float SpecularIntensity = 1.0f;
-//float Shininess = 32.0f;
-//float RotationSpeed = 0.3f;
-//// Post-Processing
-//static int mode = 0;
+float FloorPositionY = 0.0f;
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
@@ -58,9 +43,7 @@ void cs560Layer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
-	if (ImGui::CollapsingHeader("Floor")) {
-		ImGui::SliderFloat("Size", &FloorSize, 0.0f, 50.0f, "%f", 1.0f);
-	}
+
 
 	ImGui::End();
 }
@@ -72,7 +55,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 
 void cs560Layer::BuildScene()
 {
-	//auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
@@ -83,8 +66,9 @@ void cs560Layer::BuildScene()
 	//----------------
 	// Model
 	//----------------
-	//m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
+	m_YBot = Basement::Model::Create("assets/models/ybot.fbx");
 
+	// 2. load texture
 
 	//----------------
 	// Floor
@@ -209,6 +193,7 @@ void cs560Layer::BuildScene()
 void cs560Layer::RenderScene()
 {
 	//auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	auto& animationShader = m_ShaderLibrary.Get("SkeletonAnimation");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
@@ -237,10 +222,14 @@ void cs560Layer::RenderScene()
 
 	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
+	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+	animationShader->Bind();
+	Basement::Renderer::SubmitModel(m_YBot, animationShader, model);
+
 	////--------------
 	//// Draw Floor
 	////--------------
-	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
+	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
 	m_FloorTexture->Bind();
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 

@@ -34,7 +34,7 @@ namespace Basement {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;			// Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;			// Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;				// Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;				// Enable Multi-Viewport / Platform Windows
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;				// Enable Multi-Viewport / Platform Windows
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -46,7 +46,7 @@ namespace Basement {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
-		
+
 		Application& app = Application::GetInstance();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
@@ -65,7 +65,7 @@ namespace Basement {
 	void ImGuiLayer::RenderImGui()
 	{
 		ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
-		
+
 		RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
 		ImGui::Text("Vendor:   %s", info.Vendor.c_str());
 		ImGui::Text("Renderer: %s", info.Renderer.c_str());
@@ -74,7 +74,7 @@ namespace Basement {
 		ImGui::End();
 
 		static bool IsShowing = true;
-		
+
 		//ImGui::ShowDemoWindow(&IsShowing);
 	}
 

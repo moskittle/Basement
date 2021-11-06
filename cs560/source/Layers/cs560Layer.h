@@ -33,6 +33,7 @@ private:
 
 	// Model
 	//Basement::SharedPtr<Basement::Model> m_NanoSuit;
+	Basement::SharedPtr<Basement::Model> m_YBot;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
