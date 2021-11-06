@@ -32,7 +32,7 @@ private:
 	Basement::ShaderLibrary m_ShaderLibrary;
 
 	// Model
-	Basement::SharedPtr<Basement::Model> m_NanoSuit;
+	//Basement::SharedPtr<Basement::Model> m_NanoSuit;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;

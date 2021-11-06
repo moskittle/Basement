@@ -17,18 +17,15 @@
 float FloorSize = 20.0f;
 float FloorLevel = 0.0f;
 
-glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
-
-// Material Shader variables
-float AmbientIntensity = 0.7f;
-float DiffuseIntensity = 0.7f;
-float SpecularIntensity = 1.0f;
-float Shininess = 32.0f;
-
-float RotationSpeed = 0.3f;
-
-// Post-Processing
-static int mode = 0;
+//glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
+//// Material Shader variables
+//float AmbientIntensity = 0.7f;
+//float DiffuseIntensity = 0.7f;
+//float SpecularIntensity = 1.0f;
+//float Shininess = 32.0f;
+//float RotationSpeed = 0.3f;
+//// Post-Processing
+//static int mode = 0;
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
@@ -75,7 +72,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 
 void cs560Layer::BuildScene()
 {
-	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	//auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
@@ -86,7 +83,7 @@ void cs560Layer::BuildScene()
 	//----------------
 	// Model
 	//----------------
-	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
+	//m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
 
 	//----------------
@@ -211,7 +208,7 @@ void cs560Layer::BuildScene()
 
 void cs560Layer::RenderScene()
 {
-	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	//auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
@@ -226,19 +223,19 @@ void cs560Layer::RenderScene()
 	// Model
 	//----------------
 
-	glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
+	//glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
-	nanoShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
+	//nanoShader->Bind();
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
+	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
 
 	////--------------
 	//// Draw Floor
