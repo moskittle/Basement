@@ -32,8 +32,9 @@ private:
 	Basement::ShaderLibrary m_ShaderLibrary;
 
 	// Model
-	//Basement::SharedPtr<Basement::Model> m_NanoSuit;
-	Basement::SharedPtr<Basement::Model> m_YBot;
+	//Basement::SharedPtr<Basement::Model> m_YBot;
+	Basement::SharedPtr<Basement::Model> m_Doozy;
+	Basement::SharedPtr<Basement::Texture2D> m_DoozyDiffuseTex;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;

@@ -89,6 +89,9 @@ namespace Basement {
 			ProcessMaterial(mesh, m_Scene, materialAttrib, textures);
 		}
 
+		// process embedded texture
+		//auto embeddedTex = GetEmbeddedTexture(const char* filename)
+
 		return Mesh(vertices, indices, textures, materialAttrib);
 	}
 
@@ -130,12 +133,12 @@ namespace Basement {
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-		// texture
-		std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		//// texture
+		//std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		std::vector<SharedPtr<Texture2D>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		//std::vector<SharedPtr<Texture2D>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		//std::vector<Shared<Texture2D>> normalMaps= LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 		//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());

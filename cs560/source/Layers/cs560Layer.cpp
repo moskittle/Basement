@@ -60,13 +60,14 @@ void cs560Layer::BuildScene()
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
 
+	m_DoozyDiffuseTex = Basement::Texture2D::Create("assets/models/doozy/doozy_diffuse.png", false);
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
 
 	//----------------
 	// Model
 	//----------------
-	m_YBot = Basement::Model::Create("assets/models/ybot.fbx");
+	m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
 
 	// 2. load texture
 
@@ -207,24 +208,9 @@ void cs560Layer::RenderScene()
 	//----------------
 	// Model
 	//----------------
-
-	//glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-	//glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
-
-	//nanoShader->Bind();
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
-	//std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
-
-	//Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
-
 	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-	animationShader->Bind();
-	Basement::Renderer::SubmitModel(m_YBot, animationShader, model);
+	m_DoozyDiffuseTex->Bind();
+	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
 
 	////--------------
 	//// Draw Floor
