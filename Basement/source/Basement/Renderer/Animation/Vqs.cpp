@@ -21,14 +21,15 @@ namespace Basement
 
 	glm::mat4 Vqs::ConvertToMatrix()
 	{
-		return glm::mat4();
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), this->v);
+		glm::mat4 rotation = glm::toMat4(glm::normalize(glm::quat(this->q.s, this->q.v)));
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(this->s));
+
+		return translation * rotation * scale;
 	}
 
 	Vqs Vqs::Inverse()
 	{
-		//glm::vec3 inversV = VQS(glm::vec3(0), q.GetInverseQuaternion(), 1.0f / s) * -v;
-		//return VQS(inversV, q.Inverse(), 1.0f / s);
-
 		glm::vec3 inverseV = Vqs(glm::vec3(0), q.Inverse(), 1.0f / s) * -v;
 
 		return Vqs(inverseV, q.Inverse(), 1.0f / s);
@@ -43,9 +44,10 @@ namespace Basement
 		return *this;
 	}
 
-	glm::vec4 Vqs::operator*(const glm::vec3& vec)
+	// quat * vec = q * (vec * s) * q^(-1) + v
+	glm::vec3 Vqs::operator*(const glm::vec3& vec)
 	{
-		return glm::vec4();
+		return (this->q * (vec * this->s) * this->q.Inverse()).v + this->v;
 	}
 
 }

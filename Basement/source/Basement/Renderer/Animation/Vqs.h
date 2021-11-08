@@ -20,7 +20,7 @@ namespace Basement
 		glm::mat4 ConvertToMatrix();
 		Vqs Inverse();
 
-		glm::vec4 operator*(const glm::vec3& vec);
+		glm::vec3 operator*(const glm::vec3& vec);
 		Vqs& operator*(const Vqs& rhs);
 
 	public:
