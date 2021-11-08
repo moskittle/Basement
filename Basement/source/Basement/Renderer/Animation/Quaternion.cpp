@@ -11,10 +11,13 @@ namespace Basement
 		return sqrt(s * s + glm::dot(v, v));
 	}
 
-	Quaternion Quaternion::Normalize()
+	Quaternion& Quaternion::Normalize()
 	{
 		float invLength = 1.0f / this->Length();
-		return Quaternion(v * invLength, s * invLength);
+		this->v *= invLength;
+		this->s *= invLength;
+
+		return *this;
 	}
 
 	Quaternion Quaternion::Inverse()

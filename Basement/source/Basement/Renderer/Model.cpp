@@ -197,7 +197,7 @@ namespace Basement {
 			BM_ASSERT("invalid Bone Id found.", boneId != -1);
 
 			auto weights = mesh->mBones[i]->mWeights;
-			for (int j = 0; j < mesh->mBones[i]->mNumWeights; ++j)
+			for (int j = 0; j < static_cast<int>(mesh->mBones[i]->mNumWeights); ++j)
 			{
 				int vertexId = weights[j].mVertexId;
 				float weight = weights[j].mWeight;
@@ -246,13 +246,13 @@ namespace Basement {
 		}
 	}
 
-	void Model::SetVertexBoneData(Vertex& vertex, int id, float weight)
+	void Model::SetVertexBoneData(Vertex& vertex, int boneId, float weight)
 	{
 		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
 		{
 			if (vertex.BoneIds[i] < 0)
 			{
-				vertex.BoneIds[i] = id;
+				vertex.BoneIds[i] = boneId;
 				vertex.BoneWeights[i] = weight;
 				break;
 			}

@@ -16,7 +16,7 @@ namespace Basement
 		~Quaternion() = default;
 
 		float Length();
-		Quaternion Normalize();
+		Quaternion& Normalize();
 		Quaternion Inverse();
 		float Dot(const Quaternion& rhs);
 
