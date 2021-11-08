@@ -19,7 +19,9 @@ namespace Basement {
 		BufferLayout bufferLayout = {
 			{ EShaderDataType::Float3, "a_Position" },
 			{ EShaderDataType::Float3, "a_Normal" },
-			{ EShaderDataType::Float2, "a_TexCoord" }
+			{ EShaderDataType::Float2, "a_TexCoord" },
+			{ EShaderDataType::Int4, "a_BoneIds"},
+			{ EShaderDataType::Float4, "a_BoneWeights"}
 		};
 		m_VBO->SetLayout(bufferLayout);
 		m_VAO->AddVertexBuffer(m_VBO);

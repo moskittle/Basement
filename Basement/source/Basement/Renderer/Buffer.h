@@ -2,12 +2,15 @@
 
 #include <glm/glm.hpp>
 
+#define MAX_BONES 100
+#define MAX_BONE_INFLUENCE 4
+
 namespace Basement {
 
 	enum class EShaderDataType	// TODO: uint8 for packing
 	{
-		None = 0, 
-		Int, Int2, Int3, Int4, 
+		None = 0,
+		Int, Int2, Int3, Int4,
 		Float, Float2, Float3, Float4,
 		Mat3, Mat4,
 		Bool
@@ -17,17 +20,17 @@ namespace Basement {
 	{
 		switch (type)
 		{
-			case EShaderDataType::Int:     return 4;
-			case EShaderDataType::Int2:    return 4 * 2;
-			case EShaderDataType::Int3:    return 4 * 3;
-			case EShaderDataType::Int4:    return 4 * 4;
-			case EShaderDataType::Float:   return 4;
-			case EShaderDataType::Float2:  return 4 * 2;
-			case EShaderDataType::Float3:  return 4 * 3;
-			case EShaderDataType::Float4:  return 4 * 4;
-			case EShaderDataType::Mat3:    return 4 * 3 * 3;
-			case EShaderDataType::Mat4:    return 4 * 4 * 4;
-			case EShaderDataType::Bool:    return 1;
+		case EShaderDataType::Int:     return 4;
+		case EShaderDataType::Int2:    return 4 * 2;
+		case EShaderDataType::Int3:    return 4 * 3;
+		case EShaderDataType::Int4:    return 4 * 4;
+		case EShaderDataType::Float:   return 4;
+		case EShaderDataType::Float2:  return 4 * 2;
+		case EShaderDataType::Float3:  return 4 * 3;
+		case EShaderDataType::Float4:  return 4 * 4;
+		case EShaderDataType::Mat3:    return 4 * 3 * 3;
+		case EShaderDataType::Mat4:    return 4 * 4 * 4;
+		case EShaderDataType::Bool:    return 1;
 		}
 
 		BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -49,17 +52,17 @@ namespace Basement {
 		{
 			switch (Type)
 			{
-				case EShaderDataType::Int:      return 1;
-				case EShaderDataType::Int2:     return 2;
-				case EShaderDataType::Int3:     return 3;
-				case EShaderDataType::Int4:     return 4;
-				case EShaderDataType::Float:    return 1;
-				case EShaderDataType::Float2:   return 2;
-				case EShaderDataType::Float3:   return 3;
-				case EShaderDataType::Float4:   return 4;
-				case EShaderDataType::Mat3:     return 3;
-				case EShaderDataType::Mat4:     return 4;
-				case EShaderDataType::Bool:     return 1;
+			case EShaderDataType::Int:      return 1;
+			case EShaderDataType::Int2:     return 2;
+			case EShaderDataType::Int3:     return 3;
+			case EShaderDataType::Int4:     return 4;
+			case EShaderDataType::Float:    return 1;
+			case EShaderDataType::Float2:   return 2;
+			case EShaderDataType::Float3:   return 3;
+			case EShaderDataType::Float4:   return 4;
+			case EShaderDataType::Mat3:     return 3;
+			case EShaderDataType::Mat4:     return 4;
+			case EShaderDataType::Bool:     return 1;
 			}
 
 			BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -94,6 +97,9 @@ namespace Basement {
 		glm::vec3 Position;
 		glm::vec3 Normal;
 		glm::vec2 TexCoord;
+
+		int BoneIds[MAX_BONE_INFLUENCE];
+		float BoneWeights[MAX_BONE_INFLUENCE];
 	};
 
 	class VertexBuffer
@@ -101,10 +107,10 @@ namespace Basement {
 	public:
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		
+
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-		
+
 		virtual u32 GetCount() const = 0;
 
 		static SharedPtr<VertexBuffer> Create(u32 size, float* vertices);
@@ -133,7 +139,7 @@ namespace Basement {
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-		
+
 		//virtual void GetIndex() = 0;
 
 		static SharedPtr<UniformBuffer> Create();

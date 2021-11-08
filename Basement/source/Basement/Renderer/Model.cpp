@@ -75,11 +75,11 @@ namespace Basement {
 	{
 		// process vertices
 		std::vector<Vertex> vertices;
-		ProcessVertices(mesh, m_Scene, vertices);
+		ProcessVertices(mesh, vertices);
 
 		// process index
 		std::vector<u32> indices;
-		ProcessIndices(mesh, m_Scene, indices);
+		ProcessIndices(mesh, indices);
 
 		// process material
 		MaterialAttrib materialAttrib;
@@ -89,13 +89,16 @@ namespace Basement {
 			ProcessMaterial(mesh, m_Scene, materialAttrib, textures);
 		}
 
-		// process embedded texture
-		//auto embeddedTex = GetEmbeddedTexture(const char* filename)
+		// process bones
+		if (mesh->mNumBones > 0)
+		{
+			ProcessBone(mesh, vertices);
+		}
 
 		return Mesh(vertices, indices, textures, materialAttrib);
 	}
 
-	void Model::ProcessVertices(aiMesh* mesh, const aiScene* scene, std::vector<Vertex>& vertices)
+	void Model::ProcessVertices(aiMesh* mesh, std::vector<Vertex>& vertices)
 	{
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
@@ -103,6 +106,7 @@ namespace Basement {
 			Vertex vertex;
 			vertex.Position = { mesh->mVertices[i].x , mesh->mVertices[i].y, mesh->mVertices[i].z };
 			vertex.Normal = { mesh->mNormals[i].x , mesh->mNormals[i].y, mesh->mNormals[i].z };
+			ResetVertexBoneData(vertex);
 
 			if (mesh->HasTextureCoords(0))
 			{
@@ -117,7 +121,7 @@ namespace Basement {
 		}
 	}
 
-	void Model::ProcessIndices(aiMesh* mesh, const aiScene* scene, std::vector<u32>& indices)
+	void Model::ProcessIndices(aiMesh* mesh, std::vector<u32>& indices)
 	{
 		for (u32 i = 0; i < mesh->mNumFaces; ++i)
 		{
@@ -162,6 +166,49 @@ namespace Basement {
 		materialAttrib.SetAttributes(ambientColor, diffuseColor, specularColor, shininess);
 	}
 
+	void Model::ProcessBone(aiMesh* mesh, std::vector<Vertex>& vertices)
+	{
+		for (unsigned int i = 0; i < mesh->mNumBones; ++i)
+		{
+			int boneId = -1;
+			std::string boneName = mesh->mBones[i]->mName.C_Str();
+
+			if (m_BoneMap.find(boneName) != m_BoneMap.end())
+			{
+				boneId = m_BoneMap[boneName].Id;
+			}
+			else
+			{
+				Bone newBone;
+				int boneCount = static_cast<int>(m_BoneMap.size());
+
+				newBone.Id = boneCount;
+				newBone.OffsetVqs = Vqs(mesh->mBones[i]->mOffsetMatrix);
+
+				// info for draw joints.
+				Vertex newBoneVertex;
+				newBoneVertex.Position = newBone.OffsetVqs.Inverse().v;
+				newBoneVertex.BoneIds[0] = boneCount;
+				newBone.JointVertex = newBoneVertex;
+
+				m_BoneMap[boneName] = newBone;
+				boneId = boneCount;
+			}
+			BM_ASSERT("invalid Bone Id found.", boneId != -1);
+
+			auto weights = mesh->mBones[i]->mWeights;
+			for (int j = 0; j < mesh->mBones[i]->mNumWeights; ++j)
+			{
+				int vertexId = weights[j].mVertexId;
+				float weight = weights[j].mWeight;
+
+				BM_ASSERT("Vertex index out of range.", vertexId <= static_cast<int>(vertices.size()));
+
+				SetVertexBoneData(vertices[vertexId], boneId, weight);
+			}
+		}
+	}
+
 	std::vector<SharedPtr<Texture2D>> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
 	{
 		std::vector<SharedPtr<Texture2D>> textures;
@@ -188,6 +235,28 @@ namespace Basement {
 		}
 
 		return textures;
+	}
+
+	void Model::ResetVertexBoneData(Vertex& vertex)
+	{
+		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+		{
+			vertex.BoneIds[i] = -1;
+			vertex.BoneWeights[i] = 0.0f;
+		}
+	}
+
+	void Model::SetVertexBoneData(Vertex& vertex, int id, float weight)
+	{
+		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+		{
+			if (vertex.BoneIds[i] < 0)
+			{
+				vertex.BoneIds[i] = id;
+				vertex.BoneWeights[i] = weight;
+				break;
+			}
+		}
 	}
 
 }
