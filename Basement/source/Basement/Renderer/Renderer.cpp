@@ -25,8 +25,8 @@ namespace Basement {
 	{
 		m_SceneData->ViewMatrix = camera.GetViewMatrix();
 		m_SceneData->ProjectionMatrix = camera.GetProjectionMatrix();
-	}	
-	
+	}
+
 	void Renderer::BeginScene(Camera2D& camera)
 	{
 		m_SceneData->ViewMatrix = camera.GetViewMatrix();
@@ -78,6 +78,28 @@ namespace Basement {
 	}
 
 	void Renderer::Submit(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix)
+	{
+		shader->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
+
+		vertexArray->Bind();
+		RenderCommand::DrawIndex(vertexArray);
+	}
+
+	void Renderer::SubmitForPoints(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix)
+	{
+		shader->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
+
+		vertexArray->Bind();
+		RenderCommand::DrawIndex(vertexArray);
+	}
+
+	void Renderer::SubmitForLines(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix)
 	{
 		shader->Bind();
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);

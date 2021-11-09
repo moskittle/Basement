@@ -10,10 +10,10 @@ namespace Basement {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
-		info.Vendor = (const char*) glGetString(GL_VENDOR);
-		info.Renderer = (const char*) glGetString(GL_RENDERER);
-		info.Version= (const char*) glGetString(GL_VERSION);
-		
+		info.Vendor = (const char*)glGetString(GL_VENDOR);
+		info.Renderer = (const char*)glGetString(GL_RENDERER);
+		info.Version = (const char*)glGetString(GL_VERSION);
+
 		OpenGLCall(;) // Check init errors
 	}
 
@@ -80,6 +80,16 @@ namespace Basement {
 	void OpenGLRendererAPI::DrawIndex(SharedPtr<VertexArray> vertexArray)
 	{
 		OpenGLCall(glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+
+	void OpenGLRendererAPI::DrawIndexWithPoints(SharedPtr<VertexArray> vertexArray)
+	{
+		OpenGLCall(glDrawElements(GL_POINTS, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+
+	void OpenGLRendererAPI::DrawIndexWithLines(SharedPtr<VertexArray> vertexArray)
+	{
+		OpenGLCall(glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
 	void OpenGLRendererAPI::DrawArrays(u32 first, u32 count)

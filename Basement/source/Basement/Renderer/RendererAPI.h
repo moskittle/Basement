@@ -64,14 +64,16 @@ namespace Basement {
 		virtual void DisableDepthTest() = 0;
 		virtual void SetDepthMask(bool mask) = 0;
 		virtual void SetDepthFunc(u32 predicate) = 0;
-		
+
 		virtual void EnableStencilTest() = 0;
 		virtual void SetStencilOp(u32 allFail, u32 depthFail, u32 allPass) = 0;
 		virtual void SetStencilOpSeperate(u32 face, u32 allFail, u32 depthFail, u32 allPass) = 0;
 		virtual void SetStencilMask(u32 mask) = 0;
 		virtual void SetStencilFunc(u32 func, i32 ref, u32 mask) = 0;
-		
+
 		virtual void DrawIndex(SharedPtr<VertexArray> vertexArray) = 0;
+		virtual void DrawIndexWithPoints(SharedPtr<VertexArray> vertexArray) = 0;
+		virtual void DrawIndexWithLines(SharedPtr<VertexArray> vertexArray) = 0;
 		virtual void DrawArrays(u32 first, u32 count) = 0;
 
 		static EAPI GetRendererAPI() { return s_Instance; };
