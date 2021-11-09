@@ -35,13 +35,15 @@ namespace Basement
 		return Vqs(inverseV, q.Inverse(), 1.0f / s);
 	}
 
-	Vqs& Vqs::operator*(const Vqs& rhs)
+	Vqs Vqs::operator*(const Vqs& rhs)
 	{
-		this->q = this->q * rhs.q;
-		this->s = this->s * rhs.s;
-		this->v = this->v * rhs.v;
+		Vqs result;
+		result.q = this->q * rhs.q;
+		result.s = this->s * rhs.s;
+		result.v = operator*(rhs.v);
+		//this->v = (*this) * rhs.v;
 
-		return *this;
+		return result;
 	}
 
 	// quat * vec = q * (vec * s) * q^(-1) + v

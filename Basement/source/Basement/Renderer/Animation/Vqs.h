@@ -11,7 +11,7 @@ namespace Basement
 	struct Vqs
 	{
 	public:
-		Vqs() = default;
+		Vqs() : v(glm::vec3(0.0f)), q(Quaternion()), s(1.0f) {};
 		Vqs(glm::vec3 _v, Quaternion _q, float _s) : v(_v), q(_q), s(_s) {}
 		Vqs(const Vqs& rhs) : v(rhs.v), q(rhs.q), s(rhs.s) {}
 		Vqs(aiMatrix4x4 matrix);
@@ -21,7 +21,7 @@ namespace Basement
 		Vqs Inverse();
 
 		glm::vec3 operator*(const glm::vec3& vec);
-		Vqs& operator*(const Vqs& rhs);
+		Vqs operator*(const Vqs& rhs);
 
 	public:
 		glm::vec3 v;	// translation

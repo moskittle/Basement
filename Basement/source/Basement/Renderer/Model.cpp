@@ -179,7 +179,7 @@ namespace Basement {
 			}
 			else
 			{
-				Bone newBone;
+				BoneData newBone;
 				int boneCount = static_cast<int>(m_BoneMap.size());
 
 				newBone.Id = boneCount;

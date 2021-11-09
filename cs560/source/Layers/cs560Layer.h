@@ -11,6 +11,8 @@
 #include "Basement/Renderer/FrameBuffer.h"
 #include "Basement/Renderer/Model.h"
 #include "Basement/Renderer/Texture.h"
+#include "Basement/Renderer/Animation/Animator.h"
+#include "Basement/Renderer/Animation/Animation.h"
 
 
 
@@ -26,15 +28,15 @@ public:
 	virtual void HandleEvent(Basement::Event& event) override;
 private:
 	void BuildScene();
-	void RenderScene();
+	void RenderScene(const Basement::Timer& dt);
 
 	Basement::CameraController3D m_CameraController;
 	Basement::ShaderLibrary m_ShaderLibrary;
 
 	// Model
-	//Basement::SharedPtr<Basement::Model> m_YBot;
 	Basement::SharedPtr<Basement::Model> m_Doozy;
 	Basement::SharedPtr<Basement::Texture2D> m_DoozyDiffuseTex;
+	Basement::SharedPtr<Basement::Animator> m_DoozyAnimator;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;

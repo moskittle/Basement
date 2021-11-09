@@ -34,7 +34,7 @@ void cs560Layer::Update(const Basement::Timer& dt)
 
 	Basement::Renderer::BeginScene(m_CameraController.GetCamera());
 
-	RenderScene();
+	RenderScene(dt);
 
 	Basement::Renderer::EndScene();
 }
@@ -69,7 +69,18 @@ void cs560Layer::BuildScene()
 	//----------------
 	m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
 
-	// 2. load texture
+	std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> doozyAnimationLibrary;
+	auto walkAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/Walking.fbx", m_Doozy);
+	doozyAnimationLibrary["Walking"] = walkAnimation;
+	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
+
+	//animationShader->Bind();
+	//auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+	//for (int i = 0; i < 100; ++i)
+	//{
+	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+	//}
+	//animationShader->Unbind();
 
 	//----------------
 	// Floor
@@ -191,7 +202,7 @@ void cs560Layer::BuildScene()
 	m_FrameBuffer = Basement::FrameBuffer::Create(1280, 720);
 }
 
-void cs560Layer::RenderScene()
+void cs560Layer::RenderScene(const Basement::Timer& dt)
 {
 	//auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
 	auto& animationShader = m_ShaderLibrary.Get("SkeletonAnimation");
@@ -209,6 +220,16 @@ void cs560Layer::RenderScene()
 	// Model
 	//----------------
 	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+	m_DoozyAnimator->UpdateAnimation(dt);
+	animationShader->Bind();
+	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+	for (int i = 0; i < 100; ++i)
+	{
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+	}
+	animationShader->Unbind();
+
 	m_DoozyDiffuseTex->Bind();
 	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
 

@@ -20,6 +20,9 @@ namespace Basement {
 		static SharedPtr<Model> Create(const std::string& filePath);
 		void Draw(SharedPtr<Shader> shader, const glm::mat4& model);
 		void DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model);
+
+		const std::unordered_map<std::string, BoneData>& GetBoneMap() { return m_BoneMap; }
+
 	private:
 		void Load(const std::string& filePath);
 		void ProcessNode(aiNode* node, const aiScene* scene);
@@ -37,7 +40,7 @@ namespace Basement {
 		std::string m_Directory;
 		const aiScene* m_Scene;
 		UniquePtr<Assimp::Importer> m_Importer;
-		std::unordered_map<std::string, Bone> m_BoneMap;
+		std::unordered_map<std::string, BoneData> m_BoneMap;
 	};
 
 }

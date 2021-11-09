@@ -11,13 +11,14 @@ namespace Basement
 		return sqrt(s * s + glm::dot(v, v));
 	}
 
-	Quaternion& Quaternion::Normalize()
+	Quaternion Quaternion::Normalize()
 	{
+		Quaternion result;
 		float invLength = 1.0f / this->Length();
-		this->v *= invLength;
-		this->s *= invLength;
+		result.v = this->v * invLength;
+		result.s = this->s * invLength;
 
-		return *this;
+		return result;
 	}
 
 	Quaternion Quaternion::Inverse()
@@ -40,32 +41,36 @@ namespace Basement
 		return *this;
 	}
 
-	Quaternion& Quaternion::operator+(const Quaternion& rhs)
+	Quaternion Quaternion::operator+(const Quaternion& rhs)
 	{
-		this->v += rhs.v;
-		this->s += rhs.s;
+		Quaternion result;
+		result.v = this->v + rhs.v;
+		result.s = this->s + rhs.s;
+
+		return result;
+	}
+
+	Quaternion Quaternion::operator*(const float& scale)
+	{
+		Quaternion result;
+		result.v = this->v * scale;
+		result.s = this->s * scale;
 
 		return *this;
 	}
 
-	Quaternion& Quaternion::operator*(const float& scale)
+	Quaternion Quaternion::operator*(const glm::vec3& _vec)
 	{
-		this->v *= scale;
-		this->s *= scale;
-
-		return *this;
+		return (*this) * Quaternion(_vec, 0.0f);
 	}
 
-	Quaternion& Quaternion::operator*(const glm::vec3& _vec)
+	Quaternion Quaternion::operator*(const Quaternion& rhs)
 	{
-		return *this * Quaternion(_vec, 0.0f);
-	}
+		Quaternion result;
 
-	Quaternion& Quaternion::operator*(const Quaternion& rhs)
-	{
-		this->v = this->s * rhs.v + this->v * rhs.s + glm::cross(this->v, rhs.v);
-		this->s = this->s * rhs.s - glm::dot(this->v, rhs.v);
+		result.v = this->s * rhs.v + this->v * rhs.s + glm::cross(this->v, rhs.v);
+		result.s = this->s * rhs.s - glm::dot(this->v, rhs.v);
 
-		return *this;
+		return result;
 	}
 }
