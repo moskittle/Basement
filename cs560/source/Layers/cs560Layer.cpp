@@ -9,12 +9,32 @@
 #include <assimp/types.h>
 #include <ImGui/imgui.h>
 
-float FloorSize = 20.0f;
+float FloorSize = 1.0f;
 float FloorPositionY = 0.0f;
+
+bool showPath = true;
+bool showControlPoints = false;
+std::vector<glm::vec3> pathPoints = {
+	glm::vec3(-4.0f, 0.0f, -4.0f),
+	glm::vec3(-2.0f, 0.0f, -4.0f),
+	glm::vec3(0.0f,  0.0f, -5.0f),
+
+	glm::vec3(2.0f,  0.0f, -1.0f),
+	glm::vec3(-3.0f, 0.0f, 0.0f),
+	glm::vec3(-5.0f, 0.0f, 1.0f),
+
+	glm::vec3(-0.0f, 0.0f, 1.0f),
+	glm::vec3(-8.0f, 0.0f, 0.0f),
+	glm::vec3(2.0f,  0.0f, 3.0f),
+
+	glm::vec3(0.0f,   0.0f, 4.0f),
+	glm::vec3(5.0f,  0.0f, 0.0f),
+	glm::vec3(4.0f,  0.0f, 5.0f),
+};
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
-	m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 5.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -43,7 +63,22 @@ void cs560Layer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
-
+	if (ImGui::CollapsingHeader("Path"))
+	{
+		ImGui::Checkbox("Show Path", &showPath);
+		ImGui::Separator();
+		ImGui::Checkbox("Show Control Points", &showControlPoints);
+		if (ImGui::TreeNode("Control Points")) {
+			int index = 0;
+			for (auto& controlPoint : pathPoints)
+			{
+				std::string name = "Point " + std::to_string(index);
+				ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
+				index++;
+			}
+			ImGui::TreePop();
+		}
+	}
 
 	ImGui::End();
 }
@@ -56,6 +91,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 void cs560Layer::BuildScene()
 {
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
+	auto& lineShader = m_ShaderLibrary.Load("assets/shaders/DebugLine.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
@@ -63,6 +99,7 @@ void cs560Layer::BuildScene()
 	m_DoozyDiffuseTex = Basement::Texture2D::Create("assets/models/doozy/doozy_diffuse.png", false);
 	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
+
 
 	//----------------
 	// Model
@@ -74,13 +111,6 @@ void cs560Layer::BuildScene()
 	doozyAnimationLibrary["Walking"] = walkAnimation;
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
 
-	//animationShader->Bind();
-	//auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
-	//for (int i = 0; i < 100; ++i)
-	//{
-	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
-	//}
-	//animationShader->Unbind();
 
 	//----------------
 	// Floor
@@ -204,7 +234,7 @@ void cs560Layer::BuildScene()
 
 void cs560Layer::RenderScene(const Basement::Timer& dt)
 {
-	//auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	auto& lineShader = m_ShaderLibrary.Get("DebugLine");
 	auto& animationShader = m_ShaderLibrary.Get("SkeletonAnimation");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
@@ -216,27 +246,36 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
-	//----------------
-	// Model
-	//----------------
-	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-	m_DoozyAnimator->UpdateAnimation(dt);
-	animationShader->Bind();
-	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
-	for (int i = 0; i < 100; ++i)
-	{
-		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
-	}
-	animationShader->Unbind();
+	//----------------
+	// Path
+	//----------------
+	m_Path = std::make_shared<Basement::Path>(pathPoints);
+	glm::mat4 pathModelMat = glm::mat4(1.0f);
+	m_Path->Draw(lineShader, pathModelMat, showPath, showControlPoints);
 
-	m_DoozyDiffuseTex->Bind();
-	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
+
+	////----------------
+	//// Model
+	////----------------
+	//glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+
+	//m_DoozyAnimator->UpdateAnimation(dt);
+	//animationShader->Bind();
+	//auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+	//for (int i = 0; i < 100; ++i)
+	//{
+	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+	//}
+	//animationShader->Unbind();
+
+	//m_DoozyDiffuseTex->Bind();
+	//Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
 
 	////--------------
 	//// Draw Floor
 	////--------------
-	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
+	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(FloorSize, 1.0f, FloorSize));
 	m_FloorTexture->Bind();
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 

@@ -84,17 +84,25 @@ namespace Basement {
 
 	void OpenGLRendererAPI::DrawIndexWithPoints(SharedPtr<VertexArray> vertexArray)
 	{
+		OpenGLCall(glPointSize(5.0f));
 		OpenGLCall(glDrawElements(GL_POINTS, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
 	void OpenGLRendererAPI::DrawIndexWithLines(SharedPtr<VertexArray> vertexArray)
 	{
+		OpenGLCall(glLineWidth(3.0f));
 		OpenGLCall(glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
 	void OpenGLRendererAPI::DrawArrays(u32 first, u32 count)
 	{
 		OpenGLCall(glDrawArrays(GL_TRIANGLES, first, count));
+	}
+
+	void OpenGLRendererAPI::DrawArraysWithPoints(u32 first, u32 count)
+	{
+		OpenGLCall(glPointSize(5.0f));
+		OpenGLCall(glDrawArrays(GL_POINTS, first, count));
 	}
 
 }

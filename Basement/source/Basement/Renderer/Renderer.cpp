@@ -96,7 +96,7 @@ namespace Basement {
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
 
 		vertexArray->Bind();
-		RenderCommand::DrawIndex(vertexArray);
+		RenderCommand::DrawIndexWithPoints(vertexArray);
 	}
 
 	void Renderer::SubmitForLines(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, const glm::mat4& modelMatrix)
@@ -107,7 +107,7 @@ namespace Basement {
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
 
 		vertexArray->Bind();
-		RenderCommand::DrawIndex(vertexArray);
+		RenderCommand::DrawIndexWithLines(vertexArray);
 	}
 
 	void Renderer::SubmitArrays(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
@@ -119,6 +119,17 @@ namespace Basement {
 
 		vertexArray->Bind();
 		RenderCommand::DrawArrays(first, count);
+	}
+
+	void Renderer::SubmitArraysForPoints(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
+	{
+		shader->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
+
+		vertexArray->Bind();
+		RenderCommand::DrawArraysWithPoints(first, count);
 	}
 
 	void Renderer::SubmitArraysForScreen(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count)

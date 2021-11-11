@@ -13,6 +13,7 @@
 #include "Basement/Renderer/Texture.h"
 #include "Basement/Renderer/Animation/Animator.h"
 #include "Basement/Renderer/Animation/Animation.h"
+#include "Basement/Renderer/Path/Path.h"
 
 
 
@@ -37,6 +38,12 @@ private:
 	Basement::SharedPtr<Basement::Model> m_Doozy;
 	Basement::SharedPtr<Basement::Texture2D> m_DoozyDiffuseTex;
 	Basement::SharedPtr<Basement::Animator> m_DoozyAnimator;
+
+	// Path
+	Basement::SharedPtr<Basement::Path> m_Path;
+	Basement::SharedPtr<Basement::VertexArray> m_TestVAO;
+	Basement::SharedPtr<Basement::VertexBuffer> m_TestVBO;
+	Basement::SharedPtr<Basement::IndexBuffer> m_TestO;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;

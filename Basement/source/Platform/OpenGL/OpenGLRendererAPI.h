@@ -33,6 +33,7 @@ namespace Basement {
 		virtual void DrawIndexWithPoints(SharedPtr<VertexArray> vertexArray) override;
 		virtual void DrawIndexWithLines(SharedPtr<VertexArray> vertexArray) override;
 		virtual void DrawArrays(u32 first, u32 count) override;
+		virtual void DrawArraysWithPoints(u32 first, u32 count) override;
 	};
 
 }

@@ -75,6 +75,7 @@ namespace Basement {
 		virtual void DrawIndexWithPoints(SharedPtr<VertexArray> vertexArray) = 0;
 		virtual void DrawIndexWithLines(SharedPtr<VertexArray> vertexArray) = 0;
 		virtual void DrawArrays(u32 first, u32 count) = 0;
+		virtual void DrawArraysWithPoints(u32 first, u32 count) = 0;
 
 		static EAPI GetRendererAPI() { return s_Instance; };
 		static RendererAPIInfo& GetRendererAPIInfo() { static RendererAPIInfo info; return info; }
