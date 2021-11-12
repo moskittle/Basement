@@ -1,6 +1,7 @@
 #include "cs560Layer.h"
 
 #include "Basement/Renderer/Renderer.h"
+#include "Basement/Renderer/Path/SpeedControl.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -14,27 +15,34 @@ float FloorPositionY = 0.0f;
 
 bool showPath = true;
 bool showControlPoints = false;
+
+
+float elapsingTime = 0.0f;
+float totalTime = 12.0f;
+float arcValue = 0.0f;
+float angle = 0.0f;
+glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+float animationPace = 8.0f;
+
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
 	glm::vec3(-2.0f, 0.0f, -4.0f),
 	glm::vec3(0.0f,  0.0f, -5.0f),
-
 	glm::vec3(2.0f,  0.0f, -1.0f),
 	glm::vec3(-3.0f, 0.0f, 0.0f),
 	glm::vec3(-5.0f, 0.0f, 1.0f),
-
 	glm::vec3(-0.0f, 0.0f, 1.0f),
 	glm::vec3(-8.0f, 0.0f, 0.0f),
 	glm::vec3(2.0f,  0.0f, 3.0f),
-
 	glm::vec3(0.0f,   0.0f, 4.0f),
 	glm::vec3(5.0f,  0.0f, 0.0f),
-	glm::vec3(4.0f,  0.0f, 5.0f),
+	glm::vec3(4.3f,  0.0f, 5.1f),
 };
+
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
-	m_CameraController(glm::vec3(0.0f, 5.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -108,8 +116,11 @@ void cs560Layer::BuildScene()
 
 	std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> doozyAnimationLibrary;
 	auto walkAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/Walking.fbx", m_Doozy);
+	auto slowRunAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/SlowRun.fbx", m_Doozy);
 	doozyAnimationLibrary["Walking"] = walkAnimation;
+	doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
+	m_DoozyAnimator->PlayAnimation("SlowRun");
 
 
 	//----------------
@@ -250,27 +261,53 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//----------------
 	// Path
 	//----------------
-	m_Path = std::make_shared<Basement::Path>(pathPoints);
+	m_Path = Basement::Path(pathPoints);
 	glm::mat4 pathModelMat = glm::mat4(1.0f);
-	m_Path->Draw(lineShader, pathModelMat, showPath, showControlPoints);
+	m_Path.Draw(lineShader, pathModelMat, showPath, showControlPoints);
 
+	m_ArcLength = Basement::ArcLength(m_Path.GetPointsOnCurve());
+
+	Basement::SpeedControl speedControl;
+	speedControl.SetEaseInInterval(0.0f, 3.0f);
+	speedControl.SetEaseOutInterval(totalTime - 3.0f, totalTime);
+	speedControl.CalculateMaxSpeed();
+
+
+	// Update Position and orientation
+	elapsingTime += dt;
+	elapsingTime = elapsingTime >= totalTime ? 0.0f : elapsingTime;
+
+	float arcValue = speedControl.CalculateCurrentPosition(elapsingTime);
+	float curArcPos = m_ArcLength.GetValueFromLookUpTable(arcValue);
+	float curOrient = curArcPos + 0.01f > 1.0f ? 1.0f : curArcPos + 0.01f;
+
+	glm::vec3 curPos = m_Path.CalculatePointPostion(curArcPos);
+	glm::vec3 nextPos = m_Path.CalculatePointPostion(curOrient);
+	glm::vec3 facingDirection = glm::normalize(nextPos - curPos);
+	angle = curOrient < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDirection)) : angle;
+	angle = glm::cross(forwardDirection, facingDirection).y < 0 ? angle * -1.0f : angle;
+	BM_CORE_INFO(angle);
 
 	////----------------
 	//// Model
 	////----------------
-	//glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), curPos)
+		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
-	//m_DoozyAnimator->UpdateAnimation(dt);
-	//animationShader->Bind();
-	//auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
-	//for (int i = 0; i < 100; ++i)
-	//{
-	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
-	//}
-	//animationShader->Unbind();
 
-	//m_DoozyDiffuseTex->Bind();
-	//Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
+	float animationSpeed = speedControl.CalculateCurrentSpeed(elapsingTime) / speedControl.GetMaxSpeed();
+	m_DoozyAnimator->UpdateAnimation(animationSpeed * dt);
+	animationShader->Bind();
+	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+	for (int i = 0; i < 100; ++i)
+	{
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+	}
+	animationShader->Unbind();
+
+	m_DoozyDiffuseTex->Bind();
+	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
 
 	////--------------
 	//// Draw Floor

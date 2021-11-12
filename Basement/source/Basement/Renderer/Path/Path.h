@@ -21,6 +21,7 @@ namespace Basement
 		void Draw(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawPath, bool drawControlPoints);
 		void CalculateCurve();
 		glm::vec3 CalculatePointPostion(float t);
+		const std::vector<glm::vec3>& GetPointsOnCurve() { return m_PointsOnCurve; }
 	private:
 		void Init();
 

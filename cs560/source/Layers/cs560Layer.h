@@ -14,6 +14,7 @@
 #include "Basement/Renderer/Animation/Animator.h"
 #include "Basement/Renderer/Animation/Animation.h"
 #include "Basement/Renderer/Path/Path.h"
+#include "Basement/Renderer/Path/ArcLength.h"
 
 
 
@@ -40,10 +41,8 @@ private:
 	Basement::SharedPtr<Basement::Animator> m_DoozyAnimator;
 
 	// Path
-	Basement::SharedPtr<Basement::Path> m_Path;
-	Basement::SharedPtr<Basement::VertexArray> m_TestVAO;
-	Basement::SharedPtr<Basement::VertexBuffer> m_TestVBO;
-	Basement::SharedPtr<Basement::IndexBuffer> m_TestO;
+	Basement::Path m_Path;
+	Basement::ArcLength m_ArcLength;
 
 	// Floor
 	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
