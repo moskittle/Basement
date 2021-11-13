@@ -64,16 +64,16 @@ namespace Basement {
 
 	void ImGuiLayer::RenderImGui()
 	{
-		ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
+		//ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
 
-		RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
-		ImGui::Text("Vendor:   %s", info.Vendor.c_str());
-		ImGui::Text("Renderer: %s", info.Renderer.c_str());
-		ImGui::Text("Verision: %s", info.Version.c_str());
-		ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
-		ImGui::End();
+		//RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
+		//ImGui::Text("Vendor:   %s", info.Vendor.c_str());
+		//ImGui::Text("Renderer: %s", info.Renderer.c_str());
+		//ImGui::Text("Verision: %s", info.Version.c_str());
+		//ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
+		//ImGui::End();
 
-		static bool IsShowing = true;
+		//static bool IsShowing = true;
 
 		//ImGui::ShowDemoWindow(&IsShowing);
 	}

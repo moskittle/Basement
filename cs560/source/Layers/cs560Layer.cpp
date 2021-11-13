@@ -11,11 +11,10 @@
 #include <ImGui/imgui.h>
 
 float FloorSize = 1.0f;
-float FloorPositionY = 0.0f;
+float FloorPositionY = 0.5f;
 
 bool showPath = true;
 bool showControlPoints = false;
-
 
 float elapsingTime = 0.0f;
 float totalTime = 12.0f;
@@ -26,23 +25,22 @@ float animationPace = 8.0f;
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
-	glm::vec3(-2.0f, 0.0f, -4.0f),
-	glm::vec3(0.0f,  0.0f, -5.0f),
-	glm::vec3(2.0f,  0.0f, -1.0f),
-	glm::vec3(-3.0f, 0.0f, 0.0f),
-	glm::vec3(-5.0f, 0.0f, 1.0f),
-	glm::vec3(-0.0f, 0.0f, 1.0f),
-	glm::vec3(-8.0f, 0.0f, 0.0f),
-	glm::vec3(2.0f,  0.0f, 3.0f),
-	glm::vec3(0.0f,   0.0f, 4.0f),
-	glm::vec3(5.0f,  0.0f, 0.0f),
-	glm::vec3(4.3f,  0.0f, 5.1f),
+	glm::vec3(-1.4f, 0.0f, -3.4f),
+	glm::vec3(-0.8f,  0.0f, -2.8f),
+	glm::vec3(2.0f,  0.0f, -1.8f),
+	glm::vec3(-0.1f, 0.0f, 0.8f),
+	glm::vec3(-3.1f, 0.0f, -1.1f),
+	glm::vec3(-0.2f, 0.0f, 0.6f),
+	glm::vec3(-4.2f, 0.0f, 0.5f),
+	glm::vec3(-1.6f,  0.0f, 3.0f),
+	glm::vec3(0.0f,   0.0f, 1.8f),
+	glm::vec3(1.9f,  0.0f, 3.8f),
+	glm::vec3(3.1f,  0.0f, 4.0f),
 };
-
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
-	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 3.0f, 14.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -71,23 +69,38 @@ void cs560Layer::RenderImGui()
 {
 	ImGui::Begin("Scene");
 
+	if (ImGui::CollapsingHeader("Instruction"))
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::Text("Input:");
+		ImGui::Indent();
+		ImGui::BulletText("Movement: Use WSAD to move the camera.");
+		ImGui::BulletText("Look Around: Hold Right Mouse Button to look around.");
+		ImGui::Unindent();
+		ImGui::Separator();
+	}
+
 	if (ImGui::CollapsingHeader("Path"))
 	{
 		ImGui::Checkbox("Show Path", &showPath);
 		ImGui::Separator();
 		ImGui::Checkbox("Show Control Points", &showControlPoints);
-		if (ImGui::TreeNode("Control Points")) {
-			int index = 0;
-			for (auto& controlPoint : pathPoints)
-			{
-				std::string name = "Point " + std::to_string(index);
-				ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
-				index++;
-			}
-			ImGui::TreePop();
-		}
+
+		//if (ImGui::TreeNode("Control Points")) {
+		//	int index = 0;
+		//	for (auto& controlPoint : pathPoints)
+		//	{
+		//		std::string name = "Point " + std::to_string(index);
+		//		ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
+		//		index++;
+		//	}
+		//	ImGui::TreePop();
+		//}
 	}
 
+	ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
+
+	ImGui::Separator();
 	ImGui::End();
 }
 
@@ -257,7 +270,6 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
 
-
 	//----------------
 	// Path
 	//----------------
@@ -266,27 +278,22 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	m_Path.Draw(lineShader, pathModelMat, showPath, showControlPoints);
 
 	m_ArcLength = Basement::ArcLength(m_Path.GetPointsOnCurve());
-
 	Basement::SpeedControl speedControl;
 	speedControl.SetEaseInInterval(0.0f, 3.0f);
 	speedControl.SetEaseOutInterval(totalTime - 3.0f, totalTime);
 	speedControl.CalculateMaxSpeed();
 
-
 	// Update Position and orientation
 	elapsingTime += dt;
 	elapsingTime = elapsingTime >= totalTime ? 0.0f : elapsingTime;
-
-	float arcValue = speedControl.CalculateCurrentPosition(elapsingTime);
+	arcValue = speedControl.CalculateCurrentPosition(elapsingTime);
 	float curArcPos = m_ArcLength.GetValueFromLookUpTable(arcValue);
-	float curOrient = curArcPos + 0.01f > 1.0f ? 1.0f : curArcPos + 0.01f;
-
+	float nextArcPos = glm::clamp(curArcPos + dt, curArcPos + dt, 1.0f);
 	glm::vec3 curPos = m_Path.CalculatePointPostion(curArcPos);
-	glm::vec3 nextPos = m_Path.CalculatePointPostion(curOrient);
-	glm::vec3 facingDirection = glm::normalize(nextPos - curPos);
-	angle = curOrient < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDirection)) : angle;
-	angle = glm::cross(forwardDirection, facingDirection).y < 0 ? angle * -1.0f : angle;
-	BM_CORE_INFO(angle);
+	glm::vec3 nextPos = m_Path.CalculatePointPostion(nextArcPos);
+	glm::vec3 facingDir = glm::normalize(nextPos - curPos);
+	angle = nextArcPos < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDir)) : angle;
+	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
 
 	////----------------
 	//// Model

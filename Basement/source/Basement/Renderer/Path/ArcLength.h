@@ -24,7 +24,8 @@ namespace Basement
 
 		void SetupLookUpTable();
 		float GetValueFromLookUpTable(float value);
-		glm::vec3 GetPositionOnCurve(float value);
+		int GetPositionOnCurveIndex(float value);
+		glm::vec3 GetPositionOnCurve(int index);
 
 		ArcLength& operator=(const ArcLength& rhs);
 	private:

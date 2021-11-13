@@ -10,7 +10,7 @@ static const float DefaultZoomSpeed = 2.0f;
 static const float DefaultRotationSpeed3D = 0.3f;
 
 namespace Basement {
-	
+
 	//--------------------------------------------------------------
 	//---Perspective Camera Controller------------------------------
 
@@ -70,21 +70,21 @@ namespace Basement {
 
 	bool CameraController3D::ScrollMouse(MouseScrolledEvent& event)
 	{
-		// TODO: zoom in/out by changine the distance between focal point and camera position
-		if (m_Fov >= 1.0f && m_Fov <= 90.0f)
-			m_Fov -= (event.GetOffsetY() * m_ZoomSpeed);
-		
-		// Fov = [1, 90]
-		m_Fov = (m_Fov >= 1.0f) ? m_Fov : 1.0f;
-		m_Fov = (m_Fov <= 90.0) ? m_Fov : 90.0f;
+		//// TODO: zoom in/out by changine the distance between focal point and camera position
+		//if (m_Fov >= 1.0f && m_Fov <= 90.0f)
+		//	m_Fov -= (event.GetOffsetY() * m_ZoomSpeed);
+		//
+		//// Fov = [1, 90]
+		//m_Fov = (m_Fov >= 1.0f) ? m_Fov : 1.0f;
+		//m_Fov = (m_Fov <= 90.0) ? m_Fov : 90.0f;
 
-		m_Camera.SetFov(m_Fov);
+		//m_Camera.SetFov(m_Fov);
 
-		// Update move and rotate speed
-		m_ZoomLevel -= event.GetOffsetY() * 0.2f;
-		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
-		m_MoveSpeed = DefaultMoveSpeed * m_ZoomLevel;
-		m_RotationSpeed= DefaultRotationSpeed3D * m_ZoomLevel;
+		//// Update move and rotate speed
+		//m_ZoomLevel -= event.GetOffsetY() * 0.2f;
+		//m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		//m_MoveSpeed = DefaultMoveSpeed * m_ZoomLevel;
+		//m_RotationSpeed= DefaultRotationSpeed3D * m_ZoomLevel;
 
 		return false;
 	}
@@ -102,7 +102,7 @@ namespace Basement {
 			m_Pitch -= (offset.y * m_RotationSpeed);
 		}
 		m_Camera.SetRotation(m_Yaw, m_Pitch);
-		
+
 		return false;
 	}
 

@@ -30,10 +30,17 @@ namespace Basement
 			auto& startValue = entry.StartValue;
 			auto& endValue = entry.EndValue;
 
-			float midValue = (startValue + startValue) / 2.0f;
-			glm::vec3 u_a = GetPositionOnCurve(startValue);
-			glm::vec3 u_b = GetPositionOnCurve(endValue);
-			glm::vec3 u_m = GetPositionOnCurve(midValue);
+			//BM_CORE_INFO("start end mid:");
+
+			float midValue = (startValue + endValue) / 2.0f;
+
+			int startIndex = GetPositionOnCurveIndex(startValue);
+			int endIndex = GetPositionOnCurveIndex(endValue);
+			int midIndex = GetPositionOnCurveIndex(midValue);
+
+			glm::vec3 u_a = GetPositionOnCurve(startIndex);
+			glm::vec3 u_b = GetPositionOnCurve(endIndex);
+			glm::vec3 u_m = GetPositionOnCurve(midIndex);
 
 			// Lengths of two halves and that of entire segment are estimated by linear distances.
 			float A = glm::length(u_m - u_a);
@@ -44,15 +51,13 @@ namespace Basement
 			// If d is above a user defined error threshold, both halves are added into the segment list to be test
 			if (d > m_ErrorThreshold && (endValue - startValue) > m_MaxInterval)
 			{
-				//m_CurveSegments.push_front(TableEntry{ midValue, endValue, entry.Length });
-				//m_CurveSegments.push_front(TableEntry{ startValue, midValue, entry.Length });
-				m_CurveSegments.push_back(TableEntry{ startValue, midValue, entry.Length });
-				m_CurveSegments.push_back(TableEntry{ midValue, endValue, entry.Length });
+				m_CurveSegments.push_front(TableEntry{ midValue, endValue, entry.Length });
+				m_CurveSegments.push_front(TableEntry{ startValue, midValue, entry.Length });
 			}
 			else
 			{
 				// Otherwise, record  two new segments
-				float& length = m_ArcLengthList.back().Length;
+				float length = m_ArcLengthList.back().Length;
 				m_ArcLengthList.push_back(TableEntry{ startValue, midValue, length + A });
 				m_ArcLengthList.push_back(TableEntry{ midValue, endValue, length + A + B });
 			}
@@ -101,12 +106,22 @@ namespace Basement
 	/// </summary>
 	/// <param name="value"></param>
 	/// <returns></returns>
-	glm::vec3 ArcLength::GetPositionOnCurve(float value)
+	int ArcLength::GetPositionOnCurveIndex(float value)
 	{
 		int pointCount = static_cast<int>(m_CurvePointPositions.size());
 		int index = static_cast<int>(value * (pointCount - 1));
 		index = glm::clamp(index, 0, pointCount - 1);
 
+		return index;
+	}
+
+	/// <summary>
+	/// Get postion on curve by index
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
+	glm::vec3 ArcLength::GetPositionOnCurve(int index)
+	{
 		return m_CurvePointPositions[index];
 	}
 
