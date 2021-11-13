@@ -19,13 +19,13 @@ namespace Basement
 
 
 	/// <summary>
+	/// This function calculates the max speed of the character on the path, which is the height of the trapezoid
+	/// (topLength + bottomLength) * height / 2 = area
 	///  |   -----------
 	///  |  /           \
 	///  | /             \
 	///  |/               \
 	///  -------------------
-	/// This function calculates the max speed of the character on the path, which is the height of the trapezoid
-	/// (topLength + bottomLength) * height / 2 = area
 	/// </summary>
 	void SpeedControl::CalculateMaxSpeed()
 	{

@@ -29,9 +29,6 @@ namespace Basement
 			// Compute the midpoint of the curve at um=(ua+ub)/2.
 			auto& startValue = entry.StartValue;
 			auto& endValue = entry.EndValue;
-
-			//BM_CORE_INFO("start end mid:");
-
 			float midValue = (startValue + endValue) / 2.0f;
 
 			int startIndex = GetPositionOnCurveIndex(startValue);

@@ -6,62 +6,31 @@ Some fonts: Arial, Bebas Neue, Verdana, Helvetica, Tahoma, Trebuchet, MS, Times 
 
 Table of Contents
 - [1. Introduction](#1-introduction)
-- [2. Controls](#2-controls)
-- [3. Interpolations](#3-interpolations)
-- [4. Ajustable Settings](#4-ajustable-settings)
-- [5. Related Files](#5-related-files)
+- [2. Implementation](#2-implementation)
+  - [2.1 Path](#21-path)
+  - [2.2 Arc Length Calculation](#22-arc-length-calculation)
+  - [2.3 Speend and Orientation](#23-speend-and-orientation)
+- [3. Related Files](#3-related-files)
 
 ## 1. Introduction
 >This project focuses on animating 3d character model when moving along a path. It is based on my project one. Please run the project executable under the following path:  
 `Basement\cs560\cs560.exe`  
 
-<img src="image/imgui-settings.jpg" alt="picture example" title="example" width="500" height="300" />
+<img src="image/project-2-overview.jpg" alt="picture example" title="example" width="500" height="300" />
 
+## 2. Implementation
 
-## 2. Controls
->The demo executable supports both keyboard and mouse input, and the control is Unity-like. The keys and buttons work as below.
+### 2.1 Path
+I used DeCastlejau Algorithm to calculate a bezier curve with 12 given control points. The curve satisfies first order continuity, therefore the character can run at constant speed when reaching the max speed. 
 
-   | KeyCode |    Action     |
-   | :-----: | :-----------: |
-   |    W    | Move forward  |
-   |    S    | Move backward |
-   |    A    |   Move left   |
-   |    D    |  Move right   |
-   |    E    |  Move upward  |
-   |    Q    | Move downward |
+### 2.2 Arc Length Calculation
+I used adaptive approach to construct a look up table for arc length base on the curve. The table is normalized after construction. When looking up for values in the table, I used binary search to retrieve data for entries in the table.
 
-   |    Mouse Button    |   Action    |
-   | :----------------: | :---------: |
-   | Right Mouse Button | Look around |
-   |   Scroll Up/Down   | Zoom in/out |
+### 2.3 Speend and Orientation
+I implemented ease-in/ ease out distance-time function to make the character have smooth animation at the beginning and end of the path. The character smoothly accelerates to the max speed at, keep running at constant speed, and then gradually slows down.
 
-## 3. Interpolations
+The orientation is updated at each frame as well, based on the direction the character is facing at.
 
-
-## 4. Ajustable Settings
-[Put a setting picture here](https://www.youtube.com/watch?v=0N_RO-jL-90)
-
-   |         Parameter          |                 Description                  |
-   | :------------------------: | :------------------------------------------: |
-   |        Animation On        |   Toggle for playing or pausing animation    |
-   |        Wireframe On        | Toggle for rendering model in wireframe mode |
-   | Animation Selection Button |  Choose the corresponding animation to play  |
-
-There are also a few post-processing effects. 
-
-## 5. Related Files
-**Source Code**  
-1. *Model loading*  
-D:\dev\Basement\Basement\source\Basement\Renderer\Model.h
-D:\dev\Basement\Basement\source\Basement\Renderer\Model.cpp
-2. *Animation*
-D:\dev\Basement\Basement\source\Basement\Renderer\Animation\ *.h
-D:\dev\Basement\Basement\source\Basement\Renderer\Animation\ *.cpp
-
-
-**Shaders**  
-1. *Animation*  
-Basement\cs560\assets\shaders\Grandma.glsl  
-Basement\cs560\assets\shaders\SkeletonAnimation.glsl
-2. *Debug*  
-Basement\cs560\assets\shaders\SkeletonAnimation.glsl
+## 3. Related Files
+Basement\Basement\source\Basement\Renderer\Path\ *.h
+Basement\Basement\source\Basement\Renderer\Path\ *.cpp
