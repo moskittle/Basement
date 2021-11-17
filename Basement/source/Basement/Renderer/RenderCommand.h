@@ -28,6 +28,7 @@ namespace Basement {
 		static void DrawIndexWithLines(SharedPtr<VertexArray> vertexArray) { s_RenderAPI->DrawIndexWithLines(vertexArray); }
 		static void DrawArrays(u32 first, u32 count) { s_RenderAPI->DrawArrays(first, count); }
 		static void DrawArraysWithPoints(u32 first, u32 count) { s_RenderAPI->DrawArraysWithPoints(first, count); }
+		static void DrawArraysWithLines(u32 first, u32 count) { s_RenderAPI->DrawArraysWithLines(first, count); }
 	private:
 		static RendererAPI* s_RenderAPI;
 	};

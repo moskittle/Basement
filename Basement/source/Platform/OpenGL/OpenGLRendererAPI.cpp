@@ -104,5 +104,10 @@ namespace Basement {
 		OpenGLCall(glPointSize(5.0f));
 		OpenGLCall(glDrawArrays(GL_POINTS, first, count));
 	}
+	void OpenGLRendererAPI::DrawArraysWithLines(u32 first, u32 count)
+	{
+		OpenGLCall(glLineWidth(3.0f));
+		OpenGLCall(glDrawArrays(GL_LINES, first, count));
+	}
 
 }

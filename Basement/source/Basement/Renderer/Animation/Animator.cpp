@@ -72,4 +72,12 @@ namespace Basement
 		}
 
 	}
+
+	void Animator::DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones)
+	{
+		if (m_CurrentAnimation)
+		{
+			m_CurrentAnimation->DrawSkeleton(shader, modelMatrix, drawJoints, drawBones);
+		}
+	}
 }

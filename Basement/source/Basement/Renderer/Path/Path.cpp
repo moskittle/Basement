@@ -65,7 +65,8 @@ namespace Basement
 		//draw points
 		if (drawControlPoints)
 		{
-			Renderer::SubmitArraysForPoints(shader, m_PathPointVao, m_PointIndices[0], m_PointIndices.size(), modelMatrix);
+			u32 indexCount = static_cast<u32>(m_PointIndices.size());
+			Renderer::SubmitArraysForPoints(shader, m_PathPointVao, m_PointIndices[0], indexCount, modelMatrix);
 		}
 
 		// draw lines

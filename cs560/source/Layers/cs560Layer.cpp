@@ -15,6 +15,9 @@ float FloorPositionY = 0.5f;
 
 bool showPath = true;
 bool showControlPoints = false;
+bool showModel = true;
+bool showJoints = true;
+bool showBones = false;
 
 float elapsingTime = 0.0f;
 float totalTime = 12.0f;
@@ -80,6 +83,24 @@ void cs560Layer::RenderImGui()
 		ImGui::Separator();
 	}
 
+	if (ImGui::CollapsingHeader("Animation"))
+	{
+		ImGui::Checkbox("Show Model", &showModel);
+		ImGui::Checkbox("Show Joints", &showJoints);
+		ImGui::Checkbox("Show Bones", &showBones);
+
+		//if (ImGui::TreeNode("Control Points")) {
+		//	int index = 0;
+		//	for (auto& controlPoint : pathPoints)
+		//	{
+		//		std::string name = "Point " + std::to_string(index);
+		//		ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
+		//		index++;
+		//	}
+		//	ImGui::TreePop();
+		//}
+	}
+
 	if (ImGui::CollapsingHeader("Path"))
 	{
 		ImGui::Checkbox("Show Path", &showPath);
@@ -112,6 +133,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 void cs560Layer::BuildScene()
 {
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
+	auto& boneShader = m_ShaderLibrary.Load("assets/shaders/DebugBone.glsl");
 	auto& lineShader = m_ShaderLibrary.Load("assets/shaders/DebugLine.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
@@ -135,6 +157,10 @@ void cs560Layer::BuildScene()
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
 	m_DoozyAnimator->PlayAnimation("SlowRun");
 
+	//----------------
+	// Path
+	//----------------
+	m_Path = Basement::Path(pathPoints);
 
 	//----------------
 	// Floor
@@ -258,6 +284,7 @@ void cs560Layer::BuildScene()
 
 void cs560Layer::RenderScene(const Basement::Timer& dt)
 {
+	auto& boneShader = m_ShaderLibrary.Get("DebugBone");
 	auto& lineShader = m_ShaderLibrary.Get("DebugLine");
 	auto& animationShader = m_ShaderLibrary.Get("SkeletonAnimation");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
@@ -273,7 +300,6 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//----------------
 	// Path
 	//----------------
-	m_Path = Basement::Path(pathPoints);
 	glm::mat4 pathModelMat = glm::mat4(1.0f);
 	m_Path.Draw(lineShader, pathModelMat, showPath, showControlPoints);
 
@@ -295,6 +321,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	angle = nextArcPos < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDir)) : angle;
 	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
 
+
 	////----------------
 	//// Model
 	////----------------
@@ -302,19 +329,33 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
+	model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));;
 
 	float animationSpeed = speedControl.CalculateCurrentSpeed(elapsingTime) / speedControl.GetMaxSpeed();
 	m_DoozyAnimator->UpdateAnimation(animationSpeed * dt);
-	animationShader->Bind();
 	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+
+	if (showModel)
+	{
+		animationShader->Bind();
+		for (int i = 0; i < 100; ++i)
+		{
+			std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+		}
+		animationShader->Unbind();
+		m_DoozyDiffuseTex->Bind();
+		Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
+	}
+
+	// Draw bone
+	boneShader->Bind();
 	for (int i = 0; i < 100; ++i)
 	{
 		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
 	}
-	animationShader->Unbind();
+	boneShader->Unbind();
+	m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
 
-	m_DoozyDiffuseTex->Bind();
-	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
 
 	////--------------
 	//// Draw Floor
@@ -322,6 +363,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(FloorSize, 1.0f, FloorSize));
 	m_FloorTexture->Bind();
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+
 
 	//----------------
 	// Skybox
@@ -335,6 +377,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	m_FrameBuffer->Unbind();
 	Basement::Renderer::DisableDepthTest();
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit);
+
 
 	//----------------
 	// Screen Quad

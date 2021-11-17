@@ -132,6 +132,17 @@ namespace Basement {
 		RenderCommand::DrawArraysWithPoints(first, count);
 	}
 
+	void Renderer::SubmitArraysForLines(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count, const glm::mat4& modelMatrix)
+	{
+		shader->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", modelMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_View", m_SceneData->ViewMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Projection", m_SceneData->ProjectionMatrix);
+
+		vertexArray->Bind();
+		RenderCommand::DrawArraysWithLines(first, count);
+	}
+
 	void Renderer::SubmitArraysForScreen(SharedPtr<Shader> shader, SharedPtr<VertexArray> vertexArray, u32 first, u32 count)
 	{
 		glDrawArrays(GL_TRIANGLES, 0, 36);

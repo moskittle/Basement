@@ -17,6 +17,7 @@ namespace Basement
 		void PlayAnimation(const std::string& animationName);
 		void UpdateAnimation(float dt);
 		void CalculateBoneTransform(const SharedPtr<BoneNode> node, Vqs parentVqs);
+		void DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones);
 
 		const std::unordered_map<std::string, SharedPtr<Animation>>& GetAnimationLibrary() const { return m_AnimationLibrary; }
 		SharedPtr<Animation> GetCurrentAnimation() const { return m_CurrentAnimation; }

@@ -25,7 +25,9 @@ namespace Basement
 
 		// Store data for rendering joints and bones
 		void StoreJoints();
-		void StoreBone(const BoneNode* node, int parentBoneIndex);
+		void StoreBones(SharedPtr<BoneNode> node, int parentBoneIndex);
+		void SetupSkeletonVertexArray();
+		void DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones);
 
 		// getters & setters
 		double GetDuration() { return m_Duration; }
@@ -44,9 +46,16 @@ namespace Basement
 		std::unordered_map<std::string, BoneData> m_BoneDataMap;
 
 		// Data for drawing bones and joints
-		std::vector<Vertex> m_BoneVertices;
+		std::vector<Vertex> m_JointVertices;
 		std::vector<u32> m_JointIndices;
+		SharedPtr<VertexArray> m_JointVao;
+		SharedPtr<VertexBuffer> m_JointVbo;
+		SharedPtr<IndexBuffer> m_JointIbo;
+
 		std::vector<u32> m_BoneIndices;
+		SharedPtr<VertexArray> m_BoneVao;
+		SharedPtr<VertexBuffer> m_BoneVbo;
+		SharedPtr<IndexBuffer> m_BoneIbo;
 	};
 
 }

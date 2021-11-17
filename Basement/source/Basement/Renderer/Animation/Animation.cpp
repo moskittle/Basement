@@ -1,8 +1,7 @@
 #include "bmpch.h"
 
 #include "Animation.h"
-
-
+#include "../Renderer.h"
 
 namespace Basement
 {
@@ -21,8 +20,12 @@ namespace Basement
 		BM_CORE_INFO("Load animation from: {0} ticksPerSecond: {1}, duration: {2}", path, m_TicksPerSecond, m_Duration);
 
 		m_RootNode = ReadHierarchyData(scene->mRootNode);
-
 		ReadMissingBones(animation, *model);
+
+		// Debug setup
+		StoreJoints();
+		StoreBones(m_RootNode, 0);
+		SetupSkeletonVertexArray();
 	}
 
 	SharedPtr<Bone> Animation::FindBone(const std::string& name)
@@ -37,6 +40,85 @@ namespace Basement
 		}
 
 		return nullptr;
+	}
+
+	void Animation::StoreJoints()
+	{
+		int i = 0;
+
+		for (auto& [name, boneData] : m_BoneDataMap)
+		{
+			boneData.IndexInList = i;
+			m_JointVertices.push_back(boneData.JointVertex);
+			m_JointIndices.push_back(i);
+			i++;
+		}
+	}
+
+	void Animation::StoreBones(SharedPtr<BoneNode> node, int parentBoneIndex)
+	{
+		int index = parentBoneIndex;
+		std::string& nodeName = node->name;
+		if (m_BoneDataMap.find(nodeName) != m_BoneDataMap.end())
+		{
+			index = m_BoneDataMap[nodeName].IndexInList;
+		}
+
+		if (index != parentBoneIndex)
+		{
+			m_BoneIndices.push_back(parentBoneIndex);
+			m_BoneIndices.push_back(index);
+		}
+
+		for (size_t i = 0; i < node->children.size(); ++i)
+		{
+			StoreBones(node->children[i], index);
+		}
+	}
+
+	void Animation::SetupSkeletonVertexArray()
+	{
+		// Joints Vao
+		BufferLayout bufferLayout = {
+			{ EShaderDataType::Float3, "a_Position" },
+			{ EShaderDataType::Float3, "a_Normal" },
+			{ EShaderDataType::Float2, "a_TexCoord" },
+			{ EShaderDataType::Int4, "a_BoneIds"},
+			{ EShaderDataType::Float4, "a_BoneWeights"}
+		};
+
+		m_JointVao = VertexArray::Create();
+		m_JointVbo = VertexBuffer::Create(m_JointVertices);
+		m_JointVbo->SetLayout(bufferLayout);
+		m_JointVao->AddVertexBuffer(m_JointVbo);
+		m_JointIbo = IndexBuffer::Create(m_JointIndices);
+		m_JointVao->SetIndexBuffer(m_JointIbo);
+
+		// Bones Vao
+		m_BoneVao = VertexArray::Create();
+		m_BoneVbo = VertexBuffer::Create(m_JointVertices);	// share vertices with joints
+		m_BoneVbo->SetLayout(bufferLayout);
+		m_BoneVao->AddVertexBuffer(m_BoneVbo);
+		m_BoneIbo = IndexBuffer::Create(m_BoneIndices);
+		m_BoneVao->SetIndexBuffer(m_BoneIbo);
+	}
+
+	void Animation::DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones)
+	{
+		//draw joints
+		if (drawJoints)
+		{
+			u32 indexCount = static_cast<u32>(m_JointIndices.size());
+			Renderer::SubmitArraysForPoints(shader, m_JointVao, m_JointIndices[0], indexCount, modelMatrix);
+		}
+
+		// draw boines
+		if (drawBones)
+		{
+			Renderer::SubmitForLines(shader, m_BoneVao, modelMatrix);
+			//u32 indexCount = static_cast<u32>(m_BoneIndices.size());
+			//Renderer::SubmitArraysForLines(shader, m_BoneVao, m_BoneIndices[0], indexCount, modelMatrix);
+		}
 	}
 
 	SharedPtr<BoneNode> Animation::ReadHierarchyData(const aiNode* source)
