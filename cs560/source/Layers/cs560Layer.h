@@ -40,6 +40,9 @@ private:
 	Basement::SharedPtr<Basement::Texture2D> m_DoozyDiffuseTex;
 	Basement::SharedPtr<Basement::Animator> m_DoozyAnimator;
 
+	// Cube
+	Basement::SharedPtr<Basement::Model> m_Cube;
+
 	// Path
 	Basement::Path m_Path;
 	Basement::ArcLength m_ArcLength;

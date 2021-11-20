@@ -16,7 +16,7 @@ float FloorPositionY = 0.5f;
 bool showPath = true;
 bool showControlPoints = false;
 bool showModel = true;
-bool showJoints = true;
+bool showJoints = false;
 bool showBones = false;
 
 float elapsingTime = 0.0f;
@@ -25,6 +25,8 @@ float arcValue = 0.0f;
 float angle = 0.0f;
 glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
+
+glm::vec3 cubePosition(1.0f, 0.5f, 1.0f);
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
@@ -83,23 +85,12 @@ void cs560Layer::RenderImGui()
 		ImGui::Separator();
 	}
 
-	if (ImGui::CollapsingHeader("Animation"))
-	{
-		ImGui::Checkbox("Show Model", &showModel);
-		ImGui::Checkbox("Show Joints", &showJoints);
-		ImGui::Checkbox("Show Bones", &showBones);
-
-		//if (ImGui::TreeNode("Control Points")) {
-		//	int index = 0;
-		//	for (auto& controlPoint : pathPoints)
-		//	{
-		//		std::string name = "Point " + std::to_string(index);
-		//		ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
-		//		index++;
-		//	}
-		//	ImGui::TreePop();
-		//}
-	}
+	//if (ImGui::CollapsingHeader("Animation"))
+	//{
+	//	ImGui::Checkbox("Show Model", &showModel);
+	//	ImGui::Checkbox("Show Joints", &showJoints);
+	//	ImGui::Checkbox("Show Bones", &showBones);
+	//}
 
 	if (ImGui::CollapsingHeader("Path"))
 	{
@@ -132,6 +123,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 
 void cs560Layer::BuildScene()
 {
+	auto& flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
 	auto& boneShader = m_ShaderLibrary.Load("assets/shaders/DebugBone.glsl");
 	auto& lineShader = m_ShaderLibrary.Load("assets/shaders/DebugLine.glsl");
@@ -156,6 +148,11 @@ void cs560Layer::BuildScene()
 	doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
 	m_DoozyAnimator->PlayAnimation("SlowRun");
+
+	//----------------
+	// Cube
+	//----------------
+	m_Cube = Basement::Model::Create("assets/models/cube.fbx");
 
 	//----------------
 	// Path
@@ -290,6 +287,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
+	auto& flatColorShader = m_ShaderLibrary.Get("FlatColor");
 
 	// Render
 	m_FrameBuffer->Bind();
@@ -329,7 +327,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
-	model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));;
+	//model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));;
 
 	float animationSpeed = speedControl.CalculateCurrentSpeed(elapsingTime) / speedControl.GetMaxSpeed();
 	m_DoozyAnimator->UpdateAnimation(animationSpeed * dt);
@@ -356,6 +354,11 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	boneShader->Unbind();
 	m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
 
+	//--------------
+	// Draw Cube
+	//--------------
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), cubePosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------
 	//// Draw Floor
