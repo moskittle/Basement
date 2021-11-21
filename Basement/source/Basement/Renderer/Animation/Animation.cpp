@@ -143,6 +143,8 @@ namespace Basement
 		auto boneInfoMap = model.GetBoneMap();
 		auto boneCount = static_cast<int>(boneInfoMap.size());
 
+		m_BoneDataMap = boneInfoMap;
+
 		for (unsigned int i = 0; i < animation->mNumChannels; i++)
 		{
 			auto channel = animation->mChannels[i];
@@ -155,8 +157,6 @@ namespace Basement
 			}
 			m_Bones.push_back(std::make_shared<Bone>(channel->mNodeName.data, boneInfoMap[channel->mNodeName.data].Id, channel));
 		}
-
-		m_BoneDataMap = boneInfoMap;
 	}
 
 }

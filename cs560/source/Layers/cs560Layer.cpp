@@ -26,7 +26,7 @@ float angle = 0.0f;
 glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
-glm::vec3 cubePosition(1.0f, 0.5f, 1.0f);
+glm::vec3 cubePosition(3.0f, 0.5f, 3.0f);
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
@@ -85,12 +85,12 @@ void cs560Layer::RenderImGui()
 		ImGui::Separator();
 	}
 
-	//if (ImGui::CollapsingHeader("Animation"))
-	//{
-	//	ImGui::Checkbox("Show Model", &showModel);
-	//	ImGui::Checkbox("Show Joints", &showJoints);
-	//	ImGui::Checkbox("Show Bones", &showBones);
-	//}
+	if (ImGui::CollapsingHeader("Animation"))
+	{
+		ImGui::Checkbox("Show Model", &showModel);
+		ImGui::Checkbox("Show Joints", &showJoints);
+		ImGui::Checkbox("Show Bones", &showBones);
+	}
 
 	if (ImGui::CollapsingHeader("Path"))
 	{
@@ -108,6 +108,11 @@ void cs560Layer::RenderImGui()
 		//	}
 		//	ImGui::TreePop();
 		//}
+	}
+
+	if (ImGui::CollapsingHeader("Cube"))
+	{
+		ImGui::SliderFloat3("Cube Position", glm::value_ptr(cubePosition), 0.0f, 3.5f, "%.1f", 1.0f);
 	}
 
 	ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
@@ -357,7 +362,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//--------------
 	// Draw Cube
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), cubePosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 0.5f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f));
 	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------
