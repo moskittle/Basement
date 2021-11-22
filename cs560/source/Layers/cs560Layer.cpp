@@ -4,6 +4,7 @@
 #include "Basement/Renderer/Path/SpeedControl.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/compatibility.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <GLFW/glfw3.h>
@@ -15,9 +16,9 @@ float FloorPositionY = 0.5f;
 
 bool showPath = true;
 bool showControlPoints = false;
-bool showModel = true;
-bool showJoints = false;
-bool showBones = false;
+bool showModel = false;
+bool showJoints = true;
+bool showBones = true;
 
 float elapsingTime = 0.0f;
 float totalTime = 12.0f;
@@ -26,7 +27,8 @@ float angle = 0.0f;
 glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
-glm::vec3 cubePosition(3.0f, 0.5f, 3.0f);
+glm::vec3 cubePosition = glm::vec3(3.0f, 0.5f, 3.0f);
+glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 0.0f);
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
@@ -152,7 +154,7 @@ void cs560Layer::BuildScene()
 	doozyAnimationLibrary["Walking"] = walkAnimation;
 	doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
-	m_DoozyAnimator->PlayAnimation("SlowRun");
+	m_DoozyAnimator->PlayAnimation("Walking");
 
 	//----------------
 	// Cube
@@ -303,39 +305,51 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//----------------
 	// Path
 	//----------------
-	glm::mat4 pathModelMat = glm::mat4(1.0f);
-	m_Path.Draw(lineShader, pathModelMat, showPath, showControlPoints);
+	//glm::mat4 pathModelMat = glm::mat4(1.0f);
+	//m_Path.Draw(lineShader, pathModelMat, showPath, showControlPoints);
 
-	m_ArcLength = Basement::ArcLength(m_Path.GetPointsOnCurve());
-	Basement::SpeedControl speedControl;
-	speedControl.SetEaseInInterval(0.0f, 3.0f);
-	speedControl.SetEaseOutInterval(totalTime - 3.0f, totalTime);
-	speedControl.CalculateMaxSpeed();
+	//m_ArcLength = Basement::ArcLength(m_Path.GetPointsOnCurve());
+	//Basement::SpeedControl speedControl;
+	//speedControl.SetEaseInInterval(0.0f, 3.0f);
+	//speedControl.SetEaseOutInterval(totalTime - 3.0f, totalTime);
+	//speedControl.CalculateMaxSpeed();
 
-	// Update Position and orientation
-	elapsingTime += dt;
-	elapsingTime = elapsingTime >= totalTime ? 0.0f : elapsingTime;
-	arcValue = speedControl.CalculateCurrentPosition(elapsingTime);
-	float curArcPos = m_ArcLength.GetValueFromLookUpTable(arcValue);
-	float nextArcPos = glm::clamp(curArcPos + dt, curArcPos + dt, 1.0f);
-	glm::vec3 curPos = m_Path.CalculatePointPostion(curArcPos);
-	glm::vec3 nextPos = m_Path.CalculatePointPostion(nextArcPos);
-	glm::vec3 facingDir = glm::normalize(nextPos - curPos);
-	angle = nextArcPos < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDir)) : angle;
-	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
+	//// Update Position and orientation
+	//elapsingTime += dt;
+	//elapsingTime = elapsingTime >= totalTime ? 0.0f : elapsingTime;
+	//arcValue = speedControl.CalculateCurrentPosition(elapsingTime);
+	//float curArcPos = m_ArcLength.GetValueFromLookUpTable(arcValue);
+	//float nextArcPos = glm::clamp(curArcPos + dt, curArcPos + dt, 1.0f);
+	//glm::vec3 curPos = m_Path.CalculatePointPostion(curArcPos);
+	//glm::vec3 nextPos = m_Path.CalculatePointPostion(nextArcPos);
+	//angle = nextArcPos < 1.0f ? glm::acos(glm::dot(forwardDirection, facingDir)) : angle;
+	//angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
 
 
 	////----------------
 	//// Model
 	////----------------
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), curPos)
+	glm::vec3 moveDir = cubePosition - modelPosition;
+	glm::vec3 facingDir = glm::normalize(moveDir);
+	angle = glm::acos(glm::dot(forwardDirection, facingDir));
+	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
+	float distance = glm::length(moveDir);
+	if (distance > 0.35f)
+	{
+		float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
+		modelPosition += (moveDir * relativeSpeed);
+		m_DoozyAnimator->UpdateAnimation(dt);
+	}
+	else
+	{
+		// Do Inverse Kinematics
+	}
+
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), modelPosition)
 		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
-	//model = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));;
 
-	float animationSpeed = speedControl.CalculateCurrentSpeed(elapsingTime) / speedControl.GetMaxSpeed();
-	m_DoozyAnimator->UpdateAnimation(animationSpeed * dt);
 	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
 
 	if (showModel)
@@ -362,7 +376,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//--------------
 	// Draw Cube
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 0.5f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f));
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 0.5f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
 	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------
