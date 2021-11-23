@@ -34,15 +34,15 @@ namespace Basement
 			return glm::quat(aiQuat.w, aiQuat.x, aiQuat.y, aiQuat.z);
 		}
 
-		//static glm::vec3 CalculateLocalPosition(glm::vec3 position, glm::quat rotation, float scale)
-		//{
-		//	return MultiplyVqsByVec3(glm::vec3(0.0f), glm::inverse(rotation), 1 / scale, -position);
-		//}
+		// newVec = q * (oldVec* s) * q^-1 + v
+		static glm::vec3 MultiplyVqsByVec3(glm::vec3 v, glm::quat q, float s, glm::vec3 vec)
+		{
+			return q * (vec * s) * glm::inverse(q) + v;
+		}
 
-		//// newVec = q * (oldVec* s) * q^-1 + v
-		//static glm::vec3 MultiplyVqsByVec3(glm::vec3 v, glm::quat q, float s, glm::vec3 vec)
-		//{
-		//	return q * (vec * s) * glm::inverse(q) + v;
-		//}
+		static glm::vec3 CalculateLocalPosition(glm::vec3 position, glm::quat rotation, float scale)
+		{
+			return MultiplyVqsByVec3(glm::vec3(0.0f), glm::inverse(rotation), 1 / scale, -position);
+		}
 	}
 }

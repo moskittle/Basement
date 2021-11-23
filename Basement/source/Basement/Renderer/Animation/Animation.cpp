@@ -2,6 +2,7 @@
 
 #include "Animation.h"
 #include "../Renderer.h"
+#include "../RendererUtil.h"
 
 namespace Basement
 {
@@ -127,7 +128,7 @@ namespace Basement
 		BM_CORE_ASSERT(source, "Invalid source.");
 
 		result->name = source->mName.data;
-		result->localTransformation = Vqs(source->mTransformation);
+		result->localTransformation = RendererUtil::ConvertAssimpToGlmMatrix4(source->mTransformation);
 
 		for (unsigned int i = 0; i < source->mNumChildren; i++)
 		{

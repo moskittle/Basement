@@ -1,9 +1,11 @@
 #include "bmpch.h"
 
 #include "Model.h"
+#include "RendererUtil.h"
 
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Basement {
 
@@ -183,11 +185,16 @@ namespace Basement {
 				int boneCount = static_cast<int>(m_BoneMap.size());
 
 				newBone.Id = boneCount;
-				newBone.OffsetVqs = Vqs(mesh->mBones[i]->mOffsetMatrix);
+				//newBone.OffsetVqs = Vqs(mesh->mBones[i]->mOffsetMatrix);
+				//newBoneVertex.Position = newBone.OffsetVqs.Inverse().v;
+				const auto& aiOffsetMatrix = mesh->mBones[i]->mOffsetMatrix;
+				newBone.offsetMatrix = RendererUtil::ConvertAssimpToGlmMatrix4(aiOffsetMatrix);
 
 				// info for draw joints.
 				Vertex newBoneVertex;
-				newBoneVertex.Position = newBone.OffsetVqs.Inverse().v;
+				//newBoneVertex.Position = Vqs(mesh->mBones[i]->mOffsetMatrix).Inverse().v; 
+				glm::mat4 offsetInverse = glm::inverse(newBone.offsetMatrix);	// not sure why do inverse to calc join position
+				glm::decompose(offsetInverse, glm::vec3(), glm::quat(), newBoneVertex.Position, glm::vec3(), glm::vec4());
 				newBoneVertex.BoneIds[0] = boneCount;
 				newBone.JointVertex = newBoneVertex;
 

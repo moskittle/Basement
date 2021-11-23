@@ -350,14 +350,14 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
 
-	auto boneVqses = m_DoozyAnimator->GetFinalBoneVqses();
+	auto boneMatrices = m_DoozyAnimator->GetFinalBoneMatrices();
 
 	if (showModel)
 	{
 		animationShader->Bind();
 		for (int i = 0; i < 100; ++i)
 		{
-			std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+			std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
 		}
 		animationShader->Unbind();
 		m_DoozyDiffuseTex->Bind();
@@ -368,7 +368,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	boneShader->Bind();
 	for (int i = 0; i < 100; ++i)
 	{
-		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneVqses[i].ConvertToMatrix());
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
 	}
 	boneShader->Unbind();
 	m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
