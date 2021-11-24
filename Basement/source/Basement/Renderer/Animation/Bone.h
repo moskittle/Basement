@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "Vqs.h"
 #include "Basement/Renderer/Buffer.h"
 
 #include <glm/glm.hpp>
@@ -13,7 +12,6 @@ namespace Basement
 	struct BoneData
 	{
 		int Id;
-		//Vqs OffsetVqs;	// an offset matrix for bones
 		glm::mat4 offsetMatrix;
 		Vertex JointVertex;
 		int IndexInList;
