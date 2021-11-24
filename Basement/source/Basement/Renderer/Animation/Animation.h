@@ -3,7 +3,6 @@
 #include "../Model.h"
 #include "../Buffer.h"
 #include "Bone.h"
-#include "Vqs.h"
 
 namespace Basement
 {
@@ -11,7 +10,7 @@ namespace Basement
 	struct BoneNode
 	{
 		std::string name;
-		Vqs localTransformation;
+		glm::mat4 localTransformation;
 		std::vector<SharedPtr<BoneNode>> children;
 	};
 

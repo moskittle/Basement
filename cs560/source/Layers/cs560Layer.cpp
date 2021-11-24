@@ -94,23 +94,23 @@ void cs560Layer::RenderImGui()
 		ImGui::Checkbox("Show Bones", &showBones);
 	}
 
-	if (ImGui::CollapsingHeader("Path"))
-	{
-		ImGui::Checkbox("Show Path", &showPath);
-		ImGui::Separator();
-		ImGui::Checkbox("Show Control Points", &showControlPoints);
+	//if (ImGui::CollapsingHeader("Path"))
+	//{
+	//	ImGui::Checkbox("Show Path", &showPath);
+	//	ImGui::Separator();
+	//	ImGui::Checkbox("Show Control Points", &showControlPoints);
 
-		//if (ImGui::TreeNode("Control Points")) {
-		//	int index = 0;
-		//	for (auto& controlPoint : pathPoints)
-		//	{
-		//		std::string name = "Point " + std::to_string(index);
-		//		ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
-		//		index++;
-		//	}
-		//	ImGui::TreePop();
-		//}
-	}
+	//	//if (ImGui::TreeNode("Control Points")) {
+	//	//	int index = 0;
+	//	//	for (auto& controlPoint : pathPoints)
+	//	//	{
+	//	//		std::string name = "Point " + std::to_string(index);
+	//	//		ImGui::SliderFloat3(name.c_str(), glm::value_ptr(controlPoint), -10.0f, 10.0f, "%.1f", 2.0f);
+	//	//		index++;
+	//	//	}
+	//	//	ImGui::TreePop();
+	//	//}
+	//}
 
 	if (ImGui::CollapsingHeader("Cube"))
 	{
