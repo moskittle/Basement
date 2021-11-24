@@ -41,7 +41,6 @@ namespace Basement
 		glm::mat4 rotation = InterpolateRotation(animationTime);
 		glm::mat4 scale = InterpolateScale(animationTime);
 
-		//m_LocalTransform = Vqs(position, rotation, scale);
 		m_LocalTransform = translation * rotation * scale;
 	}
 
@@ -71,40 +70,12 @@ namespace Basement
 
 		int p0Index = GetRotationIndex(animationTime);
 		int p1Index = p0Index + 1;
-		//glm::quat rotation0 = (m_Rotations[p0Index].Rotation.Normalize());
-		//glm::quat rotation1 = (m_Rotations[p1Index].Rotation.Normalize());
 		glm::quat rotation0 = glm::normalize(m_Rotations[p0Index].Rotation);
 		glm::quat rotation1 = glm::normalize(m_Rotations[p1Index].Rotation);
 		float t = CalcInterpolationTValue(m_Rotations[p0Index].TimeStamp, m_Rotations[p1Index].TimeStamp, animationTime);
 
 		glm::quat finalRotation = glm::slerp(rotation0, rotation1, t);
 		return glm::toMat4(glm::normalize(finalRotation));
-
-		////float rotation0DotRoation1 = rotation0.Dot(rotation1);
-		//float rotation0DotRoation1 = glm::dot(rotation0, rotation1);
-
-		//if (rotation0DotRoation1 < 0.0f)
-		//{
-		//	rotation0DotRoation1 *= -1.0f;
-		//	rotation1 = rotation1 * -1.0f;
-		//}
-
-		//glm::quat finalRotation;
-		//if (rotation0DotRoation1 > 1.0f - std::numeric_limits<float>::epsilon())
-		//{
-		//	finalRotation = rotation0 * (1 - t) + rotation1 * t;
-
-		//	return glm::normalize(finalRotation);
-		//}
-		//else
-		//{
-		//	float theta = acos(rotation0DotRoation1);
-		//	float rotation0Scale = sin((1.0f - t) * theta) / sin(theta);
-		//	float rotation1Scale = sin(t * theta) / sin(theta);
-		//	finalRotation = rotation0 * rotation0Scale + rotation1 * rotation1Scale;
-
-		//	return glm::normalize(finalRotation);
-		//}
 	}
 
 	// Linear interpolation
