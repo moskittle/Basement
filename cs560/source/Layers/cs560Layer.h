@@ -40,6 +40,9 @@ private:
 	Basement::SharedPtr<Basement::Texture2D> m_DoozyDiffuseTex;
 	Basement::SharedPtr<Basement::Animator> m_DoozyAnimator;
 
+	Basement::SharedPtr<Basement::Model> m_Stamp;
+	Basement::SharedPtr<Basement::Animator> m_StampAnimator;
+
 	// Cube
 	Basement::SharedPtr<Basement::Model> m_Cube;
 

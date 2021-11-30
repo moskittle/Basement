@@ -27,7 +27,7 @@ float angle = 0.0f;
 glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
-glm::vec3 cubePosition = glm::vec3(3.0f, 0.5f, 3.0f);
+glm::vec3 cubePosition = glm::vec3(1.0f, 0.5f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 0.0f);
 
 std::vector<glm::vec3> pathPoints = {
@@ -47,7 +47,7 @@ std::vector<glm::vec3> pathPoints = {
 
 cs560Layer::cs560Layer()
 	: Layer("cs560 Layer"),
-	m_CameraController(glm::vec3(0.0f, 3.0f, 14.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(2.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -146,8 +146,9 @@ void cs560Layer::BuildScene()
 	//----------------
 	// Model
 	//----------------
-	m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
 
+	// Doozy setup
+	m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
 	std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> doozyAnimationLibrary;
 	auto walkAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/Walking.fbx", m_Doozy);
 	auto slowRunAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/SlowRun.fbx", m_Doozy);
@@ -155,6 +156,15 @@ void cs560Layer::BuildScene()
 	doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
 	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
 	m_DoozyAnimator->PlayAnimation("Walking");
+	m_DoozyAnimator->GenerateInverseKinematicsData("mixamorig1:LeftHandIndex2");
+
+	// Stamp setup
+	m_Stamp = Basement::Model::Create("assets/models/stamp.x");
+	std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> stampAnimationLibrary;
+	auto stampWalkAnimation = std::make_shared<Basement::Animation>("assets/models/stamp.x", m_Stamp);
+	stampAnimationLibrary["Walking"] = stampWalkAnimation;
+	m_StampAnimator = std::make_shared<Basement::Animator>(stampAnimationLibrary);
+	m_StampAnimator->PlayAnimation("Walking");
 
 	//----------------
 	// Cube
@@ -329,54 +339,90 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	////----------------
 	//// Model
 	////----------------
+	//glm::vec3 moveDir = cubePosition - modelPosition;
+	//glm::vec3 facingDir = glm::normalize(moveDir);
+	//angle = glm::acos(glm::dot(forwardDirection, facingDir));
+	//angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
+	//float distance = glm::length(moveDir);
+
+	//if (distance > 0.35f)
+	//{
+	//	float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
+	//	modelPosition += (moveDir * relativeSpeed);
+	//	m_DoozyAnimator->UpdateAnimation(dt);
+	//}
+	//else
+	//{
+	//	// Do Inverse Kinematics
+	//}
+
+	//glm::mat4 model = glm::translate(glm::mat4(1.0f), modelPosition)
+	//	* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
+	//	* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+
+
+	//auto boneMatrices = m_DoozyAnimator->GetFinalBoneMatrices();
+
+	//if (showModel)
+	//{
+	//	animationShader->Bind();
+	//	for (int i = 0; i < 100; ++i)
+	//	{
+	//		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
+	//	}
+	//	animationShader->Unbind();
+	//	m_DoozyDiffuseTex->Bind();
+	//	Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
+	//}
+
+	//// Draw bone
+	//boneShader->Bind();
+	//for (int i = 0; i < 100; ++i)
+	//{
+	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
+	//}
+	//boneShader->Unbind();
+	//m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
+
+
+	// Draw Stamp
 	glm::vec3 moveDir = cubePosition - modelPosition;
+	moveDir.y = 0.0f;
 	glm::vec3 facingDir = glm::normalize(moveDir);
 	angle = glm::acos(glm::dot(forwardDirection, facingDir));
 	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
 	float distance = glm::length(moveDir);
-	if (distance > 0.35f)
+
+	if (distance > 0.3f)
 	{
 		float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
 		modelPosition += (moveDir * relativeSpeed);
-		m_DoozyAnimator->UpdateAnimation(dt);
+		auto animationPace = glm::clamp((dt / 0.016f), 0.0f, 1.0f);
+		m_StampAnimator->UpdateAnimation(animationPace * dt);
 	}
 	else
 	{
 		// Do Inverse Kinematics
 	}
 
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), modelPosition)
+	glm::mat4 stampModelMatrix = glm::translate(glm::mat4(1.0f), modelPosition)
 		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
 		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
-
-
-	auto boneMatrices = m_DoozyAnimator->GetFinalBoneMatrices();
-
-	if (showModel)
-	{
-		animationShader->Bind();
-		for (int i = 0; i < 100; ++i)
-		{
-			std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
-		}
-		animationShader->Unbind();
-		m_DoozyDiffuseTex->Bind();
-		Basement::Renderer::SubmitModel(m_Doozy, animationShader, model);
-	}
+	auto stampBoneMatrices = m_StampAnimator->GetFinalBoneMatrices();
 
 	// Draw bone
 	boneShader->Bind();
 	for (int i = 0; i < 100; ++i)
 	{
-		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", boneMatrices[i]);
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
 	}
 	boneShader->Unbind();
-	m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
+	m_StampAnimator->DrawSkeleton(boneShader, stampModelMatrix, showJoints, showBones);
 
 	//--------------
 	// Draw Cube
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 0.5f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 1.0f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------
