@@ -17,11 +17,16 @@ namespace Basement
 		void UpdateAnimation(float dt);
 		void CalculateBoneTransform(const SharedPtr<BoneNode> node, glm::mat4 parentVqs);
 		void DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones);
+		void GenerateInverseKinematicsData(std::string endEffectorName);
+		void SolveInverseKinematicsCCD(const glm::vec3& targetPosition);
 
 		const std::unordered_map<std::string, SharedPtr<Animation>>& GetAnimationLibrary() const { return m_AnimationLibrary; }
 		SharedPtr<Animation> GetCurrentAnimation() const { return m_CurrentAnimation; }
 		const std::vector<glm::mat4>& GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
+		const std::vector<glm::mat4>& GetGlobalBoneMatrices() { return m_GlobalBoneMatrices; }
 	private:
+		std::vector<SharedPtr<BoneNode>> m_EndEffectors;
+		std::vector<glm::mat4> m_GlobalBoneMatrices;
 		std::vector<glm::mat4> m_FinalBoneMatrices;
 		SharedPtr<Animation> m_CurrentAnimation;
 		std::unordered_map<std::string, SharedPtr<Animation>> m_AnimationLibrary;

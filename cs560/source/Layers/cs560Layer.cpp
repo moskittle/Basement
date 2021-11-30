@@ -147,16 +147,16 @@ void cs560Layer::BuildScene()
 	// Model
 	//----------------
 
-	// Doozy setup
-	m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
-	std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> doozyAnimationLibrary;
-	auto walkAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/Walking.fbx", m_Doozy);
-	auto slowRunAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/SlowRun.fbx", m_Doozy);
-	doozyAnimationLibrary["Walking"] = walkAnimation;
-	doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
-	m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
-	m_DoozyAnimator->PlayAnimation("Walking");
-	m_DoozyAnimator->GenerateInverseKinematicsData("mixamorig1:LeftHandIndex2");
+	//// Doozy setup
+	//m_Doozy = Basement::Model::Create("assets/models/doozy/doozy.fbx");
+	//std::unordered_map<std::string, Basement::SharedPtr<Basement::Animation>> doozyAnimationLibrary;
+	//auto walkAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/Walking.fbx", m_Doozy);
+	//auto slowRunAnimation = std::make_shared<Basement::Animation>("assets/models/doozy/SlowRun.fbx", m_Doozy);
+	//doozyAnimationLibrary["Walking"] = walkAnimation;
+	//doozyAnimationLibrary["SlowRun"] = slowRunAnimation;
+	//m_DoozyAnimator = std::make_shared<Basement::Animator>(doozyAnimationLibrary);
+	//m_DoozyAnimator->PlayAnimation("Walking");
+	//m_DoozyAnimator->GenerateInverseKinematicsData("mixamorig1:LeftHandIndex2");
 
 	// Stamp setup
 	m_Stamp = Basement::Model::Create("assets/models/stamp.x");
@@ -165,6 +165,7 @@ void cs560Layer::BuildScene()
 	stampAnimationLibrary["Walking"] = stampWalkAnimation;
 	m_StampAnimator = std::make_shared<Basement::Animator>(stampAnimationLibrary);
 	m_StampAnimator->PlayAnimation("Walking");
+	m_StampAnimator->GenerateInverseKinematicsData("Bip01_R_Finger02");
 
 	//----------------
 	// Cube

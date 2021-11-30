@@ -11,6 +11,7 @@ namespace Basement
 	{
 		std::string name;
 		glm::mat4 localTransformation;
+		SharedPtr<BoneNode> parent;
 		std::vector<SharedPtr<BoneNode>> children;
 	};
 
@@ -34,9 +35,12 @@ namespace Basement
 		const std::vector<SharedPtr<Bone>>& GetBones() { return m_Bones; }
 		const std::unordered_map<std::string, BoneData>& GetBoneDataMap() { return m_BoneDataMap; }
 		const SharedPtr<BoneNode> GetRootNode() { return m_RootNode; }
+		std::vector<SharedPtr<BoneNode>> GenerateInverseKinematicsData(std::string endEffectorName);
+
 	private:
-		SharedPtr<BoneNode> ReadHierarchyData(const aiNode* source);
+		SharedPtr<BoneNode> ReadHierarchyData(const aiNode* source, SharedPtr<BoneNode> parentNode);
 		void ReadMissingBones(const aiAnimation* animation, Model& model);
+		SharedPtr<BoneNode> FindBoneNode(const std::string name, SharedPtr<BoneNode> node);
 
 		float m_Duration;
 		int m_TicksPerSecond;

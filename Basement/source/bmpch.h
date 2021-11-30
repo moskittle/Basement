@@ -9,11 +9,14 @@
 #include <sstream>
 #include <array>
 #include <vector>
+#include <queue>
+#include <stack>
+#include <deque>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "Basement/Core/Log.h"
 
 #ifdef BM_PLATFORM_WINDOWS
-	#include <Windows.h>
+#include <Windows.h>
 #endif // BM_PLATFORM_WINDOWS

@@ -12,7 +12,7 @@ namespace Basement
 	struct BoneData
 	{
 		int Id;
-		glm::mat4 offsetMatrix;
+		glm::mat4 offsetMatrix;	// offset to keyframe
 		Vertex JointVertex;
 		int IndexInList;
 	};

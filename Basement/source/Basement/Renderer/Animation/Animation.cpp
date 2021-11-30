@@ -4,6 +4,8 @@
 #include "../Renderer.h"
 #include "../RendererUtil.h"
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace Basement
 {
 
@@ -20,7 +22,7 @@ namespace Basement
 
 		BM_CORE_INFO("Load animation from: {0} ticksPerSecond: {1}, duration: {2}", path, m_TicksPerSecond, m_Duration);
 
-		m_RootNode = ReadHierarchyData(scene->mRootNode);
+		m_RootNode = ReadHierarchyData(scene->mRootNode, nullptr);
 		ReadMissingBones(animation, *model);
 
 		// Debug setup
@@ -117,26 +119,24 @@ namespace Basement
 		if (drawBones)
 		{
 			Renderer::SubmitForLines(shader, m_BoneVao, modelMatrix);
-			//u32 indexCount = static_cast<u32>(m_BoneIndices.size());
-			//Renderer::SubmitArraysForLines(shader, m_BoneVao, m_BoneIndices[0], indexCount, modelMatrix);
 		}
 	}
 
-	SharedPtr<BoneNode> Animation::ReadHierarchyData(const aiNode* source)
+	SharedPtr<BoneNode> Animation::ReadHierarchyData(const aiNode* source, SharedPtr<BoneNode> parentNode)
 	{
-		auto result = std::make_shared<BoneNode>();
+		auto currentNode = std::make_shared<BoneNode>();
 		BM_CORE_ASSERT(source, "Invalid source.");
 
-		result->name = source->mName.data;
-		result->localTransformation = RendererUtil::ConvertAssimpToGlmMatrix4(source->mTransformation);
-
+		currentNode->name = source->mName.data;
+		currentNode->localTransformation = RendererUtil::ConvertAssimpToGlmMatrix4(source->mTransformation);
+		currentNode->parent = parentNode;
 		for (unsigned int i = 0; i < source->mNumChildren; i++)
 		{
-			SharedPtr<BoneNode> child = ReadHierarchyData(source->mChildren[i]);
-			result->children.push_back(child);
+			SharedPtr<BoneNode> child = ReadHierarchyData(source->mChildren[i], currentNode);
+			currentNode->children.push_back(child);
 		}
 
-		return result;
+		return currentNode;
 	}
 
 	void Animation::ReadMissingBones(const aiAnimation* animation, Model& model)
@@ -158,6 +158,61 @@ namespace Basement
 			}
 			m_Bones.push_back(std::make_shared<Bone>(channel->mNodeName.data, boneInfoMap[channel->mNodeName.data].Id, channel));
 		}
+	}
+
+	SharedPtr<BoneNode> Animation::FindBoneNode(const std::string nodeName, SharedPtr<BoneNode> node)
+	{
+		if (nodeName == node->name)
+		{
+			return node;
+		}
+
+		std::queue<SharedPtr<BoneNode>> boneNodeQueue({ m_RootNode });
+		while (!boneNodeQueue.empty())
+		{
+			auto queueSize = boneNodeQueue.size();
+
+			for (int i = 0; i < queueSize; ++i)
+			{
+				auto currentNode = boneNodeQueue.front();
+				boneNodeQueue.pop();
+
+				if (nodeName == currentNode->name)
+				{
+					return currentNode;
+				}
+
+				for (auto child : currentNode->children)
+				{
+					boneNodeQueue.push(child);
+				}
+			}
+		}
+
+		BM_CORE_INFO("Bone Node {0} is not found", nodeName);
+		return nullptr;
+	}
+
+	/// <summary>
+	/// This function retrives the info of end effectors from skeleton.
+	/// </summary>
+	/// <param name="endEffectorName">The name of the end effector.</param>
+	/// <returns></returns>
+	std::vector<SharedPtr<BoneNode>> Animation::GenerateInverseKinematicsData(std::string endEffectorName)
+	{
+		auto endEffector = FindBoneNode(endEffectorName, m_RootNode);
+
+		std::vector<SharedPtr<BoneNode>> endEffectors;
+		while (endEffector != nullptr)
+		{
+			if (m_BoneDataMap.find(endEffector->name) != m_BoneDataMap.end())
+			{
+				endEffectors.push_back(endEffector);
+			}
+			endEffector = endEffector->parent;
+		}
+
+		return endEffectors;
 	}
 
 }

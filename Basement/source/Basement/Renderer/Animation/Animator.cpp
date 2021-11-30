@@ -3,6 +3,7 @@
 #include "Animator.h"
 
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 namespace Basement
 {
@@ -17,10 +18,11 @@ namespace Basement
 		}
 
 		m_FinalBoneMatrices.reserve(100);
-
+		m_GlobalBoneMatrices.reserve(100);
 		for (int i = 0; i < 100; i++)
 		{
 			m_FinalBoneMatrices.push_back(glm::mat4(1.0f));
+			m_GlobalBoneMatrices.push_back(glm::mat4(1.0f));
 		}
 	}
 
@@ -57,13 +59,14 @@ namespace Basement
 			bone->Update(m_CurrentTime);
 			localTransformation = bone->GetLocalTransformation();
 		}
-		glm::mat4 globalTransformation = parentTransformation * localTransformation;
 
+		glm::mat4 globalTransformation = parentTransformation * localTransformation;
 		auto boneDataMap = m_CurrentAnimation->GetBoneDataMap();
 		if (boneDataMap.find(nodeName) != boneDataMap.end())
 		{
 			int index = boneDataMap[nodeName].Id;
 			const glm::mat4& offsetTransformation = boneDataMap[nodeName].offsetMatrix;
+			m_GlobalBoneMatrices[index] = globalTransformation;
 			m_FinalBoneMatrices[index] = globalTransformation * offsetTransformation;
 			glm::vec3 jointPosition;
 
@@ -72,7 +75,8 @@ namespace Basement
 			boneDataMap[nodeName].JointVertex.Position = jointPosition;
 		}
 
-		for (int i = 0; i < static_cast<int>(node->children.size()); ++i)
+		auto childSize = static_cast<int>(node->children.size());
+		for (int i = 0; i < childSize; ++i)
 		{
 			CalculateBoneTransform(node->children[i], globalTransformation);
 		}
@@ -84,6 +88,38 @@ namespace Basement
 		if (m_CurrentAnimation)
 		{
 			m_CurrentAnimation->DrawSkeleton(shader, modelMatrix, drawJoints, drawBones);
+		}
+	}
+
+	void Animator::GenerateInverseKinematicsData(std::string endEffectorName)
+	{
+		m_EndEffectors = m_CurrentAnimation->GenerateInverseKinematicsData(endEffectorName);
+	}
+
+	void Animator::SolveInverseKinematicsCCD(const glm::vec3& targetPosition)
+	{
+		const auto& endEffectorCount = m_EndEffectors.size();
+		for (int i = 0; i < endEffectorCount; ++i)
+		{
+			// start position
+			glm::vec3 startPosition = glm::vec3(0.0f);	// worldPosition
+			// end position
+			glm::vec3 endPosition = glm::vec3(0.0f);	// worldPosition
+
+			glm::vec3 toTarget = glm::normalize(targetPosition - startPosition);
+			glm::vec3 toEnd = glm::normalize(endPosition - startPosition);
+
+			float cosine = glm::dot(toTarget, toEnd);
+			if (cosine < 1.0f)
+			{
+				glm::vec3 rotationAxis = glm::cross(toEnd, toTarget);
+				float rotationAngle = glm::angle(toEnd, toTarget);
+				glm::quat rotation = glm::angleAxis(rotationAngle, rotationAxis);
+				rotation = glm::normalize(rotation);
+
+				// rotate
+
+			}
 		}
 	}
 }
