@@ -175,30 +175,27 @@ namespace Basement {
 			int boneId = -1;
 			std::string boneName = mesh->mBones[i]->mName.C_Str();
 
-			if (m_BoneMap.find(boneName) != m_BoneMap.end())
+			if (m_BoneDataMap.find(boneName) != m_BoneDataMap.end())
 			{
-				boneId = m_BoneMap[boneName].Id;
+				boneId = m_BoneDataMap[boneName].Id;
 			}
 			else
 			{
 				BoneData newBone;
-				int boneCount = static_cast<int>(m_BoneMap.size());
+				int boneCount = static_cast<int>(m_BoneDataMap.size());
 
 				newBone.Id = boneCount;
-				//newBone.OffsetVqs = Vqs(mesh->mBones[i]->mOffsetMatrix);
-				//newBoneVertex.Position = newBone.OffsetVqs.Inverse().v;
 				const auto& aiOffsetMatrix = mesh->mBones[i]->mOffsetMatrix;
 				newBone.offsetMatrix = RendererUtil::ConvertAssimpToGlmMatrix4(aiOffsetMatrix);
 
 				// info for draw joints.
 				Vertex newBoneVertex;
-				//newBoneVertex.Position = Vqs(mesh->mBones[i]->mOffsetMatrix).Inverse().v; 
 				glm::mat4 offsetInverse = glm::inverse(newBone.offsetMatrix);	// not sure why do inverse to calc join position
 				glm::decompose(offsetInverse, glm::vec3(), glm::quat(), newBoneVertex.Position, glm::vec3(), glm::vec4());
 				newBoneVertex.BoneIds[0] = boneCount;
 				newBone.JointVertex = newBoneVertex;
 
-				m_BoneMap[boneName] = newBone;
+				m_BoneDataMap[boneName] = newBone;
 				boneId = boneCount;
 			}
 			BM_ASSERT("invalid Bone Id found.", boneId != -1);

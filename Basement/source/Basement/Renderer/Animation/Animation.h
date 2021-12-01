@@ -4,6 +4,8 @@
 #include "../Buffer.h"
 #include "Bone.h"
 
+#include <glm/glm.hpp>
+
 namespace Basement
 {
 
@@ -11,8 +13,14 @@ namespace Basement
 	{
 		std::string name;
 		glm::mat4 localTransformation;
+		glm::mat4 globalTransformation;
+		glm::mat4 ikTransformation;
 		SharedPtr<BoneNode> parent;
 		std::vector<SharedPtr<BoneNode>> children;
+
+		BoneNode() : name(""), localTransformation(glm::mat4(1.0f)), globalTransformation(glm::mat4(1.0f)), ikTransformation(glm::mat4(1.0f)),
+			parent(nullptr), children()
+		{}
 	};
 
 	class Animation

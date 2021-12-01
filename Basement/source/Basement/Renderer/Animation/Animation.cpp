@@ -129,6 +129,8 @@ namespace Basement
 
 		currentNode->name = source->mName.data;
 		currentNode->localTransformation = RendererUtil::ConvertAssimpToGlmMatrix4(source->mTransformation);
+		currentNode->globalTransformation = (parentNode == nullptr) ? currentNode->localTransformation :
+			currentNode->localTransformation * parentNode->globalTransformation;
 		currentNode->parent = parentNode;
 		for (unsigned int i = 0; i < source->mNumChildren; i++)
 		{
@@ -141,22 +143,22 @@ namespace Basement
 
 	void Animation::ReadMissingBones(const aiAnimation* animation, Model& model)
 	{
-		auto boneInfoMap = model.GetBoneMap();
-		auto boneCount = static_cast<int>(boneInfoMap.size());
+		auto boneDataMap = model.GetBoneDataMap();
+		auto boneCount = static_cast<int>(boneDataMap.size());
 
-		m_BoneDataMap = boneInfoMap;
+		m_BoneDataMap = boneDataMap;
 
 		for (unsigned int i = 0; i < animation->mNumChannels; i++)
 		{
 			auto channel = animation->mChannels[i];
 			std::string boneName = channel->mNodeName.data;
 
-			if (boneInfoMap.find(boneName) == boneInfoMap.end())
+			if (boneDataMap.find(boneName) == boneDataMap.end())
 			{
-				boneInfoMap[boneName].Id = boneCount;
+				boneDataMap[boneName].Id = boneCount;
 				boneCount++;
 			}
-			m_Bones.push_back(std::make_shared<Bone>(channel->mNodeName.data, boneInfoMap[channel->mNodeName.data].Id, channel));
+			m_Bones.push_back(std::make_shared<Bone>(channel->mNodeName.data, boneDataMap[channel->mNodeName.data].Id, channel));
 		}
 	}
 

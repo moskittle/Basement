@@ -387,6 +387,10 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 
 
 	// Draw Stamp
+	glm::mat4 stampModelMatrix = glm::translate(glm::mat4(1.0f), modelPosition)
+		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
+		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+
 	glm::vec3 moveDir = cubePosition - modelPosition;
 	moveDir.y = 0.0f;
 	glm::vec3 facingDir = glm::normalize(moveDir);
@@ -403,12 +407,11 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	}
 	else
 	{
+		glm::vec3 targetPosition = glm::inverse(stampModelMatrix) * glm::vec4(cubePosition, 1.0f);
 		// Do Inverse Kinematics
+		m_StampAnimator->SolveInverseKinematicsCCD(targetPosition);
 	}
 
-	glm::mat4 stampModelMatrix = glm::translate(glm::mat4(1.0f), modelPosition)
-		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 	auto stampBoneMatrices = m_StampAnimator->GetFinalBoneMatrices();
 
 	// Draw bone

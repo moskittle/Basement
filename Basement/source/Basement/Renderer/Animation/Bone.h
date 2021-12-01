@@ -13,6 +13,8 @@ namespace Basement
 	{
 		int Id;
 		glm::mat4 offsetMatrix;	// offset to keyframe
+		glm::mat4 localTransformMatrix;	// to parent
+		glm::mat4 globalTransformMatrix;	// to root
 		Vertex JointVertex;
 		int IndexInList;
 	};

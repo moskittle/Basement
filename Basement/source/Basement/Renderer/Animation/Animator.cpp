@@ -4,6 +4,7 @@
 
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 namespace Basement
 {
@@ -68,9 +69,11 @@ namespace Basement
 			const glm::mat4& offsetTransformation = boneDataMap[nodeName].offsetMatrix;
 			m_GlobalBoneMatrices[index] = globalTransformation;
 			m_FinalBoneMatrices[index] = globalTransformation * offsetTransformation;
-			glm::vec3 jointPosition;
+			boneDataMap[nodeName].localTransformMatrix = localTransformation;
+			boneDataMap[nodeName].globalTransformMatrix = globalTransformation;
 
 			// Note: there is a inverse operation
+			glm::vec3 jointPosition;
 			glm::decompose(glm::inverse(m_FinalBoneMatrices[index]), glm::vec3(), glm::quat(), jointPosition, glm::vec3(), glm::vec4());
 			boneDataMap[nodeName].JointVertex.Position = jointPosition;
 		}
@@ -99,12 +102,15 @@ namespace Basement
 	void Animator::SolveInverseKinematicsCCD(const glm::vec3& targetPosition)
 	{
 		const auto& endEffectorCount = m_EndEffectors.size();
-		for (int i = 0; i < endEffectorCount; ++i)
+
+		glm::mat4 rotationMatrix = glm::mat4(1.0f);
+		for (int i = 0; i < endEffectorCount - 1; ++i)
 		{
-			// start position
-			glm::vec3 startPosition = glm::vec3(0.0f);	// worldPosition
-			// end position
-			glm::vec3 endPosition = glm::vec3(0.0f);	// worldPosition
+			// v_ck = startPosition, v_dk = endPosition. Both in object space.
+			glm::vec3 startPosition;
+			glm::decompose(glm::inverse(m_EndEffectors[i]->globalTransformation), glm::vec3(), glm::quat(), startPosition, glm::vec3(), glm::vec4());
+			glm::vec3 endPosition;
+			glm::decompose(m_EndEffectors[i + 1]->globalTransformation, glm::vec3(), glm::quat(), endPosition, glm::vec3(), glm::vec4());
 
 			glm::vec3 toTarget = glm::normalize(targetPosition - startPosition);
 			glm::vec3 toEnd = glm::normalize(endPosition - startPosition);
@@ -118,7 +124,25 @@ namespace Basement
 				rotation = glm::normalize(rotation);
 
 				// rotate
+				rotationMatrix = glm::mat4(rotation) * m_EndEffectors[i]->globalTransformation;
+			}
 
+			for (int j = 0; j <= i; ++j)
+			{
+				rotationMatrix *= glm::inverse(m_EndEffectors[j]->localTransformation);
+			}
+
+			m_EndEffectors[i]->ikTransformation = rotationMatrix;
+
+			auto boneDataMap = m_CurrentAnimation->GetBoneDataMap();
+			for (int k = i; k >= 0; --k)
+			{
+				auto currentEndEffector = m_EndEffectors[k];
+				auto parentEndEffector = m_EndEffectors[k + 1];
+				int currentIndex = boneDataMap[currentEndEffector->name].Id;
+
+				currentEndEffector->globalTransformation = parentEndEffector->globalTransformation * currentEndEffector->localTransformation;
+				m_FinalBoneMatrices[currentIndex] = currentEndEffector->globalTransformation * boneDataMap[currentEndEffector->name].offsetMatrix;
 			}
 		}
 	}

@@ -21,7 +21,7 @@ namespace Basement {
 		void Draw(SharedPtr<Shader> shader, const glm::mat4& model);
 		void DrawOutline(SharedPtr<Shader> shader, const glm::mat4& model);
 
-		const std::unordered_map<std::string, BoneData>& GetBoneMap() { return m_BoneMap; }
+		const std::unordered_map<std::string, BoneData>& GetBoneDataMap() { return m_BoneDataMap; }
 
 	private:
 		void Load(const std::string& filePath);
@@ -40,7 +40,7 @@ namespace Basement {
 		std::string m_Directory;
 		const aiScene* m_Scene;
 		UniquePtr<Assimp::Importer> m_Importer;
-		std::unordered_map<std::string, BoneData> m_BoneMap;
+		std::unordered_map<std::string, BoneData> m_BoneDataMap;
 	};
 
 }
