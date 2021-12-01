@@ -28,7 +28,7 @@ glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
 glm::vec3 cubePosition = glm::vec3(1.0f, 0.5f, 3.0f);
-glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 0.0f);
+glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
@@ -114,7 +114,7 @@ void cs560Layer::RenderImGui()
 
 	if (ImGui::CollapsingHeader("Cube"))
 	{
-		ImGui::SliderFloat3("Cube Position", glm::value_ptr(cubePosition), 0.0f, 3.5f, "%.1f", 1.0f);
+		ImGui::SliderFloat3("Cube Position", glm::value_ptr(cubePosition), 0.0f, 3.5f, "%.01f", 1.0f);
 	}
 
 	ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
@@ -165,7 +165,8 @@ void cs560Layer::BuildScene()
 	stampAnimationLibrary["Walking"] = stampWalkAnimation;
 	m_StampAnimator = std::make_shared<Basement::Animator>(stampAnimationLibrary);
 	m_StampAnimator->PlayAnimation("Walking");
-	m_StampAnimator->GenerateInverseKinematicsData("Bip01_R_Finger02");
+	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_R_Finger02");
+	m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger12");
 
 	//----------------
 	// Cube
@@ -426,7 +427,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//--------------
 	// Draw Cube
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 1.0f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 1.0f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------
