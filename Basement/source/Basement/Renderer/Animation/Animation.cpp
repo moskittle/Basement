@@ -129,8 +129,6 @@ namespace Basement
 
 		currentNode->name = source->mName.data;
 		currentNode->localTransformation = RendererUtil::ConvertAssimpToGlmMatrix4(source->mTransformation);
-		currentNode->globalTransformation = (parentNode == nullptr) ? currentNode->localTransformation :
-			currentNode->localTransformation * parentNode->globalTransformation;
 		currentNode->parent = parentNode;
 		for (unsigned int i = 0; i < source->mNumChildren; i++)
 		{
@@ -205,13 +203,18 @@ namespace Basement
 		auto endEffector = FindBoneNode(endEffectorName, m_RootNode);
 
 		std::vector<SharedPtr<BoneNode>> endEffectors;
+
+		int i = 0;
 		while (endEffector != nullptr)
 		{
+			if (i > 3) { break; }
+
 			if (m_BoneDataMap.find(endEffector->name) != m_BoneDataMap.end())
 			{
 				endEffectors.push_back(endEffector);
 			}
 			endEffector = endEffector->parent;
+			++i;
 		}
 
 		return endEffectors;

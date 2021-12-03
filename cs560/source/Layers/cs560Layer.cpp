@@ -166,7 +166,8 @@ void cs560Layer::BuildScene()
 	m_StampAnimator = std::make_shared<Basement::Animator>(stampAnimationLibrary);
 	m_StampAnimator->PlayAnimation("Walking");
 	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_R_Finger02");
-	m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger12");
+	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger12");
+	m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger1");
 
 	//----------------
 	// Cube

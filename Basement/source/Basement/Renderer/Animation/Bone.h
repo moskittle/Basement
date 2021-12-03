@@ -62,6 +62,7 @@ namespace Basement
 		const std::string& GetName() { return m_Name; }
 		const int& GetId() { return m_Id; }
 		const glm::mat4& GetLocalTransformation() { return m_LocalTransform; }
+		void SetLocalTransformation(const glm::mat4& localTransform) { m_LocalTransform = localTransform; }
 
 	private:
 		float CalcInterpolationTValue(float lastTimeStamp, float nextTimeStamp, float animationTime);
