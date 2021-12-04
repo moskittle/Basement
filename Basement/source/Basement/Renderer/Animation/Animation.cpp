@@ -213,6 +213,7 @@ namespace Basement
 			endEffector = endEffector->parent;
 		}
 
+		// TODO: remove temp code
 		std::vector<SharedPtr<BoneNode>> result = { endEffectors.begin(), endEffectors.end() - 5 };
 
 		return result;
@@ -233,6 +234,7 @@ namespace Basement
 			endEffector = endEffector->parent;
 		}
 
+		// TODO: remove temp code
 		std::vector<SharedPtr<BoneNode>> result = { endEffectors.end() - 8, endEffectors.end() - 5 };
 
 		return result;

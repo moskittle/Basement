@@ -17,17 +17,17 @@ namespace Basement
 		void UpdateAnimation(float dt);
 		void DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones);
 		void GenerateInverseKinematicsData(std::string endEffectorName);
-		void SolveInverseKinematicsCCD(const glm::vec3& targetPosition);
+		void SolveInverseKinematicsCCD(const glm::vec3& targetPosition, float dt);
 
 		const std::unordered_map<std::string, SharedPtr<Animation>>& GetAnimationLibrary() const { return m_AnimationLibrary; }
 		SharedPtr<Animation> GetCurrentAnimation() const { return m_CurrentAnimation; }
 		const std::vector<glm::mat4>& GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
 		const std::vector<glm::mat4>& GetGlobalBoneMatrices() { return m_GlobalBoneMatrices; }
 	private:
-		void UpdateInverseKinematicsMatrices(const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors);
+		void UpdateInverseKinematicsMatrices(const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors, float dt);
 		void CalculateBoneTransform(const SharedPtr<BoneNode> node, glm::mat4 parentTransform);
 		void CalculateBoneTransformWithInverseKinematics(const SharedPtr<BoneNode> node, glm::mat4 parentTransform);
-		glm::mat4 EvalRotationMatrix(int index, const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors);
+		glm::mat4 EvalRotationMatrix(int index, const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors, float dt);
 
 		std::vector<SharedPtr<BoneNode>> m_EndEffectors;
 		std::vector<SharedPtr<BoneNode>> m_PriorityEndEffectors;

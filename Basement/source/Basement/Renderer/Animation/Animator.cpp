@@ -132,6 +132,11 @@ namespace Basement
 		}
 	}
 
+	/// <summary>
+	/// Generate a list of end effectors and a priority list of end effectors which will later
+	/// be used to inverse kinematics simulation.
+	/// </summary>
+	/// <param name="endEffectorName"></param>
 	void Animator::GenerateInverseKinematicsData(std::string endEffectorName)
 	{
 		m_EndEffectors = m_CurrentAnimation->GenerateInverseKinematicsData(endEffectorName);
@@ -148,31 +153,45 @@ namespace Basement
 		}
 	}
 
-	void Animator::SolveInverseKinematicsCCD(const glm::vec3& targetPosition)
+	/// <summary>
+	/// To simulate inverse kinematics, this method implements CCD. Also there is a priority list of end effectors
+	/// that helps the simulation to be more realistic. 
+	/// </summary>
+	/// <param name="targetPosition">the position of the destination in object space.</param>
+	/// <param name="dt">delta time</param>
+	void Animator::SolveInverseKinematicsCCD(const glm::vec3& targetPosition, float dt)
 	{
-		UpdateInverseKinematicsMatrices(targetPosition, m_EndEffectors);
-		UpdateInverseKinematicsMatrices(targetPosition, m_PriorityEndEffectors);
+		UpdateInverseKinematicsMatrices(targetPosition, m_EndEffectors, dt);
+		UpdateInverseKinematicsMatrices(targetPosition, m_PriorityEndEffectors, dt);
 
 		CalculateBoneTransformWithInverseKinematics(m_CurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 	}
 
-	void Animator::UpdateInverseKinematicsMatrices(const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors)
+	/// <summary>
+	/// Update matrices that shaders will use for final bone position calculation.
+	/// </summary>
+	/// <param name="targetPosition"></param>
+	/// <param name="endEffectors"></param>
+	/// <param name="dt"></param>
+	void Animator::UpdateInverseKinematicsMatrices(const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors, float dt)
 	{
 		auto boneDataMap = m_CurrentAnimation->GetBoneDataMap();
 
 		const auto& endEffectorCount = endEffectors.size();
 		for (int i = 0; i < endEffectorCount - 1; ++i)
 		{
-			glm::mat4 rotationMatrix = EvalRotationMatrix(i, targetPosition, endEffectors);
+			// evaluate rotation matrix
+			glm::mat4 rotationMatrix = EvalRotationMatrix(i, targetPosition, endEffectors, dt);
 
+			// transform the rotation matrix back to local space
 			for (int j = 0; j < i; ++j)
 			{
 				SharedPtr<Bone> bone = m_CurrentAnimation->FindBone(endEffectors[j]->name);
 				rotationMatrix *= glm::inverse(bone->GetLocalTransformation());
 			}
-
 			m_CurrentAnimation->FindBone(endEffectors[i]->name)->SetLocalTransformation(rotationMatrix);
 
+			// update global matrix and final matrix
 			for (int k = i; k >= 0; --k)
 			{
 				int currIndex = boneDataMap[endEffectors[k]->name].Id;
@@ -184,10 +203,19 @@ namespace Basement
 		}
 	}
 
-	glm::mat4 Animator::EvalRotationMatrix(int index, const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors)
+	/// <summary>
+	/// Evaluate the rotation matrix by using CCD
+	/// </summary>
+	/// <param name="index"></param>
+	/// <param name="targetPosition">end position of the end effector</param>
+	/// <param name="endEffectors">a list of end effectors in hierchical order (low -> high)</param>
+	/// <param name="dt">delta time: time one frame uses</param>
+	/// <returns></returns>
+	glm::mat4 Animator::EvalRotationMatrix(int index, const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors, float dt)
 	{
 		auto boneDataMap = m_CurrentAnimation->GetBoneDataMap();
 
+		// calculate the transformation matrix to end effector's local space
 		glm::mat4 toLeafTransform(1.0f);
 		for (int i = index; i >= 0; --i)
 		{
@@ -195,14 +223,19 @@ namespace Basement
 			toLeafTransform = toLeafTransform * bone->GetLocalTransformation();
 		}
 
+		// since all the positions are transformed to the local space of parent of the end effector
 		glm::vec3 v_ck;
 		glm::decompose(toLeafTransform, glm::vec3(), glm::quat(), v_ck, glm::vec3(), glm::vec4());
 		glm::mat4 parentTransform = m_GlobalBoneMatrices[boneDataMap[endEffectors[index + 1]->name].Id];
 		glm::vec3 v_dk = glm::inverse(parentTransform) * glm::vec4(targetPosition, 1.0f);
 		v_ck = glm::normalize(v_ck);
 		v_dk = glm::normalize(v_dk);
+
+		// calculate the angle to rotate: angle = dot(v_ck, v_dk)
 		float cosine = glm::dot(v_ck, v_dk);
-		float angle = acos(glm::clamp(cosine, -1.0f, 1.0f)) * 0.2f; // constraint
+		float angle = acos(glm::clamp(cosine, -1.0f, 1.0f)) * dt * 0.3f;
+
+		// calculate the axis to rotate around: axis = cross(v_ck, v_dk)
 		glm::vec3 axis = glm::normalize(glm::cross(v_ck, v_dk));
 		glm::mat4 rotationMatrix = glm::mat4_cast(glm::angleAxis(angle, axis));
 

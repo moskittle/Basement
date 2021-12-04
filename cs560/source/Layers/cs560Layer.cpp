@@ -132,6 +132,7 @@ void cs560Layer::BuildScene()
 {
 	auto& flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
+	auto& animationNoTexShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimationNoTex.glsl");
 	auto& boneShader = m_ShaderLibrary.Load("assets/shaders/DebugBone.glsl");
 	auto& lineShader = m_ShaderLibrary.Load("assets/shaders/DebugLine.glsl");
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
@@ -304,6 +305,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	auto& boneShader = m_ShaderLibrary.Get("DebugBone");
 	auto& lineShader = m_ShaderLibrary.Get("DebugLine");
 	auto& animationShader = m_ShaderLibrary.Get("SkeletonAnimation");
+	auto& animationNoTexShader = m_ShaderLibrary.Get("SkeletonAnimationNoTex");
 	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
@@ -411,10 +413,21 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	{
 		glm::vec3 targetPosition = glm::inverse(stampModelMatrix) * glm::vec4(cubePosition, 1.0f);
 		// Do Inverse Kinematics
-		m_StampAnimator->SolveInverseKinematicsCCD(targetPosition);
+		m_StampAnimator->SolveInverseKinematicsCCD(targetPosition, dt);
 	}
 
 	auto stampBoneMatrices = m_StampAnimator->GetFinalBoneMatrices();
+
+	//if (showModel)
+	//{
+	//	animationNoTexShader->Bind();
+	//	for (int i = 0; i < 100; ++i)
+	//	{
+	//		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
+	//	}
+	//	animationNoTexShader->Unbind();
+	//	Basement::Renderer::SubmitModel(m_Stamp, animationNoTexShader, stampModelMatrix);
+	//}
 
 	// Draw bone
 	boneShader->Bind();
