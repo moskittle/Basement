@@ -15,7 +15,6 @@ namespace Basement
 
 		void PlayAnimation(const std::string& animationName);
 		void UpdateAnimation(float dt);
-		void CalculateBoneTransform(const SharedPtr<BoneNode> node, glm::mat4 parentVqs);
 		void DrawSkeleton(SharedPtr<Shader> shader, glm::mat4 modelMatrix, bool drawJoints, bool drawBones);
 		void GenerateInverseKinematicsData(std::string endEffectorName);
 		void SolveInverseKinematicsCCD(const glm::vec3& targetPosition);
@@ -25,7 +24,14 @@ namespace Basement
 		const std::vector<glm::mat4>& GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
 		const std::vector<glm::mat4>& GetGlobalBoneMatrices() { return m_GlobalBoneMatrices; }
 	private:
+		void UpdateInverseKinematicsMatrices(const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors);
+		void CalculateBoneTransform(const SharedPtr<BoneNode> node, glm::mat4 parentTransform);
+		void CalculateBoneTransformWithInverseKinematics(const SharedPtr<BoneNode> node, glm::mat4 parentTransform);
+		glm::mat4 EvalRotationMatrix(int index, const glm::vec3& targetPosition, std::vector<SharedPtr<BoneNode>> endEffectors);
+
 		std::vector<SharedPtr<BoneNode>> m_EndEffectors;
+		std::vector<SharedPtr<BoneNode>> m_PriorityEndEffectors;
+		std::unordered_set<std::string> m_IkBoneNames;
 		std::vector<glm::mat4> m_GlobalBoneMatrices;
 		std::vector<glm::mat4> m_FinalBoneMatrices;
 		SharedPtr<Animation> m_CurrentAnimation;

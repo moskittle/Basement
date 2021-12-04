@@ -27,7 +27,7 @@ float angle = 0.0f;
 glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
-glm::vec3 cubePosition = glm::vec3(1.0f, 0.5f, 3.0f);
+glm::vec3 cubePosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
 
 std::vector<glm::vec3> pathPoints = {
@@ -166,8 +166,8 @@ void cs560Layer::BuildScene()
 	m_StampAnimator = std::make_shared<Basement::Animator>(stampAnimationLibrary);
 	m_StampAnimator->PlayAnimation("Walking");
 	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_R_Finger02");
-	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger12");
-	m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger1");
+	m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger12");
+	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger1");
 
 	//----------------
 	// Cube
@@ -400,7 +400,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
 	float distance = glm::length(moveDir);
 
-	if (distance > 0.3f)
+	if (distance > 0.35f)
 	{
 		float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
 		modelPosition += (moveDir * relativeSpeed);
@@ -428,7 +428,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//--------------
 	// Draw Cube
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubePosition.x, 1.0f, cubePosition.z)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
+	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), cubePosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 	m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	////--------------

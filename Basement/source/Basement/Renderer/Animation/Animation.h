@@ -42,6 +42,7 @@ namespace Basement
 		const std::unordered_map<std::string, BoneData>& GetBoneDataMap() { return m_BoneDataMap; }
 		const SharedPtr<BoneNode> GetRootNode() { return m_RootNode; }
 		std::vector<SharedPtr<BoneNode>> GenerateInverseKinematicsData(std::string endEffectorName);
+		std::vector<SharedPtr<BoneNode>> GenerateInverseKinematicsPriorityData(std::string endEffectorName);
 
 	private:
 		SharedPtr<BoneNode> ReadHierarchyData(const aiNode* source, SharedPtr<BoneNode> parentNode);

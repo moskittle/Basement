@@ -204,20 +204,38 @@ namespace Basement
 
 		std::vector<SharedPtr<BoneNode>> endEffectors;
 
-		int i = 0;
 		while (endEffector != nullptr)
 		{
-			if (i > 3) { break; }
-
 			if (m_BoneDataMap.find(endEffector->name) != m_BoneDataMap.end())
 			{
 				endEffectors.push_back(endEffector);
 			}
 			endEffector = endEffector->parent;
-			++i;
 		}
 
-		return endEffectors;
+		std::vector<SharedPtr<BoneNode>> result = { endEffectors.begin(), endEffectors.end() - 5 };
+
+		return result;
+	}
+
+	std::vector<SharedPtr<BoneNode>> Animation::GenerateInverseKinematicsPriorityData(std::string endEffectorName)
+	{
+		auto endEffector = FindBoneNode(endEffectorName, m_RootNode);
+
+		std::vector<SharedPtr<BoneNode>> endEffectors;
+
+		while (endEffector != nullptr)
+		{
+			if (m_BoneDataMap.find(endEffector->name) != m_BoneDataMap.end())
+			{
+				endEffectors.push_back(endEffector);
+			}
+			endEffector = endEffector->parent;
+		}
+
+		std::vector<SharedPtr<BoneNode>> result = { endEffectors.end() - 8, endEffectors.end() - 5 };
+
+		return result;
 	}
 
 }
