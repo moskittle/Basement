@@ -485,7 +485,6 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_LightPosition", lightPosition);
 
 
-
 	glm::mat4 ballModelMatrix = glm::translate(glm::mat4(1.0f), ballPosition);
 	m_Ball->Draw(simpleLitShader, ballModelMatrix);
 
