@@ -10,6 +10,7 @@ namespace Basement
 	class Particle
 	{
 	public:
+		Particle() = default;
 		Particle(const glm::vec3& position);
 		~Particle() = default;
 
@@ -39,7 +40,7 @@ namespace Basement
 		glm::vec3 m_Acceleration;
 		glm::vec3 m_AccumulatedNormal;	// Note: not unit length
 
-		static float m_Damping;
+		static float s_Damping;
 	};
 
 

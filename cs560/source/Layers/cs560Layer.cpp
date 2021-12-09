@@ -29,12 +29,15 @@ float animationPace = 8.0f;
 
 glm::vec3 cubePosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 ballPosition = glm::vec3(1.0f, 1.0f, 3.0f);
+glm::vec3 ballPosition2 = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 clothPosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
 
+float ballRadius = 0.5f;
 float ballAmbientIntensity = 1.0f;
 glm::vec3 ballBaseColor = glm::vec3(0.4f, 0.4f, 0.4f);
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-glm::vec3 lightPosition = glm::vec3(0.0f, 2.0f, 4.0f);
+glm::vec3 lightPosition = glm::vec3(0.0f, 2.0f, 10.0f);
 
 
 std::vector<glm::vec3> pathPoints = {
@@ -126,7 +129,8 @@ void cs560Layer::RenderImGui()
 
 	if (ImGui::CollapsingHeader("Cloth Simulation"))
 	{
-		//ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 4.0f, "%.3f", 1.0f);
+		ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition2), 0.0f, 4.0f, "%.3f", 1.0f);
+		ImGui::SliderFloat("Ball Radius", &ballRadius, 0.0f, 1.0f, "%.3f", 0.5f);
 		//ImGui::SliderFloat("Ball Ambient Intensity", &ballAmbientIntensity, 0.0f, 1.0f, "%.3f", 1.0f);
 		//ImGui::ColorPicker3("Ball Base Color", glm::value_ptr(ballBaseColor));
 		//ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
@@ -192,7 +196,8 @@ void cs560Layer::BuildScene()
 	//----------------
 	m_Cube = Basement::Model::Create("assets/models/cube.fbx");
 	m_Ball = Basement::Model::Create("assets/models/sphere.fbx");
-
+	m_Cloth = std::make_shared<Basement::Cloth>(3.0f, 2.0f, 50, 40);
+	//m_Cloth = std::make_shared<Basement::Cloth>(14, 10, 55, 45);
 
 	//----------------
 	// Path
@@ -483,6 +488,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_LightColor", lightColor);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_LightPosition", lightPosition);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->Unbind();
 
 
 	glm::mat4 ballModelMatrix = glm::translate(glm::mat4(1.0f), ballPosition);
@@ -492,15 +498,18 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	// -------------------------------------------------------------
 	// --------Project 4--------------------------------------------
 	// -------------------------------------------------------------
+	//m_Cloth->AddForce(glm::vec3(0.0f, -0.2f, 0.0f) * (float)dt);
+	//m_Cloth->WindForce(glm::vec3(0.5f, 0, 0.2f) * (float)dt); // generate some wind each frame
+	m_Cloth->Update(dt);
+	//m_Cloth->CheckSphereCollsion(ballPosition2, ballRadius);
+	m_Cloth->Draw();
 
-
-
-	////--------------
-	//// Draw Floor
-	////--------------
-	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(FloorSize, 1.0f, FloorSize));
-	m_FloorTexture->Bind();
-	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+	//////--------------
+	////// Draw Floor
+	//////--------------
+	//glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorPositionY, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(FloorSize, 1.0f, FloorSize));
+	//m_FloorTexture->Bind();
+	//Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
 
 	//----------------

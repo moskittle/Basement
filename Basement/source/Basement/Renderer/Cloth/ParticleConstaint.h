@@ -8,12 +8,12 @@ namespace Basement
 	class ParticleConstraint
 	{
 	public:
-		ParticleConstraint(const Particle& p1, const Particle& p2)
+		ParticleConstraint(Particle* p1, Particle* p2)
 		{
-			m_P1 = std::make_shared<Particle>(p1);
-			m_P2 = std::make_shared<Particle>(p2);
+			m_P1 = p1;
+			m_P2 = p2;
 
-			m_RestDistance = glm::length(p1.GetPosition() - p2.GetPosition());
+			m_RestDistance = glm::length(p1->GetPosition() - p2->GetPosition());
 		}
 
 		void SatisfyConstraint()
@@ -28,8 +28,8 @@ namespace Basement
 		}
 
 	private:
-		SharedPtr<Particle> m_P1;
-		SharedPtr<Particle> m_P2;
+		Particle* m_P1;
+		Particle* m_P2;
 		float m_RestDistance; // the length between particle p1 and p2 in rest configuration
 	};
 }

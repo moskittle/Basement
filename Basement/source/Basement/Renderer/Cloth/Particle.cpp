@@ -3,7 +3,7 @@
 
 namespace Basement
 {
-	float Particle::m_Damping = 0.01f;
+	float Particle::s_Damping = 0.01f;
 
 	Particle::Particle(const glm::vec3& position) :
 		m_Position(position), m_PreviousPosition(position), m_Acceleration(glm::vec3(0.0f)),
@@ -22,7 +22,7 @@ namespace Basement
 		if (m_IsFixed == false)
 		{
 			glm::vec3 temp = m_Position;
-			m_Position = m_Position + (m_Position - m_PreviousPosition) * (1.0f - m_Damping) + m_Acceleration * dt;
+			m_Position = m_Position + (m_Position - m_PreviousPosition) * (1.0f - s_Damping) + m_Acceleration * dt;
 			m_PreviousPosition = temp;
 			// acceleration is reset since it HAS been translated into a change in position (and implicitely into velocity)	
 			m_Acceleration = glm::vec3(0.0f);

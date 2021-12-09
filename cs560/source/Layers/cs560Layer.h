@@ -15,6 +15,7 @@
 #include "Basement/Renderer/Animation/Animation.h"
 #include "Basement/Renderer/Path/Path.h"
 #include "Basement/Renderer/Path/ArcLength.h"
+#include "Basement/Renderer/Cloth/Cloth.h"
 
 
 
@@ -46,6 +47,7 @@ private:
 	// Cube
 	Basement::SharedPtr<Basement::Model> m_Cube;
 	Basement::SharedPtr<Basement::Model> m_Ball;
+	Basement::SharedPtr<Basement::Cloth> m_Cloth;
 
 	// Path
 	Basement::Path m_Path;
