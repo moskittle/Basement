@@ -28,7 +28,14 @@ glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
 glm::vec3 cubePosition = glm::vec3(1.0f, 1.0f, 3.0f);
+glm::vec3 ballPosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
+
+float ballAmbientIntensity = 1.0f;
+glm::vec3 ballBaseColor = glm::vec3(0.4f, 0.4f, 0.4f);
+glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+glm::vec3 lightPosition = glm::vec3(0.0f, 2.0f, 4.0f);
+
 
 std::vector<glm::vec3> pathPoints = {
 	glm::vec3(-4.0f, 0.0f, -4.0f),
@@ -87,12 +94,12 @@ void cs560Layer::RenderImGui()
 		ImGui::Separator();
 	}
 
-	if (ImGui::CollapsingHeader("Animation"))
-	{
-		ImGui::Checkbox("Show Model", &showModel);
-		ImGui::Checkbox("Show Joints", &showJoints);
-		ImGui::Checkbox("Show Bones", &showBones);
-	}
+	//if (ImGui::CollapsingHeader("Animation"))
+	//{
+	//	ImGui::Checkbox("Show Model", &showModel);
+	//	ImGui::Checkbox("Show Joints", &showJoints);
+	//	ImGui::Checkbox("Show Bones", &showBones);
+	//}
 
 	//if (ImGui::CollapsingHeader("Path"))
 	//{
@@ -112,9 +119,18 @@ void cs560Layer::RenderImGui()
 	//	//}
 	//}
 
-	if (ImGui::CollapsingHeader("Cube"))
+	//if (ImGui::CollapsingHeader("Cube"))
+	//{
+	//	ImGui::SliderFloat3("Cube Position", glm::value_ptr(cubePosition), 0.0f, 3.5f, "%.01f", 1.0f);
+	//}
+
+	if (ImGui::CollapsingHeader("Cloth Simulation"))
 	{
-		ImGui::SliderFloat3("Cube Position", glm::value_ptr(cubePosition), 0.0f, 3.5f, "%.01f", 1.0f);
+		//ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 4.0f, "%.3f", 1.0f);
+		//ImGui::SliderFloat("Ball Ambient Intensity", &ballAmbientIntensity, 0.0f, 1.0f, "%.3f", 1.0f);
+		//ImGui::ColorPicker3("Ball Base Color", glm::value_ptr(ballBaseColor));
+		//ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
+		//ImGui::SliderFloat3("Light Position", glm::value_ptr(lightPosition), 0.0f, 4.0f, "%.1f", 1.0f);
 	}
 
 	ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
@@ -131,6 +147,7 @@ void cs560Layer::HandleEvent(Basement::Event& event)
 void cs560Layer::BuildScene()
 {
 	auto& flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
+	auto& simpleLitShader = m_ShaderLibrary.Load("assets/shaders/SimpleLit.glsl");
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
 	auto& animationNoTexShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimationNoTex.glsl");
 	auto& boneShader = m_ShaderLibrary.Load("assets/shaders/DebugBone.glsl");
@@ -171,9 +188,11 @@ void cs560Layer::BuildScene()
 	//m_StampAnimator->GenerateInverseKinematicsData("Bip01_L_Finger1");
 
 	//----------------
-	// Cube
+	// Cube & Ball
 	//----------------
 	m_Cube = Basement::Model::Create("assets/models/cube.fbx");
+	m_Ball = Basement::Model::Create("assets/models/sphere.fbx");
+
 
 	//----------------
 	// Path
@@ -310,12 +329,18 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
 	auto& flatColorShader = m_ShaderLibrary.Get("FlatColor");
+	auto& simpleLitShader = m_ShaderLibrary.Get("SimpleLit");
 
 	// Render
 	m_FrameBuffer->Bind();
 	Basement::Renderer::EnableDepthTest();
 	Basement::Renderer::SetClearColor(glm::vec4(0.8f, 0.6f, 0.8f, 1.0f));
 	Basement::Renderer::ClearBufferBit(Basement::RendererGL::ColorBufferBit | Basement::RendererGL::DepthBufferBit);
+
+
+	// -------------------------------------------------------------
+	// --------Project 2--------------------------------------------
+	// -------------------------------------------------------------
 
 	//----------------
 	// Path
@@ -390,59 +415,86 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	//m_DoozyAnimator->DrawSkeleton(boneShader, model, showJoints, showBones);
 
 
-	// Draw Stamp
-	glm::mat4 stampModelMatrix = glm::translate(glm::mat4(1.0f), modelPosition)
-		* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+	// -------------------------------------------------------------
+	// --------Project 3--------------------------------------------
+	// -------------------------------------------------------------
 
-	glm::vec3 moveDir = cubePosition - modelPosition;
-	moveDir.y = 0.0f;
-	glm::vec3 facingDir = glm::normalize(moveDir);
-	angle = glm::acos(glm::dot(forwardDirection, facingDir));
-	angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
-	float distance = glm::length(moveDir);
+	//// Draw Stamp
+	//glm::mat4 stampModelMatrix = glm::translate(glm::mat4(1.0f), modelPosition)
+	//	* glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f))
+	//	* glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
 
-	if (distance > 0.35f)
-	{
-		float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
-		modelPosition += (moveDir * relativeSpeed);
-		auto animationPace = glm::clamp((dt / 0.016f), 0.0f, 1.0f);
-		m_StampAnimator->UpdateAnimation(animationPace * dt);
-	}
-	else
-	{
-		glm::vec3 targetPosition = glm::inverse(stampModelMatrix) * glm::vec4(cubePosition, 1.0f);
-		// Do Inverse Kinematics
-		m_StampAnimator->SolveInverseKinematicsCCD(targetPosition, dt);
-	}
+	//glm::vec3 moveDir = cubePosition - modelPosition;
+	//moveDir.y = 0.0f;
+	//glm::vec3 facingDir = glm::normalize(moveDir);
+	//angle = glm::acos(glm::dot(forwardDirection, facingDir));
+	//angle = glm::cross(forwardDirection, facingDir).y < 0 ? angle * -1.0f : angle;
+	//float distance = glm::length(moveDir);
 
-	auto stampBoneMatrices = m_StampAnimator->GetFinalBoneMatrices();
-
-	//if (showModel)
+	//if (distance > 0.35f)
 	//{
-	//	animationNoTexShader->Bind();
-	//	for (int i = 0; i < 100; ++i)
-	//	{
-	//		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
-	//	}
-	//	animationNoTexShader->Unbind();
-	//	Basement::Renderer::SubmitModel(m_Stamp, animationNoTexShader, stampModelMatrix);
+	//	float relativeSpeed = glm::clamp(static_cast<float>(dt), 0.0f, 0.016f);
+	//	modelPosition += (moveDir * relativeSpeed);
+	//	auto animationPace = glm::clamp((dt / 0.016f), 0.0f, 1.0f);
+	//	m_StampAnimator->UpdateAnimation(animationPace * dt);
+	//}
+	//else
+	//{
+	//	glm::vec3 targetPosition = glm::inverse(stampModelMatrix) * glm::vec4(cubePosition, 1.0f);
+	//	// Do Inverse Kinematics
+	//	m_StampAnimator->SolveInverseKinematicsCCD(targetPosition, dt);
 	//}
 
-	// Draw bone
-	boneShader->Bind();
-	for (int i = 0; i < 100; ++i)
-	{
-		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
-	}
-	boneShader->Unbind();
-	m_StampAnimator->DrawSkeleton(boneShader, stampModelMatrix, showJoints, showBones);
+	//auto stampBoneMatrices = m_StampAnimator->GetFinalBoneMatrices();
+
+	////if (showModel)
+	////{
+	////	animationNoTexShader->Bind();
+	////	for (int i = 0; i < 100; ++i)
+	////	{
+	////		std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
+	////	}
+	////	animationNoTexShader->Unbind();
+	////	Basement::Renderer::SubmitModel(m_Stamp, animationNoTexShader, stampModelMatrix);
+	////}
+
+	//// Draw bone
+	//boneShader->Bind();
+	//for (int i = 0; i < 100; ++i)
+	//{
+	//	std::dynamic_pointer_cast<Basement::OpenGLShader>(animationShader)->UploadUniformMat4("u_FinalBoneMatrices[" + std::to_string(i) + "]", stampBoneMatrices[i]);
+	//}
+	//boneShader->Unbind();
+	//m_StampAnimator->DrawSkeleton(boneShader, stampModelMatrix, showJoints, showBones);
+
+	////--------------
+	//// Draw Cube
+	////--------------
+	//glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), cubePosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
+	//m_Cube->Draw(flatColorShader, cubeModelMat);
 
 	//--------------
-	// Draw Cube
+	// Draw Ball
 	//--------------
-	glm::mat4 cubeModelMat = glm::translate(glm::mat4(1.0f), cubePosition) * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
-	m_Cube->Draw(flatColorShader, cubeModelMat);
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform1f("u_AmbientIntensity", ballAmbientIntensity);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_BaseColor", ballBaseColor);
+	//std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_LightColor", lightColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_LightPosition", lightPosition);
+
+
+
+	glm::mat4 ballModelMatrix = glm::translate(glm::mat4(1.0f), ballPosition);
+	m_Ball->Draw(simpleLitShader, ballModelMatrix);
+
+
+	// -------------------------------------------------------------
+	// --------Project 4--------------------------------------------
+	// -------------------------------------------------------------
+
+
 
 	////--------------
 	//// Draw Floor

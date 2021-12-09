@@ -45,6 +45,7 @@ private:
 
 	// Cube
 	Basement::SharedPtr<Basement::Model> m_Cube;
+	Basement::SharedPtr<Basement::Model> m_Ball;
 
 	// Path
 	Basement::Path m_Path;
