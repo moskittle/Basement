@@ -28,7 +28,8 @@ glm::vec3 forwardDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 float animationPace = 8.0f;
 
 glm::vec3 cubePosition = glm::vec3(1.0f, 1.0f, 3.0f);
-glm::vec3 ballPosition = glm::vec3(1.0f, 1.0f, 3.0f);
+glm::vec3 ballPosition = glm::vec3(2.0f, 0.2f, 5.0f);
+float ballPositionZ = 5.0f;
 glm::vec3 clothPosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
 
@@ -128,7 +129,9 @@ void cs560Layer::RenderImGui()
 
 	if (ImGui::CollapsingHeader("Cloth Simulation"))
 	{
-		ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 4.0f, "%.3f", 1.0f);
+		//ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 10.0f, "%.3f", 1.0f);
+		ImGui::SliderFloat("Ball Position", &ballPositionZ, 0.0f, 100.0f, "%.1f", 1.0f);
+		ballPosition.z = ballPositionZ * 0.1f;
 		ImGui::SliderFloat("Ball Radius", &ballRadius, 0.0f, 1.0f, "%.3f", 0.5f);
 		//ImGui::SliderFloat("Ball Ambient Intensity", &ballAmbientIntensity, 0.0f, 1.0f, "%.3f", 1.0f);
 		//ImGui::ColorPicker3("Ball Base Color", glm::value_ptr(ballBaseColor));
