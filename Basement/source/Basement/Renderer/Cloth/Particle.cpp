@@ -11,12 +11,20 @@ namespace Basement
 	{
 	}
 
+	/// <summary>
+	/// Add force by using Newton's law: F = m * a. And we are doing integration here.
+	/// </summary>
+	/// <param name="force"></param>
 	void Particle::AddForce(glm::vec3 force)
 	{
 		BM_ASSERT("Mass cannot be negative!", m_Mass > 0.0f);
 		m_Acceleration += force / m_Mass;
 	}
 
+	/// <summary>
+	/// Update the position of each mass point
+	/// </summary>
+	/// <param name="dt"></param>
 	void Particle::Update(float dt)
 	{
 		if (m_IsFixed == false)
@@ -29,6 +37,10 @@ namespace Basement
 		}
 	}
 
+	/// <summary>
+	/// Update the offset position of the particle.
+	/// </summary>
+	/// <param name="offset"></param>
 	void Particle::OffsetPosition(const glm::vec3& offset)
 	{
 		if (m_IsFixed == false)
@@ -41,10 +53,5 @@ namespace Basement
 	//{
 	//	m_AccumulatedNormal += glm::normalize(normal);
 	//}
-
-
-
-
-
 
 }

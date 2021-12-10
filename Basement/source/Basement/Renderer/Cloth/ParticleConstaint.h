@@ -16,11 +16,15 @@ namespace Basement
 			m_RestDistance = glm::length(p1->GetPosition() - p2->GetPosition());
 		}
 
+		/// <summary>
+		/// If the distance between two constrained mass point is not the same as rest distance, 
+		/// the following calculation will pull or push them to persist the rest distance. 
+		/// </summary>
 		void SatisfyConstraint()
 		{
 			glm::vec3 p1ToP2 = m_P2->GetPosition() - m_P1->GetPosition();
 			float currentDistance = glm::length(p1ToP2);
-			// The offset vector that could moves p1 into a distance of rest_distance to p2
+			// The offset vector that could moves p1 into a distance of restDistance to p2
 			glm::vec3 correctionVector = p1ToP2 * (1.0f - m_RestDistance / currentDistance);
 			correctionVector *= 0.5f; // half the correction vector to move both p1 and p2
 			m_P1->OffsetPosition(correctionVector);

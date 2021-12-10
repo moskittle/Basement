@@ -9,6 +9,7 @@ namespace Basement
 {
 	int Cloth::s_ConstraintIterations = 15;
 
+
 	Cloth::Cloth(float width, float height, int particleCountInWidth, int particleCountInHeight) :
 		m_ParticleCountInWidth(particleCountInWidth), m_ParticleCountInHeight(particleCountInHeight)
 	{
@@ -63,6 +64,10 @@ namespace Basement
 		SetupVertexArrayData();
 	}
 
+	/// <summary>
+	/// Update all the mass points in the cloth with constraints. 
+	/// </summary>
+	/// <param name="dt"></param>
 	void Cloth::Update(float dt)
 	{
 		for (int i = 0; i < s_ConstraintIterations; i++) // iterate over all constraints several times
@@ -79,74 +84,11 @@ namespace Basement
 		}
 	}
 
-	///// <summary>
-	///// drawing the cloth as a smooth shaded (and colored according to column) OpenGL triangular mesh
-	///// Called from the display() method
-	///// 	The cloth is seen as consisting of triangles for four particles in the grid as follows :
-	///// 
-	///// (x, y)		*--* (x + 1, y)
-	///// 			| /|
-	///// 			|/ |
-	///// (x, y + 1)	*--* (x + 1, y + 1)
-	///// </summary>
-	//void Cloth::Draw()
-	//{
-	//	// reset normals from to last frame
-	//	for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
-	//	{
-	//		particle->SetAccumulatedNormal(glm::vec3(0.0f));
-	//	}
-
-	//	////create smooth per particle normals by adding up all the (hard) triangle normals that each particle is part of
-	//	//for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
-	//	//{
-	//	//	for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
-	//	//	{
-	//	//		Particle* p1 = GetParticle(x + 1, y);
-	//	//		Particle* p2 = GetParticle(x, y);
-	//	//		Particle* p3 = GetParticle(x, y + 1);
-	//	//		Particle* p4 = GetParticle(x + 1, y + 1);
-
-	//	//		glm::vec3 normal = CalcTriangleNormal(p1, p2, p3);
-	//	//		p1->AddToNormal(normal);
-	//	//		p2->AddToNormal(normal);
-	//	//		p3->AddToNormal(normal);
-
-	//	//		normal = CalcTriangleNormal(p4, p1, p3);
-	//	//		p4->AddToNormal(normal);
-	//	//		p1->AddToNormal(normal);
-	//	//		p3->AddToNormal(normal);
-	//	//	}
-	//	//}
-
-	//	glBegin(GL_TRIANGLES);
-	//	for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
-	//	{
-	//		for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
-	//		{
-	//			glm::vec3 color(0.0f);
-	//			// red and white color is interleaved according to which column number
-	//			if (x % 2)
-	//			{
-	//				color = glm::vec3(0.6f, 0.2f, 0.2f);
-	//			}
-	//			else
-	//			{
-	//				color = glm::vec3(1.0f, 1.0f, 1.0f);
-	//			}
-
-	//			Particle* p1 = GetParticle(x + 1, y);
-	//			Particle* p2 = GetParticle(x, y);
-	//			Particle* p3 = GetParticle(x, y + 1);
-	//			Particle* p4 = GetParticle(x + 1, y + 1);
-
-	//			DrawTriangle(p1, p2, p3, color);
-	//			DrawTriangle(p4, p1, p3, color);
-	//		}
-	//	}
-	//	glEnd();
-	//}
-
+	/// <summary>
+	/// Renders cloth as vertex for now. Will be impoved to render triangles later.
+	/// </summary>
+	/// <param name="shader"></param>
+	/// <param name="modelMatrix"></param>
 	void Cloth::DrawParticle(SharedPtr<Shader> shader, glm::mat4 modelMatrix)
 	{
 		u32 indexCount = static_cast<u32>(m_ClothIndices.size());
@@ -155,12 +97,19 @@ namespace Basement
 
 	void Cloth::AddForce(const glm::vec3& force)
 	{
+		// Note: prevent delta time too long causing crazy force
+		if (glm::length(force) > 5.0f) { return; }
+
 		for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
 		{
 			particle->AddForce(force); // add the forces to each particle
 		}
 	}
 
+	/// <summary>
+	/// Add a force from wind during simulation to make the cloth hanging in the air. 
+	/// </summary>
+	/// <param name="force"></param>
 	void Cloth::WindForce(const glm::vec3& force)
 	{
 		for (int x = 0; x < m_ParticleCountInWidth - 1; x++)
@@ -173,6 +122,11 @@ namespace Basement
 		}
 	}
 
+	/// <summary>
+	/// This method does the fast and simple sphere collision detection
+	/// </summary>
+	/// <param name="spherePosition"></param>
+	/// <param name="radius"></param>
 	void Cloth::CheckSphereCollsion(const glm::vec3& spherePosition, float radius)
 	{
 		for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
@@ -192,6 +146,9 @@ namespace Basement
 		return m_Particles[index].GetPosition() - m_ParticleOriginalPositions[index];
 	}
 
+	/// <summary>
+	/// Set up the vertex array and vertex buffer for rendering the cloth.
+	/// </summary>
 	void Cloth::SetupVertexArrayData()
 	{
 		// Setup cloth particle
@@ -264,27 +221,5 @@ namespace Basement
 		p2->AddForce(force);
 		p3->AddForce(force);
 	}
-
-	/// <summary>
-	/// A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color
-	/// </summary>
-	/// <param name="p1"></param>
-	/// <param name="p2"></param>
-	/// <param name="p3"></param>
-	/// <param name="color"></param>
-	void Cloth::DrawTriangle(Particle* p1, Particle* p2, Particle* p3, const glm::vec3& color)
-	{
-		//glColor3fv((GLfloat*)&color);
-
-		glNormal3fv((GLfloat*)&(glm::normalize(p1->GetAccumulatedNormal())));
-		glVertex3fv((GLfloat*)&(p1->GetPosition()));
-
-		glNormal3fv((GLfloat*)&(glm::normalize(p2->GetAccumulatedNormal())));
-		glVertex3fv((GLfloat*)&(p2->GetPosition()));
-
-		glNormal3fv((GLfloat*)&(glm::normalize(p3->GetAccumulatedNormal())));
-		glVertex3fv((GLfloat*)&(p3->GetPosition()));
-	}
-
 
 }

@@ -17,7 +17,6 @@ namespace Basement
 		~Cloth() = default;
 
 		void Update(float dt);
-		void Draw();
 		void DrawParticle(SharedPtr<Shader> shader, glm::mat4 modelMatrix);
 		void AddForce(const glm::vec3& force);
 		void WindForce(const glm::vec3& force);
@@ -31,7 +30,6 @@ namespace Basement
 		void MakeConstraints(Particle* p1, Particle* p2);
 		glm::vec3 CalcTriangleNormal(Particle* p1, Particle* p2, Particle* p3);
 		void AddWindForcesForTriangle(Particle* p1, Particle* p2, Particle* p3, const glm::vec3& direction);
-		void DrawTriangle(Particle* p1, Particle* p2, Particle* p3, const glm::vec3& color);
 
 		int m_ParticleCountInWidth;
 		int m_ParticleCountInHeight;
