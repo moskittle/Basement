@@ -29,7 +29,6 @@ float animationPace = 8.0f;
 
 glm::vec3 cubePosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 ballPosition = glm::vec3(1.0f, 1.0f, 3.0f);
-glm::vec3 ballPosition2 = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 clothPosition = glm::vec3(1.0f, 1.0f, 3.0f);
 glm::vec3 modelPosition = glm::vec3(0.0f, 0.5f, 1.5f);
 
@@ -129,7 +128,7 @@ void cs560Layer::RenderImGui()
 
 	if (ImGui::CollapsingHeader("Cloth Simulation"))
 	{
-		ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition2), 0.0f, 4.0f, "%.3f", 1.0f);
+		ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 4.0f, "%.3f", 1.0f);
 		ImGui::SliderFloat("Ball Radius", &ballRadius, 0.0f, 1.0f, "%.3f", 0.5f);
 		//ImGui::SliderFloat("Ball Ambient Intensity", &ballAmbientIntensity, 0.0f, 1.0f, "%.3f", 1.0f);
 		//ImGui::ColorPicker3("Ball Base Color", glm::value_ptr(ballBaseColor));
@@ -152,6 +151,7 @@ void cs560Layer::BuildScene()
 {
 	auto& flatColorShader = m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
 	auto& simpleLitShader = m_ShaderLibrary.Load("assets/shaders/SimpleLit.glsl");
+	auto& simpleLitClothShader = m_ShaderLibrary.Load("assets/shaders/SimpleLitCloth.glsl");
 	auto& animationShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimation.glsl");
 	auto& animationNoTexShader = m_ShaderLibrary.Load("assets/shaders/SkeletonAnimationNoTex.glsl");
 	auto& boneShader = m_ShaderLibrary.Load("assets/shaders/DebugBone.glsl");
@@ -196,7 +196,8 @@ void cs560Layer::BuildScene()
 	//----------------
 	m_Cube = Basement::Model::Create("assets/models/cube.fbx");
 	m_Ball = Basement::Model::Create("assets/models/sphere.fbx");
-	m_Cloth = std::make_shared<Basement::Cloth>(3.0f, 2.0f, 50, 40);
+	//m_Cloth = std::make_shared<Basement::Cloth>(3.0f, 2.0f, 50, 40);
+	m_Cloth = std::make_shared<Basement::Cloth>(3.0f, 2.0f, 30, 30);
 	//m_Cloth = std::make_shared<Basement::Cloth>(14, 10, 55, 45);
 
 	//----------------
@@ -335,6 +336,7 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
 	auto& flatColorShader = m_ShaderLibrary.Get("FlatColor");
 	auto& simpleLitShader = m_ShaderLibrary.Get("SimpleLit");
+	auto& simpleLitClothShader = m_ShaderLibrary.Get("SimpleLitCloth");
 
 	// Render
 	m_FrameBuffer->Bind();
@@ -498,11 +500,26 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	// -------------------------------------------------------------
 	// --------Project 4--------------------------------------------
 	// -------------------------------------------------------------
-	//m_Cloth->AddForce(glm::vec3(0.0f, -0.2f, 0.0f) * (float)dt);
+	m_Cloth->AddForce(glm::vec3(0.0f, -0.2f, 0.0f) * (float)dt);
 	//m_Cloth->WindForce(glm::vec3(0.5f, 0, 0.2f) * (float)dt); // generate some wind each frame
 	m_Cloth->Update(dt);
-	//m_Cloth->CheckSphereCollsion(ballPosition2, ballRadius);
-	m_Cloth->Draw();
+	m_Cloth->CheckSphereCollsion(ballPosition - clothPosition, ballRadius);
+
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->UploadUniform1f("u_AmbientIntensity", 1.0f);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->UploadUniform3f("u_BaseColor", glm::vec3(1.0f));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->UploadUniform3f("u_LightColor", lightColor);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->UploadUniform3f("u_LightPosition", lightPosition);
+	for (int i = 0; i < m_Cloth->GetParticleCount(); ++i)
+	{
+		glm::vec3 offsetPosition = m_Cloth->GetParticleOffsetPosition(i);
+		std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->UploadUniform3f("u_OffsetPositions[" + std::to_string(i) + "]", offsetPosition);
+	}
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitClothShader)->Unbind();
+
+	//m_Cloth->Draw();
+	glm::mat4 clothTransform = glm::translate(glm::mat4(1.0f), clothPosition);
+	m_Cloth->DrawParticle(simpleLitClothShader, clothTransform);
 
 	//////--------------
 	////// Draw Floor

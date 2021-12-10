@@ -101,7 +101,7 @@ namespace Basement {
 
 	void OpenGLRendererAPI::DrawArraysWithPoints(u32 first, u32 count)
 	{
-		OpenGLCall(glPointSize(5.0f));
+		OpenGLCall(glPointSize(2.0f));
 		OpenGLCall(glDrawArrays(GL_POINTS, first, count));
 	}
 	void OpenGLRendererAPI::DrawArraysWithLines(u32 first, u32 count)

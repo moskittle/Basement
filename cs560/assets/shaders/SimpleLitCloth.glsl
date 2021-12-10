@@ -1,11 +1,13 @@
-// Phong Lighting Shader
+// Phong Lighting Shader for Cloth
 
 #type vertex
 #version 330 core
 
 layout (location = 0) in vec3 a_Position;
 layout (location = 1) in vec3 a_Normal;
+layout (location = 3) in ivec4 a_BoneIds;   // vertex index is store in a_BoneIds[0]
 
+uniform vec3 u_OffsetPositions[1000];
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
@@ -15,10 +17,11 @@ out vec3 v_WorldPosition;
 
 void main()
 {
-    v_WorldPosition = vec3(u_Model * vec4(a_Position, 1.0));     // Fragment position in world coord
+    vec3 position = a_Position + u_OffsetPositions[a_BoneIds[0]];
+    v_WorldPosition = vec3(u_Model * vec4(position, 1.0));     // Fragment position in world coord
     v_Normal = a_Normal;
 
-    gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
+    gl_Position = u_Projection * u_View * u_Model * vec4(position, 1.0);
 }
 
 //---------------------------------------------------------------------------

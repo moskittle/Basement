@@ -1,8 +1,9 @@
 #include "bmpch.h"
 
 #include "Cloth.h"
+#include "../Renderer.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace Basement
 {
@@ -54,6 +55,12 @@ namespace Basement
 			rightParticle->SetIsFixed(true);
 		}
 
+		for (const auto& particle : m_Particles)
+		{
+			m_ParticleOriginalPositions.push_back(particle.GetPosition());
+		}
+
+		SetupVertexArrayData();
 	}
 
 	void Cloth::Update(float dt)
@@ -140,6 +147,12 @@ namespace Basement
 		glEnd();
 	}
 
+	void Cloth::DrawParticle(SharedPtr<Shader> shader, glm::mat4 modelMatrix)
+	{
+		u32 indexCount = static_cast<u32>(m_ClothIndices.size());
+		Renderer::SubmitArraysForPoints(shader, m_ClothVao, m_ClothIndices[0], indexCount, modelMatrix);
+	}
+
 	void Cloth::AddForce(const glm::vec3& force)
 	{
 		for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
@@ -171,6 +184,53 @@ namespace Basement
 				particle->OffsetPosition(glm::normalize(dir) * (radius - distance));
 			}
 		}
+	}
+
+	glm::vec3 Cloth::GetParticleOffsetPosition(int index)
+	{
+		BM_ASSERT("index cannot be negative!", index >= 0);
+		return m_Particles[index].GetPosition() - m_ParticleOriginalPositions[index];
+	}
+
+	void Cloth::SetupVertexArrayData()
+	{
+		// Setup cloth particle
+		int count = 0;
+		for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
+		{
+			auto newVertex = Vertex();
+			newVertex.Position = particle->GetPosition();
+			newVertex.BoneIds[0] = count;
+			m_ClothVertices.push_back(newVertex);
+			count++;
+		}
+
+		for (int i = 0; i < m_ClothVertices.size(); ++i)
+		{
+			m_ClothIndices.push_back(i);
+		}
+
+		BufferLayout bufferLayout = {
+			{ EShaderDataType::Float3, "a_Position" },
+			{ EShaderDataType::Float3, "a_Normal" },
+			{ EShaderDataType::Float2, "a_TexCoord" },
+			{ EShaderDataType::Int4, "a_BoneIds"},
+			{ EShaderDataType::Float4, "a_BoneWeights"}
+		};
+
+		m_ClothVao = VertexArray::Create();
+		m_ClothVbo = VertexBuffer::Create(m_ClothVertices);
+		m_ClothVbo->SetLayout(bufferLayout);
+		m_ClothVao->AddVertexBuffer(m_ClothVbo);
+
+
+		//for (u32 i = 0; i < static_cast<u32>(m_PointVertices.size()); ++i)
+		//{
+		//	m_PointIndices.push_back(i);
+		//}
+
+		//m_PathPointIbo = IndexBuffer::Create(m_PointIndices);
+		//m_PathPointVao->SetIndexBuffer(m_PathPointIbo);
 	}
 
 	Particle* Cloth::GetParticle(int x, int y)
@@ -224,17 +284,6 @@ namespace Basement
 
 		glNormal3fv((GLfloat*)&(glm::normalize(p3->GetAccumulatedNormal())));
 		glVertex3fv((GLfloat*)&(p3->GetPosition()));
-	}
-
-	void Cloth::Init()
-	{
-		glShadeModel(GL_SMOOTH);
-		glClearColor(0.2f, 0.2f, 0.4f, 0.5f);
-		glClearDepth(1.0f);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_COLOR_MATERIAL);
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	}
 
 
