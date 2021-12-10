@@ -17,7 +17,7 @@ namespace Basement
 		void AddForce(glm::vec3 force);
 		void Update(float dt);
 		void OffsetPosition(const glm::vec3& offset);
-		void AddToNormal(const glm::vec3& normal);
+		//void AddToNormal(const glm::vec3& normal);
 
 		const bool& GetIsFixed() const { return m_IsFixed; }
 		void SetIsFixed(bool isFixed) { m_IsFixed = isFixed; }

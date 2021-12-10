@@ -79,73 +79,73 @@ namespace Basement
 		}
 	}
 
-	/// <summary>
-	/// drawing the cloth as a smooth shaded (and colored according to column) OpenGL triangular mesh
-	/// Called from the display() method
-	/// 	The cloth is seen as consisting of triangles for four particles in the grid as follows :
-	/// 
-	/// (x, y)		*--* (x + 1, y)
-	/// 			| /|
-	/// 			|/ |
-	/// (x, y + 1)	*--* (x + 1, y + 1)
-	/// </summary>
-	void Cloth::Draw()
-	{
-		// reset normals from to last frame
-		for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
-		{
-			particle->SetAccumulatedNormal(glm::vec3(0.0f));
-		}
+	///// <summary>
+	///// drawing the cloth as a smooth shaded (and colored according to column) OpenGL triangular mesh
+	///// Called from the display() method
+	///// 	The cloth is seen as consisting of triangles for four particles in the grid as follows :
+	///// 
+	///// (x, y)		*--* (x + 1, y)
+	///// 			| /|
+	///// 			|/ |
+	///// (x, y + 1)	*--* (x + 1, y + 1)
+	///// </summary>
+	//void Cloth::Draw()
+	//{
+	//	// reset normals from to last frame
+	//	for (auto particle = m_Particles.begin(); particle != m_Particles.end(); particle++)
+	//	{
+	//		particle->SetAccumulatedNormal(glm::vec3(0.0f));
+	//	}
 
-		//create smooth per particle normals by adding up all the (hard) triangle normals that each particle is part of
-		for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
-		{
-			for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
-			{
-				Particle* p1 = GetParticle(x + 1, y);
-				Particle* p2 = GetParticle(x, y);
-				Particle* p3 = GetParticle(x, y + 1);
-				Particle* p4 = GetParticle(x + 1, y + 1);
+	//	////create smooth per particle normals by adding up all the (hard) triangle normals that each particle is part of
+	//	//for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
+	//	//{
+	//	//	for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
+	//	//	{
+	//	//		Particle* p1 = GetParticle(x + 1, y);
+	//	//		Particle* p2 = GetParticle(x, y);
+	//	//		Particle* p3 = GetParticle(x, y + 1);
+	//	//		Particle* p4 = GetParticle(x + 1, y + 1);
 
-				glm::vec3 normal = CalcTriangleNormal(p1, p2, p3);
-				p1->AddToNormal(normal);
-				p2->AddToNormal(normal);
-				p3->AddToNormal(normal);
+	//	//		glm::vec3 normal = CalcTriangleNormal(p1, p2, p3);
+	//	//		p1->AddToNormal(normal);
+	//	//		p2->AddToNormal(normal);
+	//	//		p3->AddToNormal(normal);
 
-				normal = CalcTriangleNormal(p4, p1, p3);
-				p4->AddToNormal(normal);
-				p1->AddToNormal(normal);
-				p3->AddToNormal(normal);
-			}
-		}
+	//	//		normal = CalcTriangleNormal(p4, p1, p3);
+	//	//		p4->AddToNormal(normal);
+	//	//		p1->AddToNormal(normal);
+	//	//		p3->AddToNormal(normal);
+	//	//	}
+	//	//}
 
-		glBegin(GL_TRIANGLES);
-		for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
-		{
-			for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
-			{
-				glm::vec3 color(0.0f);
-				// red and white color is interleaved according to which column number
-				if (x % 2)
-				{
-					color = glm::vec3(0.6f, 0.2f, 0.2f);
-				}
-				else
-				{
-					color = glm::vec3(1.0f, 1.0f, 1.0f);
-				}
+	//	glBegin(GL_TRIANGLES);
+	//	for (int x = 0; x < m_ParticleCountInWidth - 1; ++x)
+	//	{
+	//		for (int y = 0; y < m_ParticleCountInHeight - 1; ++y)
+	//		{
+	//			glm::vec3 color(0.0f);
+	//			// red and white color is interleaved according to which column number
+	//			if (x % 2)
+	//			{
+	//				color = glm::vec3(0.6f, 0.2f, 0.2f);
+	//			}
+	//			else
+	//			{
+	//				color = glm::vec3(1.0f, 1.0f, 1.0f);
+	//			}
 
-				Particle* p1 = GetParticle(x + 1, y);
-				Particle* p2 = GetParticle(x, y);
-				Particle* p3 = GetParticle(x, y + 1);
-				Particle* p4 = GetParticle(x + 1, y + 1);
+	//			Particle* p1 = GetParticle(x + 1, y);
+	//			Particle* p2 = GetParticle(x, y);
+	//			Particle* p3 = GetParticle(x, y + 1);
+	//			Particle* p4 = GetParticle(x + 1, y + 1);
 
-				DrawTriangle(p1, p2, p3, color);
-				DrawTriangle(p4, p1, p3, color);
-			}
-		}
-		glEnd();
-	}
+	//			DrawTriangle(p1, p2, p3, color);
+	//			DrawTriangle(p4, p1, p3, color);
+	//		}
+	//	}
+	//	glEnd();
+	//}
 
 	void Cloth::DrawParticle(SharedPtr<Shader> shader, glm::mat4 modelMatrix)
 	{

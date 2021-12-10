@@ -130,9 +130,9 @@ void cs560Layer::RenderImGui()
 	if (ImGui::CollapsingHeader("Cloth Simulation"))
 	{
 		//ImGui::SliderFloat3("Ball Position", glm::value_ptr(ballPosition), 0.0f, 10.0f, "%.3f", 1.0f);
-		ImGui::SliderFloat("Ball Position", &ballPositionZ, 0.0f, 100.0f, "%.1f", 1.0f);
-		ballPosition.z = ballPositionZ * 0.1f;
-		ImGui::SliderFloat("Ball Radius", &ballRadius, 0.0f, 1.0f, "%.3f", 0.5f);
+		ImGui::SliderFloat("Ball Position", &ballPositionZ, 0.0f, 10.0f, "%.1f", 1.0f);
+		ballPosition.z = ballPositionZ;
+		//ImGui::SliderFloat("Ball Radius", &ballRadius, 0.0f, 1.0f, "%.3f", 0.5f);
 		//ImGui::SliderFloat("Ball Ambient Intensity", &ballAmbientIntensity, 0.0f, 1.0f, "%.3f", 1.0f);
 		//ImGui::ColorPicker3("Ball Base Color", glm::value_ptr(ballBaseColor));
 		//ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
@@ -503,8 +503,8 @@ void cs560Layer::RenderScene(const Basement::Timer& dt)
 	// -------------------------------------------------------------
 	// --------Project 4--------------------------------------------
 	// -------------------------------------------------------------
-	m_Cloth->AddForce(glm::vec3(0.0f, -0.2f, 0.0f) * (float)dt);
-	//m_Cloth->WindForce(glm::vec3(0.5f, 0, 0.2f) * (float)dt); // generate some wind each frame
+	m_Cloth->AddForce(glm::vec3(0.0f, -2.0f, 0.0f) * (float)dt);
+	m_Cloth->WindForce(glm::vec3(0.5f, 0, 0.2f) * (float)dt); // generate some wind each frame
 	m_Cloth->Update(dt);
 	m_Cloth->CheckSphereCollsion(ballPosition - clothPosition, ballRadius);
 

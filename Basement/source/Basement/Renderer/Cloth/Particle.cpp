@@ -37,10 +37,10 @@ namespace Basement
 		}
 	}
 
-	void Particle::AddToNormal(const glm::vec3& normal)
-	{
-		m_AccumulatedNormal += glm::normalize(normal);
-	}
+	//void Particle::AddToNormal(const glm::vec3& normal)
+	//{
+	//	m_AccumulatedNormal += glm::normalize(normal);
+	//}
 
 
 
