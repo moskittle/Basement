@@ -14,19 +14,9 @@
 #include <assimp/types.h>
 
 // Global Variables
-//glm::vec3 LightPosition(1.2f, 1.0f, 2.0f);
 glm::vec3 LightPosition(0.0f, 0.0f, 2.0f);
 glm::vec3 LightDirection(-0.2f, -1.0f, 0.5f);
 glm::vec3 LightColor(1.0f, 1.0f, 1.0f);
-
-// Point Light (attenuation)
-float PointLightConstant = 1.0f;
-float PointLightLinear = 0.045f;
-float PointLightQuadratic = 0.0075f;
-
-// Spotlight
-float InnerCutoffAngle = 12.5f;
-float OuterCutoffAngle = 17.5f;
 
 // Material Shader variables
 glm::vec3 Ambient(1.0f, 0.5f, 0.31f);
@@ -36,20 +26,9 @@ float AmbientIntensity = 0.7f;
 float DiffuseIntensity = 0.7f;
 float SpecularIntensity = 1.0f;
 
-// Emerald Shader
-glm::vec3 EmeraldCubePosition(0.7f, 1.0f, 0.7f);
-glm::vec3 SilverCubePosition(1.5f, 0.0f, 0.0f);
-
-float EmeraldShininess = 32.0f;
-
 float Shininess = 32.0f;
 float RotationSpeed = 0.3f;
-#define ROTATE glm::radians(Degree)
-#define ROTATE_GLFW RotationSpeed * (float)glfwGetTime()
 
-// floor
-float FloorSize = 20.0f;
-float FloorLevel = 0.0f;
 
 // Post-Processing
 static int mode = 0;
@@ -57,7 +36,7 @@ static int mode = 0;
 
 GoofyLandLayer::GoofyLandLayer() :
 	Layer("GL"),
-	m_CameraController(glm::vec3(0.0f, 10.0f, 25.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -101,7 +80,6 @@ void GoofyLandLayer::BuildScene()
 	//----------------
 	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
-
 	//----------------
 	// Floor
 	//----------------
@@ -127,7 +105,6 @@ void GoofyLandLayer::BuildScene()
 
 	floorShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("u_Texture", 0);
-
 
 	//----------------
 	// Skybox
@@ -188,11 +165,9 @@ void GoofyLandLayer::BuildScene()
 	skyboxShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(skyboxShader)->UploadUniform1i("u_SkyboxTexture", 0);
 
-
 	//----------------
 	// Screen Quad
 	//----------------
-
 	float quadVertices[] = {
 		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 		// positions   // texCoords
@@ -260,9 +235,8 @@ void GoofyLandLayer::RenderScene()
 	//----------------
 	// Model
 	//----------------
-
 	glm::mat4 model(1.0f);
-	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
 
 	nanoShader->Bind();
@@ -279,7 +253,7 @@ void GoofyLandLayer::RenderScene()
 	////--------------
 	//// Draw Floor
 	////--------------
-	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, FloorLevel, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f * FloorSize, 0.0f, 0.3f * FloorSize));
+	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	m_FloorTexture->Bind();
 	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
 
@@ -346,13 +320,6 @@ void GoofyLandLayer::RenderImGui()
 		if (ImGui::TreeNode("Bulb")) {
 			ImGui::SliderFloat3("Light Position", glm::value_ptr(LightPosition), -10.0f, 10.0f, "%.1f", 2.0f);
 			ImGui::ColorEdit3("Light Color", glm::value_ptr(LightColor));
-
-			ImGui::TreePop();
-			ImGui::Separator();
-		}
-
-		if (ImGui::TreeNode("Floor")) {
-			ImGui::SliderFloat("Size", &FloorSize, 0.0f, 50.0f, "%f", 1.0f);
 
 			ImGui::TreePop();
 			ImGui::Separator();
