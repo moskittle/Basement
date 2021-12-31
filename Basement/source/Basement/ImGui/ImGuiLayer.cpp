@@ -46,7 +46,7 @@ namespace Basement {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
-		
+
 		Application& app = Application::GetInstance();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
@@ -65,7 +65,7 @@ namespace Basement {
 	void ImGuiLayer::RenderImGui()
 	{
 		ImGui::Begin("Renderer Info");                          // Create a window called "Hello, world!" and append into it.
-		
+
 		RendererAPI::RendererAPIInfo& info = RendererAPI::GetRendererAPIInfo();
 		ImGui::Text("Vendor:   %s", info.Vendor.c_str());
 		ImGui::Text("Renderer: %s", info.Renderer.c_str());
@@ -73,8 +73,8 @@ namespace Basement {
 		ImGui::Text("FPS: %.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::End();
 
-		static bool IsShowing = true;
-		ImGui::ShowDemoWindow(&IsShowing);
+		//static bool IsShowing = true;
+		//ImGui::ShowDemoWindow(&IsShowing);
 	}
 
 	void ImGuiLayer::Begin()
