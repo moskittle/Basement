@@ -6,8 +6,8 @@ namespace Basement {
 
 	enum class EShaderDataType	// TODO: uint8 for packing
 	{
-		None = 0, 
-		Int, Int2, Int3, Int4, 
+		None = 0,
+		Int, Int2, Int3, Int4,
 		Float, Float2, Float3, Float4,
 		Mat3, Mat4,
 		Bool
@@ -17,17 +17,17 @@ namespace Basement {
 	{
 		switch (type)
 		{
-			case EShaderDataType::Int:     return 4;
-			case EShaderDataType::Int2:    return 4 * 2;
-			case EShaderDataType::Int3:    return 4 * 3;
-			case EShaderDataType::Int4:    return 4 * 4;
-			case EShaderDataType::Float:   return 4;
-			case EShaderDataType::Float2:  return 4 * 2;
-			case EShaderDataType::Float3:  return 4 * 3;
-			case EShaderDataType::Float4:  return 4 * 4;
-			case EShaderDataType::Mat3:    return 4 * 3 * 3;
-			case EShaderDataType::Mat4:    return 4 * 4 * 4;
-			case EShaderDataType::Bool:    return 1;
+		case EShaderDataType::Int:     return 4;
+		case EShaderDataType::Int2:    return 4 * 2;
+		case EShaderDataType::Int3:    return 4 * 3;
+		case EShaderDataType::Int4:    return 4 * 4;
+		case EShaderDataType::Float:   return 4;
+		case EShaderDataType::Float2:  return 4 * 2;
+		case EShaderDataType::Float3:  return 4 * 3;
+		case EShaderDataType::Float4:  return 4 * 4;
+		case EShaderDataType::Mat3:    return 4 * 3 * 3;
+		case EShaderDataType::Mat4:    return 4 * 4 * 4;
+		case EShaderDataType::Bool:    return 1;
 		}
 
 		BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -49,17 +49,17 @@ namespace Basement {
 		{
 			switch (Type)
 			{
-				case EShaderDataType::Int:      return 1;
-				case EShaderDataType::Int2:     return 2;
-				case EShaderDataType::Int3:     return 3;
-				case EShaderDataType::Int4:     return 4;
-				case EShaderDataType::Float:    return 1;
-				case EShaderDataType::Float2:   return 2;
-				case EShaderDataType::Float3:   return 3;
-				case EShaderDataType::Float4:   return 4;
-				case EShaderDataType::Mat3:     return 3;
-				case EShaderDataType::Mat4:     return 4;
-				case EShaderDataType::Bool:     return 1;
+			case EShaderDataType::Int:      return 1;
+			case EShaderDataType::Int2:     return 2;
+			case EShaderDataType::Int3:     return 3;
+			case EShaderDataType::Int4:     return 4;
+			case EShaderDataType::Float:    return 1;
+			case EShaderDataType::Float2:   return 2;
+			case EShaderDataType::Float3:   return 3;
+			case EShaderDataType::Float4:   return 4;
+			case EShaderDataType::Mat3:     return 3;
+			case EShaderDataType::Mat4:     return 4;
+			case EShaderDataType::Bool:     return 1;
 			}
 
 			BM_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -101,10 +101,10 @@ namespace Basement {
 	public:
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		
+
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-		
+
 		virtual u32 GetCount() const = 0;
 
 		static SharedPtr<VertexBuffer> Create(u32 size, float* vertices);
@@ -133,9 +133,39 @@ namespace Basement {
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-		
+
 		//virtual void GetIndex() = 0;
 
 		static SharedPtr<UniformBuffer> Create();
+	};
+
+	enum class FrameBufferFormat
+	{
+		None = 0,
+		RGBA8 = 1,
+		RGBA16F = 2
+	};
+
+	class FrameBuffer
+	{
+	public:
+		virtual ~FrameBuffer() = default;
+
+		static SharedPtr<FrameBuffer> Create(u32 width, u32 height);
+
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+		virtual void ActivateTexture(u32 slot = 0) const = 0;
+
+		virtual u32 GetFrameBufferID() const = 0;
+		virtual u32 GetColorAttachmentID() const = 0;
+		virtual u32 GetDepthAttachmentID() const = 0;
+	private:
+
+	};
+
+	class FrameBufferPool
+	{
+		// TODO
 	};
 }
