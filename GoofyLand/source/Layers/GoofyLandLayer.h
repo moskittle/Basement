@@ -6,7 +6,6 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Basement/Renderer/Texture.h"
 #include "Basement/Renderer/VertexArray.h"
-#include "Basement/Renderer/FrameBuffer.h"
 #include "Basement/Renderer/Model.h"
 
 #include <glm/glm.hpp>
@@ -23,24 +22,9 @@ public:
 private:
 	void BuildScene();
 	void RenderScene();
-
-	void BuildLightingScene();
-	void RenderLightingScene();
-
-	void BuildLightingMapScene();
-	void RenderLightingMapScene();
-
-	void BuildModelScene();
-	void RenderModelScene();
-
-	void BuildSkyboxScene();
-	void RednerSkyboxScene();
-
-	void BuildFrameBufferScene();
-	void RenderFrameBufferScene();
 private:
 	Basement::CameraController3D m_CameraController;
-	
+
 	Basement::ShaderLibrary m_ShaderLibrary;
 
 	// Skybox
@@ -75,11 +59,6 @@ private:
 	Basement::SharedPtr<Basement::Texture2D> m_ScreenTexture;
 	Basement::SharedPtr<Basement::VertexArray> m_SmallScreenVAO;
 	Basement::SharedPtr<Basement::VertexBuffer> m_SmallScreenVBO;
-
-	// Sphere
-	Basement::SharedPtr<Basement::VertexArray> m_SphereVAO;
-	Basement::SharedPtr<Basement::VertexBuffer> m_SphereVBO;
-	Basement::SharedPtr<Basement::IndexBuffer> m_SphereIBO;
 
 	// Frame Buffer
 	Basement::SharedPtr<Basement::FrameBuffer> m_FrameBuffer;
