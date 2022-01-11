@@ -1,7 +1,6 @@
 #include "GoofyLandLayer.h"
 
 #include "Basement/Renderer/Renderer.h"
-#include "Basement/Mesh/Sphere.h"
 
 #include "ImGui/imgui.h"
 
@@ -66,13 +65,13 @@ void GoofyLandLayer::BuildScene()
 	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 
+	// post-processing shaders
 	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
 	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadInversion.glsl");
 	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadGrayScale.glsl");
 	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadKernel.glsl");
 	auto& blurShaderShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadBlur.glsl");
 
-	m_FloorTexture = Basement::Texture2D::Create("assets/textures/wood.png", true);
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
 
 	//----------------
@@ -81,30 +80,9 @@ void GoofyLandLayer::BuildScene()
 	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
 
 	//----------------
-	// Floor
+	// Sponza
 	//----------------
-	float planeVertices[] = {
-		// note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat
-		// positions          // texture Coords
-		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-
-		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-	};
-	m_FloorVAO = Basement::VertexArray::Create();
-	m_FloorVBO = Basement::VertexBuffer::Create(sizeof(planeVertices), planeVertices);
-	Basement::BufferLayout bufferLayout = {
-		{ Basement::EShaderDataType::Float3, "a_Position" },
-		{ Basement::EShaderDataType::Float2, "a_TexCood" }
-	};
-	m_FloorVBO->SetLayout(bufferLayout);
-	m_FloorVAO->AddVertexBuffer(m_FloorVBO);
-
-	floorShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(floorShader)->UploadUniform1i("u_Texture", 0);
+	m_Sponza = Basement::Model::Create("assets/models/sponza/sponza.obj");
 
 	//----------------
 	// Skybox
@@ -192,23 +170,6 @@ void GoofyLandLayer::BuildScene()
 	screenShader->Bind();
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(screenShader)->UploadUniform1i("u_ScreenTexture", 0);
 
-
-	float smallQuadVertices[] = {
-		// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-		// positions   // texCoords
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  1.0f,  1.0f, 1.0f
-	};
-	m_SmallScreenVAO = Basement::VertexArray::Create();
-	m_SmallScreenVBO = Basement::VertexBuffer::Create(sizeof(smallQuadVertices), smallQuadVertices);
-	m_SmallScreenVBO->SetLayout(screenLayout);
-	m_SmallScreenVAO->AddVertexBuffer(m_SmallScreenVBO);
-
 	//-----------------------------
 	// Framebuffer configuration
 	//-----------------------------
@@ -235,12 +196,12 @@ void GoofyLandLayer::RenderScene()
 	//----------------
 	// Model
 	//----------------
-	glm::mat4 model(1.0f);
-	model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-	glm::mat3 normalMat = glm::mat3(glm::transpose(glm::inverse(model)));
+	glm::mat4 nanoModel(1.0f);
+	nanoModel = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+	glm::mat3 nanoNormalMat = glm::mat3(glm::transpose(glm::inverse(nanoModel)));
 
 	nanoShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", normalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", nanoNormalMat);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
@@ -248,14 +209,24 @@ void GoofyLandLayer::RenderScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, model);
+	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, nanoModel);
 
-	////--------------
-	//// Draw Floor
-	////--------------
-	glm::mat4 floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	m_FloorTexture->Bind();
-	Basement::Renderer::SubmitArrays(floorShader, m_FloorVAO, 0, 6, floorModel);
+	//----------------
+	// Sponza
+	//----------------
+	glm::mat4 sponzaModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+	glm::mat3 sponzaNormalMat = glm::mat3(glm::transpose(glm::inverse(sponzaModelMat)));
+
+	nanoShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", sponzaNormalMat);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
+
+	Basement::Renderer::SubmitModel(m_Sponza, nanoShader, sponzaModelMat);
 
 	//----------------
 	// Skybox
@@ -296,13 +267,6 @@ void GoofyLandLayer::RenderScene()
 
 	m_ScreenVAO->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	// small
-	screenShader->Bind();
-	m_SmallScreenVAO->Bind();
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	//Basement::Renderer::SubmitArrays(screenShader, m_ScreenVAO, 0, 6, screenModel);
 }
 
 void GoofyLandLayer::RenderImGui()

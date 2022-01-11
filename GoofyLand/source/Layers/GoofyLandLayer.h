@@ -32,13 +32,8 @@ private:
 	Basement::SharedPtr<Basement::VertexBuffer> m_SkyboxVBO;
 	Basement::SharedPtr<Basement::TextureCube> m_SkyboxTexture;
 
-	// Object
-	Basement::SharedPtr<Basement::VertexArray> m_VertexArray;
-	Basement::SharedPtr<Basement::VertexBuffer> m_VertexBuffer;
-	Basement::SharedPtr<Basement::IndexBuffer> m_IndexBuffer;
-	Basement::SharedPtr<Basement::Texture2D> m_BoxTexture;
-	Basement::SharedPtr<Basement::Texture2D> m_BoxSpecularTexture;
-	Basement::SharedPtr<Basement::Texture2D> m_BoxEmissionTexture;
+	// Sponza
+	Basement::SharedPtr<Basement::Model> m_Sponza;
 
 	// Model
 	Basement::SharedPtr<Basement::Model> m_NanoSuit;
@@ -47,11 +42,6 @@ private:
 	Basement::SharedPtr<Basement::VertexArray> m_LightVertexArray;
 	Basement::SharedPtr<Basement::VertexBuffer> m_LightVertexBuffer;
 	Basement::SharedPtr<Basement::IndexBuffer> m_LightIndexBuffer;
-
-	// Floor
-	Basement::SharedPtr<Basement::VertexArray> m_FloorVAO;
-	Basement::SharedPtr<Basement::VertexBuffer> m_FloorVBO;
-	Basement::SharedPtr<Basement::Texture2D> m_FloorTexture;
 
 	// Screen Quad
 	Basement::SharedPtr<Basement::VertexArray> m_ScreenVAO;

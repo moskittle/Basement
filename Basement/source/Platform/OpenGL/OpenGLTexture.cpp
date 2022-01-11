@@ -11,21 +11,25 @@ namespace Basement {
 	//----------------------------------------------------
 	// OpenGL Texture 2D
 	//----------------------------------------------------
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isRepeated) : 
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isRepeated) :
 		m_Path(path),
 		m_IsRepeated(isRepeated)
 	{
 		int width, height, channels;
 
-		stbi_set_flip_vertically_on_load(true);
+		//stbi_set_flip_vertically_on_load(true);
 		stbi_uc* data = stbi_load(m_Path.c_str(), &width, &height, &channels, 0);
 		BM_CORE_ASSERT(data, "Failed to load image!");
-		
+
 		m_Width = width;
 		m_Height = height;
 
 		auto [internalFormat, dataFormat] = GetFormat(channels);
-		BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
+		//BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
+		if ((internalFormat && dataFormat) == 0)
+		{
+			BM_CORE_ERROR("Format not supported!");
+		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
 		glTextureStorage2D(m_TextureID, 1, internalFormat, m_Width, m_Height);
@@ -99,11 +103,11 @@ namespace Basement {
 
 		OpenGLCall(glGenTextures(1, &m_TextureID));
 		OpenGLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
-		
+
 		int width, height, channels;
 		for (u8 i = 0; i < 6; ++i)
 		{
-			path = directory + "/" + faces[i] + + "." + format;
+			path = directory + "/" + faces[i] + +"." + format;
 
 			stbi_set_flip_vertically_on_load(false);
 			stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
@@ -111,8 +115,8 @@ namespace Basement {
 
 			auto [internalFormat, dataFormat] = GetFormat(channels);
 			BM_CORE_ASSERT(internalFormat && dataFormat, "Format not supported!");
-			
-			OpenGLCall(glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+
+			OpenGLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data));
 			stbi_image_free(data);
 		}

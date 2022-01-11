@@ -8,7 +8,7 @@
 namespace Basement {
 
 	static const u32 s_MeshImportFlags =
-		aiProcess_Triangulate | 
+		aiProcess_Triangulate |
 		aiProcess_FlipUVs;
 
 	static std::unordered_map<std::string, SharedPtr<Texture2D>> TextureLibrary;
@@ -63,7 +63,7 @@ namespace Basement {
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			m_Meshes.push_back(ProcessMesh(mesh, scene));
 		}
-		
+
 		// recursion
 		for (unsigned int i = 0; i < node->mNumChildren; ++i)
 		{
@@ -110,14 +110,14 @@ namespace Basement {
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			
+
 			// texture
 			std::vector<SharedPtr<Texture2D>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-			
-			std::vector<SharedPtr<Texture2D>> specularMaps= LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+
+			std::vector<SharedPtr<Texture2D>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-			
+
 			//std::vector<Shared<Texture2D>> normalMaps= LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 			//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 			//
@@ -152,11 +152,9 @@ namespace Basement {
 			material->GetTexture(type, i, &str);
 			std::string fileName(str.C_Str());
 
-			BM_CORE_INFO("Load Texture: {0}", str.C_Str());
-
 			if (TextureLibrary.find(fileName) != TextureLibrary.end())
 			{
-				BM_CORE_WARN("Texture {0} already exists!", fileName);
+				//BM_CORE_WARN("Texture {0} already exists!", fileName);
 			}
 			else
 			{
@@ -165,6 +163,8 @@ namespace Basement {
 				textures.push_back(texture);
 
 				TextureLibrary[fileName] = texture;
+
+				BM_CORE_INFO("Load Texture: {0}", str.C_Str());
 			}
 		}
 
