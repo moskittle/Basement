@@ -62,15 +62,14 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 void GoofyLandLayer::BuildScene()
 {
 	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
-	auto& floorShader = m_ShaderLibrary.Load("assets/shaders/Floor.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 
 	// post-processing shaders
-	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuad.glsl");
-	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadInversion.glsl");
-	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadGrayScale.glsl");
-	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadKernel.glsl");
-	auto& blurShaderShader = m_ShaderLibrary.Load("assets/shaders/ScreenQuadBlur.glsl");
+	auto& screenShader = m_ShaderLibrary.Load("assets/shaders/post-process/ScreenQuad.glsl");
+	auto& inversionShader = m_ShaderLibrary.Load("assets/shaders/post-process/ScreenQuadInversion.glsl");
+	auto& grayShader = m_ShaderLibrary.Load("assets/shaders/post-process/ScreenQuadGrayScale.glsl");
+	auto& kernelShader = m_ShaderLibrary.Load("assets/shaders/post-process/ScreenQuadKernel.glsl");
+	auto& blurShaderShader = m_ShaderLibrary.Load("assets/shaders/post-process/ScreenQuadBlur.glsl");
 
 	m_SkyboxTexture = Basement::TextureCube::Create("assets/skybox/lake", "jpg");
 
@@ -179,7 +178,6 @@ void GoofyLandLayer::BuildScene()
 void GoofyLandLayer::RenderScene()
 {
 	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
-	auto& floorShader = m_ShaderLibrary.Get("Floor");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
 	auto& inversionShader = m_ShaderLibrary.Get("ScreenQuadInversion");
