@@ -79,7 +79,15 @@ namespace Basement {
 			// process vertex
 			Vertex vertex;
 			vertex.Position = { mesh->mVertices[i].x , mesh->mVertices[i].y, mesh->mVertices[i].z };
-			vertex.Normal = { mesh->mNormals[i].x , mesh->mNormals[i].y, mesh->mNormals[i].z };
+
+			if (mesh->HasNormals())
+			{
+				vertex.Normal = { mesh->mNormals[i].x , mesh->mNormals[i].y, mesh->mNormals[i].z };
+			}
+			else
+			{
+				vertex.Normal = { 0.0f, 0.0f, 0.0f };
+			}
 
 			if (mesh->HasTextureCoords(0))
 			{

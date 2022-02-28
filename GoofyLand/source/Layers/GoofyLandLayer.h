@@ -32,11 +32,8 @@ private:
 	Basement::SharedPtr<Basement::VertexBuffer> m_SkyboxVBO;
 	Basement::SharedPtr<Basement::TextureCube> m_SkyboxTexture;
 
-	// Sponza
-	Basement::SharedPtr<Basement::Model> m_Sponza;
-
-	// Model
-	Basement::SharedPtr<Basement::Model> m_NanoSuit;
+	// Monkey
+	Basement::SharedPtr<Basement::Model> m_Monkey;
 
 	// Light
 	Basement::SharedPtr<Basement::VertexArray> m_LightVertexArray;

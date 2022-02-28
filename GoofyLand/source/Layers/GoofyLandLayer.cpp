@@ -35,7 +35,7 @@ static int mode = 0;
 
 GoofyLandLayer::GoofyLandLayer() :
 	Layer("GL"),
-	m_CameraController(glm::vec3(0.0f, 3.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
+	m_CameraController(glm::vec3(0.0f, 1.0f, 10.0f), 45.0f, 1.7778f, 0.1f, 1000.0f)
 {
 	Basement::Renderer::EnableDepthTest();
 
@@ -61,7 +61,7 @@ void GoofyLandLayer::Update(const Basement::Timer& dt)
 
 void GoofyLandLayer::BuildScene()
 {
-	auto& nanoShader = m_ShaderLibrary.Load("assets/shaders/NanoSuit.glsl");
+	auto& simpleLit = m_ShaderLibrary.Load("assets/shaders/SimpleLit.glsl");
 	auto& skyboxShader = m_ShaderLibrary.Load("assets/shaders/Skybox.glsl");
 
 	// post-processing shaders
@@ -76,12 +76,7 @@ void GoofyLandLayer::BuildScene()
 	//----------------
 	// Model
 	//----------------
-	m_NanoSuit = Basement::Model::Create("assets/models/nanosuit/nanosuit.obj");
-
-	//----------------
-	// Sponza
-	//----------------
-	m_Sponza = Basement::Model::Create("assets/models/sponza/sponza.obj");
+	m_Monkey = Basement::Model::Create("assets/models/suzanne.fbx");
 
 	//----------------
 	// Skybox
@@ -177,7 +172,7 @@ void GoofyLandLayer::BuildScene()
 
 void GoofyLandLayer::RenderScene()
 {
-	auto& nanoShader = m_ShaderLibrary.Get("NanoSuit");
+	auto& simpleLitShader = m_ShaderLibrary.Get("SimpleLit");
 	auto& skyboxShader = m_ShaderLibrary.Get("Skybox");
 	auto& screenShader = m_ShaderLibrary.Get("ScreenQuad");
 	auto& inversionShader = m_ShaderLibrary.Get("ScreenQuadInversion");
@@ -194,37 +189,20 @@ void GoofyLandLayer::RenderScene()
 	//----------------
 	// Model
 	//----------------
-	glm::mat4 nanoModel(1.0f);
-	nanoModel = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-	glm::mat3 nanoNormalMat = glm::mat3(glm::transpose(glm::inverse(nanoModel)));
+	glm::mat4 monkeyModelMatrix(1.0f);
+	monkeyModelMatrix = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * RotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+	glm::mat3 monkeyNormalMatrix = glm::mat3(glm::transpose(glm::inverse(monkeyModelMatrix)));
 
-	nanoShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", nanoNormalMat);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
+	simpleLitShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniformMat3("u_NormalMat", monkeyNormalMatrix);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
-	Basement::Renderer::SubmitModel(m_NanoSuit, nanoShader, nanoModel);
-
-	//----------------
-	// Sponza
-	//----------------
-	glm::mat4 sponzaModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-	glm::mat3 sponzaNormalMat = glm::mat3(glm::transpose(glm::inverse(sponzaModelMat)));
-
-	nanoShader->Bind();
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniformMat3("u_NormalMat", sponzaNormalMat);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.position", LightPosition);
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
-	std::dynamic_pointer_cast<Basement::OpenGLShader>(nanoShader)->UploadUniform1f("u_Material.shininess", Shininess);
-
-	Basement::Renderer::SubmitModel(m_Sponza, nanoShader, sponzaModelMat);
+	Basement::Renderer::SubmitModel(m_Monkey, simpleLitShader, monkeyModelMatrix);
 
 	//----------------
 	// Skybox
