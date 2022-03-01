@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Basement/Core/Layer.h"
+#include "Basement/Scene/Scene.h"
 
 #include "Basement/Renderer/CameraController.h"
 #include "Platform/OpenGL/OpenGLShader.h"
@@ -26,6 +27,8 @@ private:
 	Basement::CameraController3D m_CameraController;
 
 	Basement::ShaderLibrary m_ShaderLibrary;
+
+	Basement::SharedPtr<Basement::Scene> m_CurrentScene;
 
 	// Skybox
 	Basement::SharedPtr<Basement::VertexArray> m_SkyboxVAO;

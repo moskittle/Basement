@@ -39,6 +39,8 @@ GoofyLandLayer::GoofyLandLayer() :
 {
 	Basement::Renderer::EnableDepthTest();
 
+	m_CurrentScene = std::make_shared<Basement::Scene>();
+
 	BuildScene();
 }
 

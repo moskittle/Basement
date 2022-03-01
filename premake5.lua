@@ -20,6 +20,7 @@ IncludeDir["ImGui"] = "Basement/vendor/ImGui"
 IncludeDir["glm"] = "Basement/vendor/glm"
 IncludeDir["stb_image"] = "Basement/vendor/stb_image"
 IncludeDir["assimp"] = "Basement/vendor/assimp/include"
+IncludeDir["entt"] = "Basement/vendor/entt/single_include"
 
 group "Dependencies"
 	include "Basement/vendor/GLFW"
@@ -47,7 +48,8 @@ project "Basement"
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp"
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/entt/single_include/**.hpp"
 	}
 
 	defines
@@ -64,7 +66,8 @@ project "Basement"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -124,7 +127,8 @@ project "Backyard"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -192,7 +196,8 @@ project "GoofyLand"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
