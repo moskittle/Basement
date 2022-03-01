@@ -77,6 +77,7 @@ void GoofyLandLayer::BuildScene()
 	// Model
 	//----------------
 	m_Monkey = Basement::Model::Create("assets/models/suzanne.fbx");
+	m_Sphere = Basement::Model::Create("assets/models/sphere.fbx");
 
 	//----------------
 	// Skybox
@@ -203,6 +204,25 @@ void GoofyLandLayer::RenderScene()
 	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform1f("u_Material.shininess", Shininess);
 
 	Basement::Renderer::SubmitModel(m_Monkey, simpleLitShader, monkeyModelMatrix);
+
+
+	//----------------
+	// Sphere
+	//----------------
+	glm::mat4 sphereModelMatrix(1.0f);
+	sphereModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
+	glm::mat3 sphereNormalMatrix = glm::mat3(glm::transpose(glm::inverse(sphereModelMatrix)));
+
+	simpleLitShader->Bind();
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniformMat3("u_NormalMat", monkeyNormalMatrix);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_ViewPosition", m_CameraController.GetCamera().GetPosition());
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.position", LightPosition);
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.ambient_power", glm::vec3(AmbientIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.diffuse_power", glm::vec3(DiffuseIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform3f("u_Light.specular_power", glm::vec3(SpecularIntensity));
+	std::dynamic_pointer_cast<Basement::OpenGLShader>(simpleLitShader)->UploadUniform1f("u_Material.shininess", Shininess);
+
+	Basement::Renderer::SubmitModel(m_Sphere, simpleLitShader, sphereModelMatrix);
 
 	//----------------
 	// Skybox

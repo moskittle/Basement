@@ -34,6 +34,7 @@ private:
 
 	// Monkey
 	Basement::SharedPtr<Basement::Model> m_Monkey;
+	Basement::SharedPtr<Basement::Model> m_Sphere;
 
 	// Light
 	Basement::SharedPtr<Basement::VertexArray> m_LightVertexArray;
